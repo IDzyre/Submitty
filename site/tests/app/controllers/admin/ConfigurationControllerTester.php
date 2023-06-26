@@ -418,9 +418,8 @@ class ConfigurationControllerTester extends \PHPUnit\Framework\TestCase {
                 'Homework Help' => 1,
                 'Quizzes' => 2,
                 'Tests' => 3
-                    };
-                }
-            ));
+                };
+            }));
 
         $core->setQueries($queries);
         $response = $controller->updateConfiguration();
