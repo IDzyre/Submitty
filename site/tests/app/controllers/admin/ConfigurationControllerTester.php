@@ -401,7 +401,6 @@ class ConfigurationControllerTester extends \PHPUnit\Framework\TestCase {
         $config->loadMasterConfigs($this->master_configs_dir);
         $config->loadCourseJson('f19', 'sample', $this->course_config);
         $core->setConfig($config);
-
         $_POST['name'] = 'forum_enabled';
         $_POST['entry'] = 'true';
         $queries = $this->createMock(DatabaseQueries::class);
@@ -413,32 +412,15 @@ class ConfigurationControllerTester extends \PHPUnit\Framework\TestCase {
         $queries
             ->expects($this->exactly(4))
             ->method('addNewCategory')
-            ->with($this->callback(function ($value) {
-                switch ($value) {
-                    case 'General Questions':
-                        return true;
-                    case 'Homework Help':
-                        return true;
-                    case 'Quizzes':
-                        return true;
-                    case 'Tests':
-                        return true;
-                    default:
-                        return false;
-                }
-            }))
             ->will($this->returnCallback(function ($value) {
-                switch ($value) {
-                    case 'General Questions':
-                        return 0;
-                    case 'Homework Help':
-                        return 1;
-                    case 'Quizzes':
-                        return 2;
-                    case 'Tests':
-                        return 3;
+                match($value) {
+                'General Questions' => 0,
+                'Homework Help' => 1,
+                'Quizzes' => 2,
+                'Tests' => 3
+                    };
                 }
-            }));
+            ));
 
         $core->setQueries($queries);
         $response = $controller->updateConfiguration();

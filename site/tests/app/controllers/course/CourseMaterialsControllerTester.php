@@ -484,23 +484,11 @@ class CourseMaterialsControllerTester extends BaseUnitTest {
         $repository
             ->expects($this->exactly(2))
             ->method('findOneBy')
-            ->with($this->callback(function ($value) {
-                switch (true) {
-                    case $value == ['path' => $this->upload_path . "/foo/foo2"]:
-                        return true;
-                    case $value == ['path' => $this->upload_path . "/foo"]:
-                        return true;
-                    default:
-                        return false;
-                }
-            }))
             ->will($this->returnCallback(function ($value) use ($course_material) {
-                switch (true) {
-                    case $value == ['path' => $this->upload_path . "/foo/foo2"]:
-                        return $course_material;
-                    case $value == ['path' => $this->upload_path . "/foo"]:
-                        return $course_material;
-                }
+                match($value){
+                    ['path' => $this->upload_path . "/foo/foo2"]  => $course_material,
+                    ['path' => $this->upload_path . "/foo"] => $course_material
+                };
             }));
         $this->core->getCourseEntityManager()
             ->expects($this->exactly(3))
