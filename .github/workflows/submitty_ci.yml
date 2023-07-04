@@ -315,7 +315,7 @@ jobs:
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
 
-  e2eCypress:
+  e2eCypress_1:
     runs-on: ubuntu-20.04
     services:
       postgres:
@@ -361,7 +361,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           config: baseUrl=http://localhost
-          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site/cypress_one
           browser: chrome
           env: run_area=CI
 
@@ -448,6 +448,50 @@ jobs:
       - name: Check for site errors
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
+
+  e2eCypress_2:
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: submitty_dbuser
+          POSTGRES_USER: postgres
+          TZ: America/New_York
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: ./.github/actions/e2e-Setup-Composite
+      # TODO: Remove this block after upgrading jsPDF
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-cache-node-modules-dev-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+              ${{ runner.os }}-cache-node-modules-dev
+
+      - name: Install node dependencies
+        working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+        run: |
+          npm install file-saver --save
+          npm install --production=false
+
+      - name: Run cypress e2e tests with pam auth
+        uses: cypress-io/github-action@v5
+        with:
+          config: baseUrl=http://localhost
+          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site/cypress_two
+          browser: chrome
+          env: run_area=CI
 
 
   e2eIntegrationTests:
