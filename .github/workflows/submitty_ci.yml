@@ -449,7 +449,7 @@ jobs:
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
 
-  e2eCypress_2:
+  e2eCypress_accessibility:
     runs-on: ubuntu-20.04
     services:
       postgres:
@@ -489,9 +489,9 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           config: baseUrl=http://localhost
-          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site/cypress_two
+          spec: cypress/cypress_two/*
+          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
-          env: run_area=CI
 
 
   e2eIntegrationTests:
