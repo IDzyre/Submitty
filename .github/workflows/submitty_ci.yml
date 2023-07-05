@@ -374,6 +374,7 @@ jobs:
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
           env: autograding_shipper_off=True
+          record: true
 
       - name: Restart autograding shipper
         run: |
