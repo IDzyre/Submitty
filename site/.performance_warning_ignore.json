@@ -26,12 +26,12 @@
   "/courses/<semester>/<course>/display_file",
   "/autograding_status",
   "/autograding_status/get_update",
-  "/courses/<semester>/<course>/course_material/.*",
-  "/courses/<semester>/<course>/course_materials/upload",
-  "/courses/<semester>/<course>/course_materials/delete",
-  "/courses/<semester>/<course>/course_materials/modify_timestamp",
-  "/courses/<semester>/<course>/course_materials/edit",
-  "/courses/<semester>/<course>/polls/newPoll",
-  "/courses/<semester>/<course>/polls/editPoll/submitEdits",
-  "/courses/<semester>/<course>/polls/deletePoll"
+  "/courses/<term>/<course>/course_material/.*",
+  "/courses/<term>/<course>/course_materials/upload",
+  "/courses/<term>/<course>/course_materials/delete",
+  "/courses/<term>/<course>/course_materials/modify_timestamp",
+  "/courses/<term>/<course>/course_materials/edit",
+  "/courses/<term>/<course>/polls/newPoll",
+  "/courses/<term>/<course>/polls/editPoll/submitEdits",
+  "/courses/<term>/<course>/polls/deletePoll"
 ]

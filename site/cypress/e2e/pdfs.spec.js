@@ -1,105 +1,85 @@
-import {getCurrentSemester} from '../support/utils.js';
-
-function switch_settings(setting, pdf_type) {
-    cy.visit(`/courses/${getCurrentSemester()}/sample`);
-    cy.login('instructor');
-    cy.get(`a[href*="/sample/gradeable/${pdf_type}/update"]`).click();
+Cypress.Commands.add('switch_settings', (gradeable_id) => {
+    cy.visit(['sample', 'gradeable', gradeable_id, 'update']);
     cy.get('#page_3_nav').click();
-    cy.get('#minimum_grading_group option:selected').invoke('text').as('minimumGradingGroup');
-    cy.get('#minimum_grading_group').select(setting);
-    cy.get('#minimum_grading_group option:selected').should('have.text', setting);
-    cy.get('input[name="grader_assignment_method"]:checked').as('graderAssignmentMethod');
-    cy.get('input[name="grader_assignment_method"][value="1"]').check();
-    cy.logout();
-}
+    // Save the previous settings to revert after. 
+    cy.get('#minimum_grading_group option:selected').invoke('text').as(gradeable_id.concat('_selected'));
+    cy.get('input[name="grader_assignment_method"]:checked').as(gradeable_id.concat('_checked'));
+    
+    cy.get('[data-testid="minimum_grading_group"]').select('Limited Access Grader');
+    cy.get('input[data-testname="grader_assignment_method"][value="1"]').check();
+});
 
-function revert_settings(pdf_type) {
-    cy.visit(`/courses/${getCurrentSemester()}/sample`);
-    cy.login('instructor');
-    cy.get(`a[href*="/sample/gradeable/${pdf_type}/update"]`).click();
+Cypress.Commands.add('revert_settings', (gradeable_id) => {
+    cy.visit(['sample', 'gradeable', gradeable_id, 'update']);
     cy.get('#page_3_nav').click();
-    cy.get('@minimumGradingGroup').then(setting => {
+    cy.get('@'.concat(gradeable_id, '_selected')).then(setting => {
         cy.get('#minimum_grading_group').select(setting);
         cy.get('#minimum_grading_group option:selected').should('have.text', setting);
     });
-    cy.get('@graderAssignmentMethod').check();
-}
+    cy.get('@'.concat(gradeable_id, '_checked')).check();
+});
 
-function pdf_access(user_id, tr_number, td_number, gradeable_id, pdf_name) {
-    cy.visit(`/courses/${getCurrentSemester()}/sample`);
+Cypress.Commands.add('pdf_access', (user_id, gradeable_id) => {
+    cy.visit('/');
     cy.login(user_id);
-    cy.get(`a[href*="/sample/gradeable/${gradeable_id}/grading/details"]`).click();
+
+    cy.visit(['sample', 'gradeable', gradeable_id, 'grading', 'details']);
     cy.get('#agree-button').click({ force: true });
-    if (user_id !== 'student') {
-        cy.get(`a[href*='/sample/gradeable/${gradeable_id}/grading/status']`).click();
-        cy.contains('Grading Index').should('be.visible').click();
+    cy.get('[data-testid="details-table"]').should('be.visible');
+    if (user_id !== 'grader') {
+            cy.get('[data-testid="view-sections"').then(($button) =>{
+                if($button.text().includes('View All')){
+                    $button.click();
+                }
+            });
+        
     }
-    cy.get('#details-table').should('be.visible');
-    if (user_id !== 'student') {
-        cy.get('.markers-container .btn-default').each(($el) => {
-            if ($el.text().trim() === 'View All') {
-                cy.wrap($el).click();
-            }
-        });
-    }
-    cy.get(`#details-table > tbody.details-content.panel-content-active > tr:nth-child(${tr_number}) > td:nth-child(${td_number}) > a`).eq(0).click();
-    cy.wait(500); //wait for #submission_browser to get loaded
-    cy.get('#submission_browser_btn').then(($el) => {
-        if (!$el.hasClass( 'active' )) {
-            cy.log($el);
-            cy.get($el).find('button').click();
+    // This gets a gradeable that has been graded already, so there are submissions available. 
+    cy.get('[data-testid="grade-table"]').contains('/ 12').click({ force: true });
+    // This is because some of the gradeables have the submission tab open
+    cy.get('[data-testid="show-submission"]').then($element => {
+        console.log($element.className);
+        if($element.hasClass('active')){
+            // do nothing
+        } else {
+            $element.click();
         }
     });
-    cy.get('#submissions').click();
-    cy.get('#div_viewer_sd1').find(`a[file-url*='${pdf_name}']`).click();
+
+    cy.get('[data-testid="folders"]').contains('submissions').click();
+    cy.get('#div_viewer_sd1').contains('words_').click();
     cy.get('#pageContainer1').should('be.visible');
-    cy.get('a[onclick*="collapseFile"]').click();
     cy.logout();
 }
+);
+
+const types = ['grading_homework_pdf', 'grading_homework_team_pdf', 'grading_pdf_peer_homework', 'grading_pdf_peer_team_homework'];
 
 describe('Test cases for PDFs access', () => {
-    it('users should have access to basic pdfs', () => {
-        const pdf_type = 'grading_homework_pdf';
-        switch_settings('Limited Access Grader', pdf_type);
-
-        pdf_access('instructor', '3', '8' ,pdf_type, 'words_1463.pdf');
-        pdf_access('ta', '3', '8', pdf_type, 'words_1463.pdf');
-        pdf_access('grader', '4', '8', pdf_type, 'words_881.pdf');
-
-        revert_settings(pdf_type);
+    before(() => {
+        // cy.visit('/');
+        // cy.login('instructor');
+        // types.forEach((gradeable_id) => {
+        //     cy.switch_settings(gradeable_id);
+        // });
+        // cy.logout();
     });
 
-    it('users should have access to team pdfs', () => {
-        const pdf_type = 'grading_homework_team_pdf';
-        switch_settings('Limited Access Grader', pdf_type);
-
-        pdf_access('instructor', '3', '9', pdf_type, 'words_1463.pdf');
-        pdf_access('ta', '3', '9', pdf_type, 'words_1463.pdf');
-        pdf_access('grader','1', '7', pdf_type, 'words_881.pdf');
-
-        revert_settings(pdf_type);
+    after(() => {
+        cy.visit('/');
+        cy.login('instructor');
+        types.forEach((gradeable_id) => {
+            cy.revert_settings(gradeable_id);
+        });
+        cy.logout();
     });
 
-    it('users should have access to peer pdfs', () => {
-        const pdf_type = 'grading_pdf_peer_homework';
-        switch_settings('Limited Access Grader', pdf_type);
-
-        pdf_access('instructor', '3', '8', pdf_type, 'words_249.pdf');
-        pdf_access('ta', '3', '8', pdf_type, 'words_249.pdf');
-        pdf_access('grader','2', '8', pdf_type, 'words_249.pdf');
-        pdf_access('student','9', '5', pdf_type, 'words_881.pdf');
-
-        revert_settings(pdf_type);
-    });
-
-    it('users should have access to peer team pdfs', () => {
-        const pdf_type = 'grading_pdf_peer_team_homework';
-        switch_settings('Limited Access Grader', pdf_type);
-
-        pdf_access('instructor', '2', '9', pdf_type, 'words_1463.pdf');
-        pdf_access('ta', '2', '9', pdf_type, 'words_1463.pdf');
-        pdf_access('grader', '4', '7', pdf_type, 'words_1463.pdf');
-
-        revert_settings(pdf_type);
+    ['grader', 'ta', 'instructor'].forEach((user) => {
+        it(`${user} should have access to pdfs`, () => {
+            types.forEach((gradeable_id) => {
+                cy.pdf_access(user, gradeable_id);
+            });
+            cy.login('student');
+        });
     });
 });
