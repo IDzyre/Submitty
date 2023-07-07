@@ -121,7 +121,7 @@
             <tr>
                 {% for column in columns %}
                     {% if column.sort_type is defined %}
-                        <th style="width:{{ column.width }}; text-align: center" data-col-title="{{ column.title }}" >
+                        <th style="width:{{ column.width }}; text-align: center" data-col-title="{{ column.title }}">
                             <a href="#" onclick= "sortTableByColumn('{{ column.sort_type }}', '{{ sort == column.sort_type ? (direction == 'ASC' ? 'DESC' : 'ASC') : 'ASC' }}')"
                             {% if sort == column.sort_type %}
                                 class="active-sort"
