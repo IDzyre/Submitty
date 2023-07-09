@@ -50,7 +50,7 @@ describe('Test cases for PDFs access', () => {
     before(() => {
         cy.visit('/');
         cy.login('instructor');
-        // Change the settings that aren't already
+        // Change the settings that aren't already what we need
         switch_settings('grading_homework_team_pdf');
         switch_settings('grading_pdf_peer_homework');
         switch_settings('grading_pdf_peer_team_homework');
