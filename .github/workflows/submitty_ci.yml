@@ -315,7 +315,7 @@ jobs:
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
 
-  e2eCypress_one:
+  e2eCypress_basic:
     runs-on: ubuntu-20.04
     services:
       postgres:
@@ -370,6 +370,7 @@ jobs:
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
           env: autograding_shipper_off=True
+          record: true
 
       - name: Restart autograding shipper
         run: |
@@ -441,14 +442,14 @@ jobs:
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
 
-  e2eCypress_two:
+  e2eCypress_cloud:
     runs-on: ubuntu-20.04
     strategy:
       # don't fail the entire matrix on failure
       fail-fast: false
       matrix:
         # run copies of the current job in parallel
-        containers: [1,2,3,4]
+        containers: [1, 2,3,4]
     services:
       postgres:
         image: postgres
@@ -467,7 +468,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: ./.github/actions/e2e-Setup-Composite
+      - uses: ./.github/workflows/vagrant_up.yaml
       # TODO: Remove this block after upgrading jsPDF
       - name: Cache Node Modules
         uses: actions/cache@v3
