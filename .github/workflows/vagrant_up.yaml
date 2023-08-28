@@ -22,32 +22,30 @@ jobs:
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
       - name: Save to cloud 
-        run: sudo apt-get install jq
-        run: 'curl \
-              --request POST \
-              --header "Content-Type: application/json" \
-              --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
-              https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/versions \
-              --data '{ "version": { "version": "1.2.3" } }''
-        run: 'curl \
-              --request POST \
-              --header "Content-Type: application/json" \
-              --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
-              https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/version/1.2.3/providers \
-              --data '{ "provider": { "name": "virtualbox" } }'
-            '
-        run: 'response=$(curl \
-                  --request GET \
-                  --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
-                  https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/1.2.3/provider/virtualbox/upload)'
+        run: |
+            sudo apt-get install jq
+            curl --request POST --header "Content-Type: application/json" \
+            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/versions \
+            --data '{ "version": { "version": "1.2.3" } }''
+            curl \
+            --request POST \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/version/1.2.3/providers \
+            --data '{ "provider": { "name": "virtualbox" } }'
+            response=$(curl \
+            --request GET \
+            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/1.2.3/provider/virtualbox/upload)'
 
-        run:  upload_path=$(echo "$response" | jq .upload_path)
+            upload_path=$(echo "$response" | jq .upload_path)
 
-        run:  curl --request PUT "${upload_path}" --upload-file virtualbox-1.2.3.box
+            curl --request PUT "${upload_path}" --upload-file virtualbox-1.2.3.box
 
-        run:    'curl \
-                --request PUT \
-                --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
-                https://app.vagrantup.com/api/v1/box/myuser/test/version/1.2.3/release'
+            'curl \
+            --request PUT \
+            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            https://app.vagrantup.com/api/v1/box/myuser/test/version/1.2.3/release'
 
 
