@@ -422,6 +422,7 @@ jobs:
         run: sudo bash tests/test_site_error_log.sh
 
   Cypress-Feature:
+    if: ${{ secrets.CYPRESS_RECORD_KEY }}
     runs-on: ubuntu-22.04
     strategy:
       # don't fail the entire matrix on failure
@@ -447,15 +448,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: ./.github/actions/e2e-Setup-Composite
-      # TODO: Remove this block after upgrading jsPDF
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-cache-node-modules-dev-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-              ${{ runner.os }}-cache-node-modules-dev
+      # - uses: ./.github/actions/e2e-Setup-Composite
+      # # TODO: Remove this block after upgrading jsPDF
+      # - name: Cache Node Modules
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-cache-node-modules-dev-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #         ${{ runner.os }}-cache-node-modules-dev
 
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
