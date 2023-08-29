@@ -25,18 +25,18 @@ jobs:
         run: |
             sudo apt-get install jq
             curl --request POST --header "Content-Type: application/json" \
-            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
             https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/versions \
             --data '{ "version": { "version": "1.2.3" } }''
             curl \
             --request POST \
             --header "Content-Type: application/json" \
-            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
             https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/version/1.2.3/providers \
             --data '{ "provider": { "name": "virtualbox" } }'
             response=$(curl \
             --request GET \
-            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
             https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/1.2.3/provider/virtualbox/upload)'
 
             upload_path=$(echo "$response" | jq .upload_path)
@@ -45,7 +45,7 @@ jobs:
 
             'curl \
             --request PUT \
-            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN" \
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
             https://app.vagrantup.com/api/v1/box/myuser/test/version/1.2.3/release'
 
 
