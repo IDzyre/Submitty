@@ -26,8 +26,9 @@ jobs:
             response=$(curl
             --request GET
             --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/1.2.3/provider/virtualbox/upload)
+           
             echo $response
-            
+
             upload_path=$(echo "$response" | jq .upload_path)
 
             curl --request PUT "${upload_path}" --upload-file virtualbox-1.2.3.box
