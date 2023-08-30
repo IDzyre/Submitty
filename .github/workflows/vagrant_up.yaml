@@ -29,6 +29,6 @@ jobs:
             --header "Content-Type: application/json"
             https://app.vagrantup.com/api/v1/authenticate
             --data '{"token": {"description": "Login from cURL"},"user": {"login": "reapernsgaming","password": ${secrets.VAGRANT_PASSWORD}}}'
-            
+
       - name: Is This the token?
-        run: echo "WAAA $token"
+        run: echo "WAAA ${ steps.token }"
