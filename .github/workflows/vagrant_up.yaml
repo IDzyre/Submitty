@@ -26,7 +26,7 @@ jobs:
             curl
             --request POST
             --header "Content-Type: application/json"
-            --header "Authorization: Bearer $VAGRANT_CLOUD_TOKEN"
+            --header "Authorization: Bearer ${secrets.VAGRANT_CLOUD_TOKEN}"
             https://app.vagrantup.com/api/v1/box/reapernsgaming/Submitty/versions/
             --data '
               {
