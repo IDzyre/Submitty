@@ -24,11 +24,11 @@ jobs:
       - name: Save to cloud
         id: token
         run: >
-            response=`curl
-            --request POST
-            --output /dev/null
-            --header "Content-Type: application/json"
-            https://app.vagrantup.com/api/v1/authenticate
-            --data '{"token": {"description": "Login from cURL"},"user": {"login": "reapernsgaming","password": ${secrets.VAGRANT_PASSWORD}}}'`
+            response=`curl \
+            --request POST \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer ${ secrets.VAGRANT_CLOUD_TOKEN }" \
+            https://app.vagrantup.com/api/v1/boxes \
+            --data '{ "box": { "username": "reapernsgaming", "name": "test123" } }'`
 
             echo $response
