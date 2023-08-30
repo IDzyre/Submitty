@@ -23,9 +23,8 @@ jobs:
       #   run: curl --show-error --fail --include http://localhost:1511
       - name: Save to cloud 
         run: |
-            curl --request POST --header "Content-Type: application/json" \
-            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
-            https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/versions \
+            curl --request POST --header "Content-Type: application/json"
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/versions
             --data "{ "version": { "version": "1.2.3" } }"
 
             # curl \
