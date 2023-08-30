@@ -29,6 +29,6 @@ jobs:
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer ${secrets.VAGRANT_CLOUD_TOKEN}" \
             https://app.vagrantup.com/api/v1/boxes \
-            --data '{ "box": { "username": "reapernsgaming", "name": "test123" } }')
+            --data "{ "box": { "username": "reapernsgaming", "name": "test123" } }")
 
             echo $response
