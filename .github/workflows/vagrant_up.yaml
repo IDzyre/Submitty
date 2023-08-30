@@ -23,31 +23,19 @@ jobs:
       #   run: curl --show-error --fail --include http://localhost:1511
       - name: Save to cloud 
         run: >
-            response=$(curl --request POST --header "Content-Type: application/json"
-            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/versions
-            --data "{ "version": { "version": "1.2.3" } }")
             
-            echo "$response"
-
-            curl \
-            --request POST \
-            --header "Content-Type: application/json" \
-            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
-            https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/version/1.2.3/providers \
-            --data "{ "provider": { "name": "virtualbox" } }"
-
-            response=$(curl \
-            --request GET \
-            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
+            response=$(curl
+            --request GET
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}"
             https://app.vagrantup.com/api/v1/box/ReaperNSGaming/Submitty/1.2.3/provider/virtualbox/upload)
 
             upload_path=$(echo "$response" | jq .upload_path)
 
             curl --request PUT "${upload_path}" --upload-file virtualbox-1.2.3.box
 
-            curl \
-            --request PUT \
-            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}" \
+            curl
+            --request PUT
+            --header "Authorization: Bearer ${{ secrets.VAGRANT_CLOUD_TOKEN }}"
             https://app.vagrantup.com/api/v1/box/myuser/test/version/1.2.3/release
 
 
