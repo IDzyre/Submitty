@@ -28,12 +28,10 @@ jobs:
             --header "Content-Type: application/json"
             --header "Authorization: Bearer ${secrets.VAGRANT_CLOUD_TOKEN}"
             https://app.vagrantup.com/api/v1/box/reapernsgaming/Submitty/versions/
-            --data '
-              {
+            --data '{
                 "version": {
                   "version": "1.2.3",
                   "description": "A new version"
                 }
-              }
-            '
+            }'
 
