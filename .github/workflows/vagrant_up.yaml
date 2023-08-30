@@ -40,4 +40,4 @@ jobs:
               }
             '
       - name: Is This the token?
-        run: echo "WAAA ${{ token }}"
+        run: echo "WAAA ${{ steps.token.outputs.token }}"
