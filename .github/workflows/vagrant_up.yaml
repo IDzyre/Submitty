@@ -23,7 +23,7 @@ jobs:
       #   run: curl --show-error --fail --include http://localhost:1511
       - name: Save to cloud 
         run: >
-            request=$(curl
+            request = $(curl
             --request POST
             --header "Content-Type: application/json"
             https://app.vagrantup.com/api/v1/authenticate
