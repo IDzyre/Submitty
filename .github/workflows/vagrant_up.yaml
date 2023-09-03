@@ -22,11 +22,6 @@ jobs:
       # - name: Validate image
       #   run: curl --show-error --fail --include http://localhost:1511
       - name: Save to cloud
-        id: token
-        run: >
-            curl \
-            --request POST \
-            --header "Content-Type: application/json" \
-            --header "Authorization: Bearer ${secrets.VAGRANT_CLOUD_TOKEN}" \
-            https://app.vagrantup.com/api/v1/boxes \
-            --data "{ "box": { "username": "reapernsgaming", "name": "test123" } }"
+        run: |
+            vagrant package --output submitty.box
+            bash vagrant_cloud.sh ${{ secrets.VAGRANT_CLOUD_TOKEN }} ReaperNSGaming 
