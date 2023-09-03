@@ -1,7 +1,7 @@
 #!
 VAGRANT_CLOUD_TOKEN=snLkGsKzUGacZA.atlasv1.Az8EQpaXnY1SMgoef32yHeFAirNtGj6VPeGrQS4LXho3x2ON3ftP6zmK2zfyeqY8pis
 VAGRANT_CLOUD_VERSION=$(git describe --tags)
-
+ 
 curl \
   --request POST \
   --header "Content-Type: application/json" \
