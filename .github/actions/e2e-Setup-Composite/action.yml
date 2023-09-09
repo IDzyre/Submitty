@@ -28,7 +28,7 @@ runs:
         sudo apt install virtualbox
       shell: bash
     - name: Vagrant up
-      run: vagrant up
+      run: VAGRANT_BOX=reapernsgaming/Submitty vagrant up
       shell: bash
     - name: Run git tests
       run: vagrant ssh -c 'bash tests/git_test.sh'
