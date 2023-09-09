@@ -47,6 +47,7 @@ def gen_script(machine_name, worker: false)
     end
     if default
       setup_cmd += ' --default'
+    end
   end
   unless extra.empty?
     setup_cmd += " #{extra}"
