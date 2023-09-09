@@ -106,11 +106,8 @@ Vagrant.configure(2) do |config|
     config.env.enable
   end
 
-  if ENV.has_key?('DEFAULT')
-    config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes.default)
-  else
-    config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes[:submitty_release])
-  end
+  config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes[:submitty_release])
+  
 
   arch = `uname -m`.chomp
   arm = arch == 'arm64' || arch == 'aarch64'
