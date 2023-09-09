@@ -23,9 +23,5 @@ runs:
     - name: Vagrant up
       run: vagrant up
     - name: Run git tests
-      run: |
-        cd $SUBMITTY_REPOSITORY
-        SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')
-        sudo python3 /usr/local/submitty/bin/generate_repos.py ${SEMESTER} sample open_homework
-        bash tests/git_test.sh
+      run: vagrant ssh -c 'bash tests/git_test.sh'
       shell: bash
