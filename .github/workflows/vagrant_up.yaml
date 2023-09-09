@@ -19,10 +19,8 @@ jobs:
       # versions are close enough that we are fine without it.
       # - run: vagrant plugin install vagrant-vbguest
       # - run: NO_SUBMISSIONS=1 vagrant up ubuntu-22.04
-      
       - name: Validate image
-        run: |
-          exit 1
+        run: exit 1
       - name: Notify if failed job
         if: failed()
         run: "curl -X POST -H 'Content-type: application/json' --data '{"text":"Vagrant Up job has failed"}' ${{ secrets.VAGRANT_UP_WEBHOOK }}"
