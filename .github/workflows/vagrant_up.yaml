@@ -12,9 +12,5 @@ jobs:
   vagrant-up:
     runs-on: macos-latest
     steps:
-      - name: failed step
-        run: |
-          exit 1
       - name: Notify if failed job
-        if: failed()
         run: "curl -X POST -H 'Content-type: application/json' --data '{"text":"Vagrant Up job has failed"}' ${{ secrets.VAGRANT_UP_WEBHOOK }}"
