@@ -25,4 +25,4 @@ jobs:
       - name: Send mail
         if: failure()
         run: |
-          curl -X POST -H "Content-type: application/json" --data '{"text":"Vagrant Up job has failed"}' ${{ secrets.VAGRANT_UP_WEBHOOK }}
+          curl -X POST -H "Content-type: application/json" --data '{"text":"@everyone The Vagrant Up job has failed. View here: https://github.com/Submitty/Submitty/actions/workflows/vagrant_up.yaml"}' ${{ secrets.VAGRANT_UP_WEBHOOK }}
