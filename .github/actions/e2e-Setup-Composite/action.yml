@@ -22,7 +22,6 @@ runs:
         path: SUBMITTY_CPY/
     - name: Vagrant up
       run: vagrant up
-      
     - name: Run git tests
       run: |
         cd $SUBMITTY_REPOSITORY
