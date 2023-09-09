@@ -244,9 +244,4 @@ Vagrant.configure(2) do |config|
     config.ssh.password = 'vagrant'
     config.ssh.insert_key = 'true'
   end
-
-  if ARGV.include?('--default')
-    override.vm.box = base_boxes[:submitty_release]
-  end
-
 end
