@@ -22,6 +22,7 @@ runs:
         path: SUBMITTY_CPY/
     - name: Vagrant up
       run: vagrant up
+      shell: bash
     - name: Run git tests
       run: vagrant ssh -c 'bash tests/git_test.sh'
       shell: bash
