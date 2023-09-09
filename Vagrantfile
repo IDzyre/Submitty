@@ -35,7 +35,6 @@ require 'json'
 def gen_script(machine_name, worker: false)
   no_submissions = !ENV.fetch('NO_SUBMISSIONS', '').empty?
   extra = ENV.fetch('EXTRA', '')
-  default = ENV.fetch('DEFAULT', '')
 
   setup_cmd = 'bash ${GIT_PATH}/.setup/'
   if worker
@@ -44,9 +43,6 @@ def gen_script(machine_name, worker: false)
     setup_cmd += 'vagrant/setup_vagrant.sh'
     if no_submissions
       setup_cmd += ' --no_submissions'
-    end
-    if default
-      setup_cmd += ' --default'
     end
   end
   unless extra.empty?
@@ -72,7 +68,6 @@ base_boxes.default         = "bento/ubuntu-22.04"
 base_boxes[:arm_bento]     = "bento/ubuntu-22.04-arm64"
 base_boxes[:libvirt]       = "generic/ubuntu2204"
 base_boxes[:arm_mac_qemu]  = "perk/ubuntu-2204-arm64"
-base_boxes[:submitty_recent] = "reapernsgaming/Submitty"
 
 def mount_folders(config, mount_options)
   # ideally we would use submitty_daemon or something as the owner/group, but since that user doesn't exist
@@ -106,8 +101,7 @@ Vagrant.configure(2) do |config|
     config.env.enable
   end
 
-  config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes[:submitty_release])
-  
+  config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes.default)
 
   arch = `uname -m`.chomp
   arm = arch == 'arm64' || arch == 'aarch64'
