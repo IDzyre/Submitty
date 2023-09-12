@@ -453,15 +453,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: ./.github/actions/e2e-Setup-Composite
-      # TODO: Remove this block after upgrading jsPDF
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-cache-node-modules-dev-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-              ${{ runner.os }}-cache-node-modules-dev
+      # - uses: ./.github/actions/e2e-Setup-Composite
+      # # TODO: Remove this block after upgrading jsPDF
+      # - name: Cache Node Modules
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-cache-node-modules-dev-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #         ${{ runner.os }}-cache-node-modules-dev
 
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
