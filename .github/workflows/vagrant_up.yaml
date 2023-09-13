@@ -18,11 +18,9 @@ jobs:
       # attempting to mount the shared folder. The guest and host guest additions
       # versions are close enough that we are fine without it.
       # - run: vagrant plugin install vagrant-vbguest
-      # - run: NO_SUBMISSIONS=1 vagrant up ubuntu-22.04
-      - name: failed step
-        run: |
-          exit 1
-      - name: Send mail
+      - run: NO_SUBMISSIONS=1 vagrant up ubuntu-22.04
+      
+      - name: Send slack message
         if: failure()
         run: |
-          curl -X POST -H "Content-type: application/json" --data '{"text":"@everyone The Vagrant Up job has failed. View here: https://github.com/Submitty/Submitty/actions/workflows/vagrant_up.yaml"}' ${{ secrets.VAGRANT_UP_WEBHOOK }}
+          curl -X POST -H "Content-type: application/json" --data '{"text":"The Vagrant Up job has failed. View here: https://github.com/Submitty/Submitty/actions/workflows/vagrant_up.yaml"}' ${{ secrets.VAGRANT_UP_WEBHOOK }}
