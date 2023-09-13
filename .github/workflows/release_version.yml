@@ -1,8 +1,7 @@
 name: Release Submitty Version
 on:
-  push:
-    release:
-      types: [published]
+  release:
+    types: [published]
 
 permissions:
   contents: read
