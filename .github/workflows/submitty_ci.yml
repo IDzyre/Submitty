@@ -453,7 +453,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: ./.github/actions/e2e-Setup-Composite
+      # - uses: ./.github/actions/e2e-Setup-Composite
       # TODO: Remove this block after upgrading jsPDF
       - name: Cache Node Modules
         uses: actions/cache@v3
@@ -477,6 +477,7 @@ jobs:
           spec: cypress/e2e/Cypress-${{matrix.containers}}/*
           browser: chrome
           env: run_area=CI
+
 
       - name: Check for site errors
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
