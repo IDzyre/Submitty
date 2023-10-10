@@ -286,8 +286,7 @@ jobs:
       - name: Run ShellCheck
         run: python3 run_shellcheck.py  # Uses the default Python installed with Ubuntu
 
-
-  Cypress-System:
+  Build-Submitty:
     runs-on: ubuntu-22.04
     services:
       postgres:
@@ -323,6 +322,9 @@ jobs:
           npm install file-saver --save
           npm install --production=false
 
+  Cypress-System:
+    needs: BuildSubmitty
+    steps:
       - name: Run accessibility test
         uses: cypress-io/github-action@v6
         with:
@@ -431,44 +433,12 @@ jobs:
 
   Cypress:
     runs-on: ubuntu-22.04
+    needs: BuildSubmitty
     strategy:
       fail-fast: false
       matrix:
         containers: ["Gradeable", "Admin", "UI", "Feature"]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: submitty_dbuser
-          POSTGRES_USER: postgres
-          TZ: America/New_York
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - uses: ./.github/actions/e2e-Setup-Composite
-      # TODO: Remove this block after upgrading jsPDF
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-cache-node-modules-dev-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-              ${{ runner.os }}-cache-node-modules-dev
-
-      - name: Install node dependencies
-        working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
-        run: |
-          npm install file-saver --save
-          npm install --production=false
-
       - name: Run cypress e2e tests with pam auth
         uses: cypress-io/github-action@v6
         with:
@@ -495,28 +465,8 @@ jobs:
 
 
   Integration:
+    needs: BuildSubmitty
     runs-on: ubuntu-22.04
-    # Postgres should not be needed for the integration tests.
-    # But unfortunately Configure test suite seems to use it at the moment, and
-    # Configure test suite seems to be necessary for the Integration tests
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: submitty_dbuser
-          POSTGRES_USER: postgres
-          TZ: America/New_York
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - uses: ./.github/actions/e2e-Setup-Composite
       - name: Run integration tests
         run: sudo -E env "PATH=$PATH" python3 /usr/local/submitty/test_suite/integrationTests/run.py
