@@ -14,8 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Get tags
-        run: git fetch --tags origin
+        with:
+          fetch-depth: 1
       - name: Get latest version
         id: get-version
         run: |
