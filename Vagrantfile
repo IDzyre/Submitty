@@ -100,7 +100,7 @@ Vagrant.configure(2) do |config|
     config.env.enable
   end
 
-  if ENV.has_key('VAGRANT_JOB')
+  if ENV.has_key?('VAGRANT_JOB')
       config.ssh.insert_key = 'false'
   else 
       config.ssh.insert_key = 'true'
