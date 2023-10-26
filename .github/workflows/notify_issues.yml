@@ -1,17 +1,20 @@
-name: 'Notify Good First Issues'
+name: 'Label New Issues'
 
 on:
   issues:
     types:
-      - labeled
+      - created
 jobs:
   notify_zulip:
     runs-on: ubuntu-latest
     steps:
-      - name: Send notification to Zulip
-        if: github.event.label.name == 'good first issue'
+      - name: Add Awaiting Triage Label
+        if: github.event.label.name != 'Awaiting Triage'
         run: |
-          curl -X POST https://submitty.zulipchat.com/api/v1/messages -u ${{ secrets.ZULIP_AUTHENTICATION }} --data-urlencode 'type=stream' --data-urlencode 'to=RPI Developers' \
-          --data-urlencode 'topic=Available Good First Issue' --data-urlencode \
-          'content=A good first issue has been posted. View here: [${{ github.event.issue.title }}](https://github.com/Submitty/Submitty/issues/${{ github.event.issue.number }}).
-          View a list of all good first issues here: [Good First Issues](https://github.com/Submitty/Submitty/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)'
+          curl -L \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.SUBMITTY_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/Submitty/Submitty/issues/${{ github.event.issue.number}}/labels \
+          -d '{"labels":["Awaiting Triage"]}'
