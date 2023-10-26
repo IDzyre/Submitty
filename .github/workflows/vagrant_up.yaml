@@ -38,7 +38,7 @@ jobs:
       - name: Publish image
         run: |
           vagrant cloud auth login --token ${{ secrets.VAGRANT_CLOUD_TOKEN }}
-          vagrant cloud publish reapernsgaming/submitty 12 virtualbox submitty.box --release --force
+          vagrant cloud publish reapernsgaming/submitty 69 virtualbox submitty.box --release --force
           vagrant cloud auth logout
       # - name: Acquire Job ID
       #   if: failure()
