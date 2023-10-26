@@ -39,9 +39,6 @@ jobs:
         run: |
           vagrant cloud auth login --token ${{ secrets.VAGRANT_CLOUD_TOKEN }}
           vagrant cloud version create reapernsgaming/submitty 122
-          vagrant cloud provider create reapernsgaming/submitty virtualbox 122
-          vagrant cloud provider upload reapernsgaming/submitty virtualbox submitty.box
-          vagrant cloud version release reapernsgaming/submitty 122
           vagrant cloud auth logout
       # - name: Acquire Job ID
       #   if: failure()
