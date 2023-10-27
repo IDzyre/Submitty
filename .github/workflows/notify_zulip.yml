@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [Submitty CI]
     # types: [completed]
-    branches: [main]
+    branches: ['main']
 jobs:
   Notify-Failure:
     runs-on: ubuntu-latest
