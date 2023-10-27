@@ -29,16 +29,16 @@ jobs:
       # attempting to mount the shared folder. The guest and host guest additions
       # versions are close enough that we are fine without it.
       # - run: vagrant plugin install vagrant-vbguest
-      - name: Vagrant Up
-        run: VAGRANT_JOB=1 vagrant up
+      # - name: Vagrant Up
+      #  run: VAGRANT_JOB=1 vagrant up
       # - name: Validate image
       #   run: curl --show-error --fail --include http://localhost:1511
-      - name: Save image
-        run: vagrant package --output submitty.box
+     # - name: Save image
+      #  run: vagrant package --output submitty.box
       - name: Publish image
         run: |
           vagrant cloud auth login --token ${{ secrets.VAGRANT_CLOUD_TOKEN }}
-          vagrant cloud version create reapernsgaming/submitty 122
+          vagrant cloud version create submitty_temp/ubuntu22-dev 122
           vagrant cloud auth logout
       # - name: Acquire Job ID
       #   if: failure()
