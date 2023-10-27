@@ -8,7 +8,7 @@ on:
 jobs:
   Notify-Failure:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       - name: Send notification to Zulip
         run: |
