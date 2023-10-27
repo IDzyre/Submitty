@@ -36,25 +36,26 @@ def gen_script(machine_name, worker: false)
   no_submissions = !ENV.fetch('NO_SUBMISSIONS', '').empty?
   extra = ENV.fetch('EXTRA', '')
 
-  # setup_cmd = 'bash ${GIT_PATH}/.setup/'
-  # if worker
-  #   setup_cmd += 'install_worker.sh'
-  # else
-  #   setup_cmd += 'vagrant/setup_vagrant.sh'
-  #   if no_submissions
-  #     setup_cmd += ' --no_submissions'
-  #   end
-  # end
-  # unless extra.empty?
-  #   setup_cmd += " #{extra}"
-  # end
-  # setup_cmd += " 2>&1 | tee ${GIT_PATH}/.vagrant/logs/#{machine_name}.log"
+  setup_cmd = 'bash ${GIT_PATH}/.setup/'
+  if worker
+    setup_cmd += 'install_worker.sh'
+  else
+    setup_cmd += 'vagrant/setup_vagrant.sh'
+    if no_submissions
+      setup_cmd += ' --no_submissions'
+    end
+  end
+  unless extra.empty?
+    setup_cmd += " #{extra}"
+  end
+  setup_cmd += " 2>&1 | tee ${GIT_PATH}/.vagrant/logs/#{machine_name}.log"
 
   script = <<SCRIPT
     GIT_PATH=/usr/local/submitty/GIT_CHECKOUT/Submitty
     DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
     VERSION=$(lsb_release -sr | tr '[:upper:]' '[:lower:]')
     mkdir -p ${GIT_PATH}/.vagrant/logs
+    #{setup_cmd}
 SCRIPT
 
   return script
@@ -101,7 +102,11 @@ Vagrant.configure(2) do |config|
     config.env.enable
   end
 
-  config.ssh.insert_key = false
+  if ENV.has_key?('VAGRANT_JOB')
+    config.ssh.insert_key = false
+  else
+    config.ssh.insert_key = true
+  end
   
   config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes.default)
 
@@ -236,6 +241,5 @@ Vagrant.configure(2) do |config|
   if ARGV.include?('ssh')
     config.ssh.username = 'vagrant'
     config.ssh.password = 'vagrant'
-    config.ssh.insert_key = true
   end
 end
