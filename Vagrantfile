@@ -63,6 +63,7 @@ end
 base_boxes = Hash[]
 
 # Should all be base Ubuntu boxes that use the same version
+# base_boxes.default         = "submitty_temp/ubuntu22-dev"
 base_boxes.default         = "bento/ubuntu-22.04"
 base_boxes[:arm_bento]     = "bento/ubuntu-22.04-arm64"
 base_boxes[:libvirt]       = "generic/ubuntu2204"
@@ -100,12 +101,8 @@ Vagrant.configure(2) do |config|
     config.env.enable
   end
 
-  if ENV.has_key?('VAGRANT_JOB')
-      config.ssh.insert_key = 'false'
-  else 
-      config.ssh.insert_key = 'true'
-  end
-
+  config.ssh.insert_key = false
+  
   config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes.default)
 
   arch = `uname -m`.chomp
@@ -239,6 +236,6 @@ Vagrant.configure(2) do |config|
   if ARGV.include?('ssh')
     config.ssh.username = 'vagrant'
     config.ssh.password = 'vagrant'
-    config.ssh.insert_key = 'true'
+    config.ssh.insert_key = true
   end
 end
