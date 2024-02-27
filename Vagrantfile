@@ -113,7 +113,8 @@ Vagrant.configure(2) do |config|
   else 
     config.ssh.insert_key = true
   end
-
+  smb_username = 'root'
+  smb_password = 'vagrant'
   mount_options = []
 
   config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes.default)
@@ -251,8 +252,7 @@ Vagrant.configure(2) do |config|
     qe.ssh_port = ENV.fetch('VM_PORT_SSH', 2222)
 
     mount_folders(override, [])
-    smb_username = 'root'
-    smb_password = 'vagrant'
+  
   end
 
   config.vm.provision :shell, :inline => " sudo timedatectl set-timezone America/New_York", run: "once"
