@@ -10,15 +10,15 @@ permissions:
 
 jobs:
   vagrant-up:
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install qemu
-        run: brew install qemu
+        run: apt-get install qemu
       - name: install vagrant
-        run: brew install --cask vagrant
+        run: apt-get install --cask vagrant
       - name: Setup vagrant for qemu
         run: vagrant plugin install vagrant-qemu
       - name: Vagrant Up
