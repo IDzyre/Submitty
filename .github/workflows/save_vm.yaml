@@ -22,7 +22,7 @@ jobs:
       - name: Setup vagrant for qemu
         run: vagrant plugin install vagrant-qemu
       - name: Vagrant Up
-        run: CI=1 BASE_BOX=1 vagrant up --provider=qemu
+        run: BASE_BOX=1 vagrant up --provider=qemu
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
       - name: Save image
