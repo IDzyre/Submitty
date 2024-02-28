@@ -16,9 +16,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install qemu
-        run: apt-get install qemu
+        run: sudo apt-get install qemu
       - name: install vagrant
-        run: apt-get install --cask vagrant
+        run: sudo apt-get install --cask vagrant
       - name: Setup vagrant for qemu
         run: vagrant plugin install vagrant-qemu
       - name: Vagrant Up
