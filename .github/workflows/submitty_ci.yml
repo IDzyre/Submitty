@@ -542,7 +542,7 @@ jobs:
 
   notify-main:
     runs-on: ubuntu-22.04
-    needs: [css-lint, js-lint, js-unit, php-lint, php-unit, python-lint, python-unit, yamllint, shell-check, Cypress-System, Cypress (Gradeable), Cypress (UI), Cypress (Admin), Cypress (Feature), Integration]
+    needs: [css-lint, js-lint, js-unit, php-lint, php-unit, python-lint, python-unit, yaml-lint, shellcheck, Cypress-System, Cypress, Integration]
     if: ${{ failure() && github.event_name == 'push' && github.repository == 'Submitty/Submitty' }}
     steps:
       - run: >
