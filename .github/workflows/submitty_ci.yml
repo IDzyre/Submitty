@@ -539,3 +539,14 @@ jobs:
       - uses: ./.github/actions/e2e-Setup-Composite
       - name: Run integration tests
         run: sudo -E env "PATH=$PATH" python3 /usr/local/submitty/test_suite/integrationTests/run.py
+
+  notify-main:
+    runs-on: ubuntu-22.04
+    needs: [css-lint, js-lint]
+    # , js-unit, php-lint, php-unit, python-lint, python-unit, yamllint, shell-check, Cypress-System, Cypress (Gradeable), Cypress (UI), Cypress (Admin), Cypress (Feature), Integration]
+    if: ${{ failure() && github.event_name == 'push' && github.repository == 'IDzyre/Submitty' }}
+    steps:
+      - run: |
+            curl -X POST https://submitty.zulipchat.com/api/v1/messages -u ${{ secrets.ZULIP_AUTHENTICATION }} --data-urlencode 'type=stream' --data-urlencode 'to=Submitty Developer Studio' \
+            --data-urlencode 'topic=Main CI Failures' --data-urlencode \
+            'content=The Github Actions CI has failed on the Main branch, View here: [Main CI](https://github.com/IDzyre/Submitty/actions/runs/${{ github.run_id }})'
