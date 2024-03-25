@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [css-lint, js-lint]
     # needs: [css-lint, js-lint, js-unit, php-lint, php-unit, python-lint, python-unit, yamllint, shell-check, Cypress-System, Cypress (Gradeable), Cypress (UI), Cypress (Admin), Cypress (Feature)]
-    if: failure() && ${{ github.event_name != 'pull_request' }} && ${{ github.repository == 'Submitty/Submitty' }}
+    if: failure() && ${{ github.event_name != 'pull_request' }} && ${{ github.repository == 'IDzyre/Submitty' }}
     steps:
       - run: echo 1
 
