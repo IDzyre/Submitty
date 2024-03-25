@@ -48,7 +48,6 @@ jobs:
       - name: Run stylelint
         run: npm run css-stylelintss
 
-
   js-lint:
     runs-on: ubuntu-22.04
     defaults:
