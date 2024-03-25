@@ -46,7 +46,7 @@ jobs:
                 ${{ runner.os }}-cache-node-modules-
       - run: npm install
       - name: Run stylelint
-        run: npm run css-stylelintss
+        run: npm run css-stylelint
 
   js-lint:
     runs-on: ubuntu-22.04
