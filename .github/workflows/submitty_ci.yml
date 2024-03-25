@@ -28,7 +28,6 @@ concurrency:
 
 jobs:
   css-lint:
-  id: css-lint
     runs-on: ubuntu-22.04
     defaults:
       run:
