@@ -72,11 +72,11 @@ jobs:
       - name: Run npm build (tsc and esbuild)
         run: npm run build
 
+
   notify-main:
     runs-on: ubuntu-22.04
       if: failure()
         run: echo 1
-
 
 #   js-unit:
 #     runs-on: ubuntu-22.04
