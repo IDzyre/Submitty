@@ -23,6 +23,6 @@ jobs:
         #     --data-urlencode 'topic=Main CI Failures' --data-urlencode \
         #     'content=The Github Actions CI has failed on the Main branch, View here: [Main CI](https://github.com/Submitty/Submitty/actions/runs/${{ github.event.workflow_run.id }})'
       - name: Echo success message
-        if: ${{ github.event_name.workflow_run.conclusion == 'success' }}
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         run: |
             echo ${{ github.event_name }}
