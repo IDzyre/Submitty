@@ -19,4 +19,4 @@ jobs:
       - name: Echo success message
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         run: |
-            echo ${{ github.event.workflow_run.repository }} ${{  github.event.workflow_run.head_repository  }}
+            echo ${{ toJson(github.event) }}
