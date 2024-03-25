@@ -9,7 +9,7 @@ on:
 jobs:
   Notify-Failure:
     # Runs if on the main Submitty repository, and it's not a pull request (merged PR's act as a commit to main an not a pull request)
-    if: ${{ github.repository == 'Submitty/Submitty' && github.event_name != 'pull_request' }}
+    # if: ${{ github.repository == 'Submitty/Submitty' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Send notification to Zulip on failure
@@ -21,4 +21,4 @@ jobs:
       - name: Echo success message
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         run: |
-            echo "All Tests have passed"
+            echo ${{ github.event_name }}
