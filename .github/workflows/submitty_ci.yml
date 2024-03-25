@@ -79,7 +79,7 @@ jobs:
     # needs: [css-lint, js-lint, js-unit, php-lint, php-unit, python-lint, python-unit, yamllint, shell-check, Cypress-System, Cypress (Gradeable), Cypress (UI), Cypress (Admin), Cypress (Feature)]
     # if: failure() && ${{ github.event_name == 'push' }} && ${{ github.repository == 'IDzyre/Submitty' }}
     steps:
-      - run: echo ${{ github.event_name == 'push' }} ${{ github.repository == 'IDzyre/Submitty' }}
+      - run: echo ${{ failure() && ${{ github.event_name == 'push' }} && ${{ github.repository == 'IDzyre/Submitty' }} }}
 
 #   js-unit:
 #     runs-on: ubuntu-22.04
