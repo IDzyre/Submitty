@@ -44,34 +44,41 @@ jobs:
           key: ${{ runner.os }}-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
                 ${{ runner.os }}-cache-node-modules-
-      - run: npm install
+      # - run: npm install
       - name: Run stylelint
-        run: echo ${{ github.event.pull_request.head.repo.full_name == '' }}
+        run: npm run css-stylelintss
+
+  js-lint:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+                ${{ runner.os }}-cache-node-modules-
+      - run: npm install
+      - name: Run eslint
+        run: npm run eslint
+      - name: Run npm build (tsc and esbuild)
+        run: npm run build
 
 
-#   js-lint:
-#     runs-on: ubuntu-22.04
-#     defaults:
-#       run:
-#         working-directory: site
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-node@v4
-#         with:
-#           node-version: ${{ env.NODE_VERSION }}
-#       - name: Cache Node Modules
-#         uses: actions/cache@v4
-#         with:
-#           path: ~/.npm
-#           key: ${{ runner.os }}-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
-#           restore-keys: |
-#                 ${{ runner.os }}-cache-node-modules-
-#       - run: npm install
-#       - name: Run eslint
-#         run: npm run eslint
-#       - name: Run npm build (tsc and esbuild)
-#         run: npm run build
-
+  notify-main:
+    runs-on: ubuntu-22.04
+    needs: [css-lint, js-lint]
+    # needs: [css-lint, js-lint, js-unit, php-lint, php-unit, python-lint, python-unit, yamllint, shell-check, Cypress-System, Cypress (Gradeable), Cypress (UI), Cypress (Admin), Cypress (Feature)]
+    if: failure() && ${{ github.event_name != 'pull_request' }} && ${{ github.repository == 'IDzyre/Submitty' }}
+    steps:
+      - run: echo 1
 
 #   js-unit:
 #     runs-on: ubuntu-22.04
