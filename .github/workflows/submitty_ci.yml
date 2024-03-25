@@ -28,6 +28,7 @@ concurrency:
 
 jobs:
   css-lint:
+  id: css-lint
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -74,6 +75,7 @@ jobs:
 
   notify-main:
     runs-on: ubuntu-22.04
+    needs: [css-lint, js-lint]
     if: failure()
     steps:
       - run: echo 1
