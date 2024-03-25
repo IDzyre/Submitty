@@ -72,7 +72,6 @@ jobs:
       - name: Run npm build (tsc and esbuild)
         run: npm run build
 
-
   js-unit:
     runs-on: ubuntu-22.04
     defaults:
