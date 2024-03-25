@@ -44,9 +44,9 @@ jobs:
           key: ${{ runner.os }}-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
                 ${{ runner.os }}-cache-node-modules-
-      - run: npm install
+      # - run: npm install
       - name: Run stylelint
-        run: npm run css-stylelint
+        run: npm run css-stylelintss
 
   js-lint:
     runs-on: ubuntu-22.04
