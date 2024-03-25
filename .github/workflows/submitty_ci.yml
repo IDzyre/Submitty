@@ -75,6 +75,7 @@ jobs:
   notify-main:
     runs-on: ubuntu-22.04
     if: failure()
+    steps:
       run: echo 1
 
 #   js-unit:
