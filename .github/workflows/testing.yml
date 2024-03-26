@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [Submitty CI]
     types: [completed]
-    
+
 jobs:
   printJob:    
     name: Print event
@@ -14,4 +14,4 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
-        echo "$GITHUB_CONTEXT"
+        echo "$GITHUB_CONTEXT" 
