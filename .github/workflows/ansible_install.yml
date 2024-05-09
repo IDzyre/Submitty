@@ -35,6 +35,5 @@ jobs:
         shell: bash 
         run: |
           service ssh status
-        # cd infrastructure/ansible
-        # cat setup-prod.yml
-        # ansible-playbook -vvv --private-key /home/runner/.ssh/id_rsa -u ubuntu -i hosts.yml setup-prod.yml
+          cd .setup/ansible
+          ansible-playbook -vvv -i inventory/submitty.yml playbooks/submitty_install.yml
