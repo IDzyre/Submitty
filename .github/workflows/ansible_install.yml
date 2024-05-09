@@ -36,4 +36,4 @@ jobs:
         shell: bash 
         run: |
           cd .setup/ansible
-          ansible-playbook -vvv -i inventory/submitty.yml playbooks/submitty_install.yml
+          ansible-playbook -vvv -i inventory/submitty playbooks/submitty_install.yml
