@@ -27,6 +27,7 @@ jobs:
         run: |
           pwd
           whoami
+          ip a
           ssh-keygen -t rsa -b 4096 -C "github_ci" -N '' -f /home/runner/.ssh/id_rsa
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
           cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -34,6 +35,5 @@ jobs:
       - name: Run ansible script
         shell: bash 
         run: |
-          service ssh status
           cd .setup/ansible
           ansible-playbook -vvv -i inventory/submitty.yml playbooks/submitty_install.yml
