@@ -36,4 +36,4 @@ jobs:
         run: |
           service ssh status
           cd .setup/ansible
-          ansible-playbook -vvv --private-key /home/runner/.ssh/id_rsa  -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook -vvv --private-key /home/runner/.ssh/id_rsa -u runner -i inventory/submitty playbooks/submitty_install.yml
