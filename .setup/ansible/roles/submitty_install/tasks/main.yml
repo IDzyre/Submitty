@@ -33,7 +33,7 @@
     executable: "/bin/bash"
     cmd: |
       set -o pipefail
-      echo  ""{{ db_host }}""
+      echo  ""{{ db_host }}"
         "{{ db_port }}"
         "{{ submitty_dbuser }}"
         "{{ submitty_dbuser_password }}"
