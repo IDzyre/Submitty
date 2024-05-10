@@ -1,4 +1,4 @@
-name: CI
+name: Ansible-Install
 
 # Controls when the workflow will run
 on:
@@ -10,7 +10,7 @@ on:
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  run-playbooks:
+  install:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v4
@@ -36,4 +36,4 @@ jobs:
         run: |
           service ssh status
           cd .setup/ansible
-          ansible-playbook -vvv --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner'  -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook  --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner'  -i inventory/submitty playbooks/submitty_install.yml

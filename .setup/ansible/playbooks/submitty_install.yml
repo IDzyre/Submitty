@@ -4,7 +4,7 @@
 
 - name: Install Submitty
   hosts: submitty
-  remote_user: runner
+  remote_user: ubuntu
   become: yes
   tasks:
     - name: Install Submitty
