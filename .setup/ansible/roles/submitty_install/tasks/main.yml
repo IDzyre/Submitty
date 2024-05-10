@@ -29,7 +29,7 @@
     update: yes
 
 - name: Run install_system.sh script
-  ansible.builtin.shell: |
+  ansible.builtin.shell:
     executable: "/bin/bash"
     cmd: |
       set -o pipefail
