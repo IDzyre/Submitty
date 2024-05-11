@@ -35,5 +35,4 @@ jobs:
         shell: bash 
         run: |
           service ssh status
-          cd .setup/ansible
-          ansible-playbook  --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner'  -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook  --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner'  -i .setup/ansible/inventory/submitty .setup/ansible/playbooks/submitty_install.yml
