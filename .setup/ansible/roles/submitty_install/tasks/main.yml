@@ -77,6 +77,10 @@
     msg: "{{command_output.stdout}}"
   when: result is failed
 
+- name: fail
+  fail:
+    msg: "bab"
+
 - name: Check to see if installation succeeded
   ansible.builtin.shell: grep "INSTALLATION SUCCESS!" /usr/local/submitty/install.log
 
