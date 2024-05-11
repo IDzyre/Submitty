@@ -33,7 +33,7 @@
     executable: "/bin/bash"
     cmd: |
       set -o pipefail
-      echo  ""{{ db_host }}"
+      echo  '"{{ db_host }}"
         "{{ db_port }}"
         "{{ submitty_dbuser }}"
         "{{ submitty_dbuser_password }}"
@@ -58,8 +58,7 @@
         "{{ smtp_server }}"
         "{{ smtp_port }}"
         "{{ institution_url }}"
-        " | bash -p ./.setup/install_system.sh > /usr/local/submitty/install.log 2>&1
-
+        ' | bash -p ./.setup/install_system.sh > /usr/local/submitty/install.log 2>&1
   args:
     chdir: /usr/local/submitty/GIT_CHECKOUT/Submitty
   become: true
