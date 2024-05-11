@@ -17,22 +17,11 @@ jobs:
 
       - name: Setup SSH 
         shell: bash
-        # run: |
-        #  eval `ssh-agent -s`
-        #  mkdir -p /home/runner/.ssh/
-        #  touch /home/runner/.ssh/id_rsa
-        #  echo -e "${{secrets.SSH_KEY}}" > /home/runner/.ssh/id_rsa
-        #  chmod 700 /home/runner/.ssh/id_rsa
-        #  ssh-keyscan -t rsa,dsa,ecdsa,ed25519 ${{secrets.SSH_HOST}} >> /home/runner/.ssh/known_hosts
         run: |
-          pwd
-          whoami
           ssh-keygen -t rsa -b 4096 -C "github_ci" -N '' -f /home/runner/.ssh/id_rsa
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
-          cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-          ssh -T localhost
+          cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
       - name: Run ansible script
         shell: bash 
         run: |
-          service ssh status
-          ansible-playbook  --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner'  -i .setup/ansible/inventory/submitty .setup/ansible/playbooks/submitty_install.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner, become=yes' -i .setup/ansible/inventory/submitty .setup/ansible/playbooks/submitty_install.yml
