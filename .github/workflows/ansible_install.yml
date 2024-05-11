@@ -24,4 +24,5 @@ jobs:
       - name: Run ansible script
         shell: bash 
         run: |
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner, become=yes' -i .setup/ansible/inventory/submitty .setup/ansible/playbooks/submitty_install.yml
+          cd .setup/ansible
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner, become:yes' -i inventory/submitty playbooks/submitty_install.yml
