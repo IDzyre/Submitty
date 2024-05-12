@@ -49,7 +49,7 @@
         "{{ institution_url }}"
         {{ authentication_method }}
         "{{ admin_email }}"
-        "{{ email_enabled }}"
+        {{ email_enabled }}
         "{{ admin_email }}"
         "{{ admin_password }}"
         "{{ submitty_ip }}"
