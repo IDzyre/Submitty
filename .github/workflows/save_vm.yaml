@@ -62,7 +62,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install qemu and vagrant
-        run: brew install qemu vagrant
+        run: |
+          brew install qemu vagrant
+          vagrant plugin install vagrant-qemu
       # - name: Get latest version
       #   id: get-version
       #   run: |
