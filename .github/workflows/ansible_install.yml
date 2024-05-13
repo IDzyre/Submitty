@@ -40,6 +40,13 @@ jobs:
         run: |
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: localhost
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+          POSTGRES_PASSWORD: submitty_dbuser
+          POSTGRES_USER: postgres
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
