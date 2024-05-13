@@ -63,15 +63,15 @@ jobs:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: brew install qemu vagrant
-      - name: Get latest version
-        id: get-version
-        run: |
-          TAG=$(git describe --tags --abbrev=0)
-          if ! [[ $TAG =~ ^v[0-9]{2}\.[0-9]{2}\.[0-9]{2}$ ]]; then
-            echo "Invalid tag name: '$TAG'"
-            exit 1
-          fi
-          echo "version=${TAG:1}" >> $GITHUB_OUTPUT
+      # - name: Get latest version
+      #   id: get-version
+      #   run: |
+      #     TAG=$(git describe --tags --abbrev=0)
+      #     if ! [[ $TAG =~ ^v[0-9]{2}\.[0-9]{2}\.[0-9]{2}$ ]]; then
+      #       echo "Invalid tag name: '$TAG'"
+      #       exit 1
+      #     fi
+      #     echo "version=${TAG:1}" >> $GITHUB_OUTPUT
       - name: Vagrant Up
         run: CI=1 vagrant up --provider=qemu
       # - name: Validate image
