@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: |
-          brew install libvirt vagrant
+          brew install qemu libvirt vagrant
           vagrant plugin install vagrant-libvirt
       # - name: Get latest version
       #   id: get-version
