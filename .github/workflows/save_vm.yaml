@@ -63,6 +63,7 @@ jobs:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: |
+          sudo sysctl machdep.cpu.features | grep VMX
           brew install qemu
           brew install --cask vagrant
           vagrant plugin install vagrant-qemu
