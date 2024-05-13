@@ -63,7 +63,8 @@ jobs:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: |
-          brew install qemu vagrant
+          brew install qemu
+          brew install --cask vagrant
           vagrant plugin install vagrant-qemu
           sudo pwpolicy -u runner -sethashtypes SMB-NT on
       # - name: Get latest version

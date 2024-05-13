@@ -39,18 +39,18 @@ def gen_script(machine_name, worker: false, base: false)
   reinstall = ENV.has_key?('VAGRANT_BOX') || base
   extra = ENV.fetch('EXTRA', '')  
   setup_cmd = 'bash ${GIT_PATH}/.setup/'
-  if reinstall || ON_CI
-    if worker
-      setup_cmd += 'install_worker.sh'
-    else
-      setup_cmd += 'vagrant/setup_vagrant.sh'
-      if no_submissions
-        setup_cmd += ' --no_submissions'
-      end
-    end
-  else
+  # if reinstall || ON_CI
+  #   if worker
+  #     setup_cmd += 'install_worker.sh'
+  #   else
+  #     setup_cmd += 'vagrant/setup_vagrant.sh'
+  #     if no_submissions
+  #       setup_cmd += ' --no_submissions'
+  #     end
+  #   end
+  # else
     setup_cmd += 'install_success_from_cloud.sh'
-  end
+  # end
   unless extra.empty?
     setup_cmd += " #{extra}"
   end
