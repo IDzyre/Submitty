@@ -67,20 +67,6 @@
   ignore_errors: true
   register: result
 
-- name: Display resolv.conf contents
-  command: cat /usr/local/submitty/install.log
-  register: command_output
-  when: result is failed
-
-- name: Run only if the task that registered the "result" variable fails
-  ansible.builtin.debug:
-    msg: "{{command_output.stdout}}"
-  when: result is failed
-
-- name: fail
-  fail:
-    msg: "bab"
-
 - name: Check to see if installation succeeded
   ansible.builtin.shell: grep "INSTALLATION SUCCESS!" /usr/local/submitty/install.log
 
