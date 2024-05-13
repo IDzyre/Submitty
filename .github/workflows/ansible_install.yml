@@ -12,6 +12,10 @@ env:
 jobs:
   install:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
     steps: 
       - uses: actions/checkout@v4
 
