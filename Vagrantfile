@@ -249,7 +249,7 @@ Vagrant.configure(2) do |config|
     qe.smp = 2
 
     qe.ssh_port = ENV.fetch('VM_PORT_SSH', 2222)
-
+    smb_username = 'runner'
     mount_folders(override, [])
   end
 
