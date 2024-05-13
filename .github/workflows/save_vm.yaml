@@ -74,6 +74,6 @@ jobs:
         run: |
           # Add your commands to build the ARM64 Vagrant box here
           # For example:
-          sudo vagrant up --provider=libvirt
+          sudo CI=1 vagrant up --provider=libvirt
           # vagrant package --output arm64-vagrant-box.box
           # vagrant cloud publish --release <username>/<box-name> <version> <provider> arm64-vagrant-box.box --force
