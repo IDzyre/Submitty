@@ -15,6 +15,9 @@ jobs:
     services:
       postgres:
         image: postgres
+        env:
+          POSTGRES_PASSWORD: submitty_dbuser
+          POSTGRES_USER: postgres
     steps: 
       - uses: actions/checkout@v4
 
