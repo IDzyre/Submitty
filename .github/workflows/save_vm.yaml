@@ -63,7 +63,11 @@ jobs:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: |
-          sudo apt-get install vagrant
+          sudo apt-get purge vagrant-libvirt
+          sudo apt-mark hold vagrant-libvirt
+          sudo apt-get update && \
+          sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools \
+          vagrant ruby-fog-libvirt
           vagrant plugin install vagrant-libivrt
       # - name: Get latest version
       #   id: get-version
