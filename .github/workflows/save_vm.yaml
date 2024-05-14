@@ -56,16 +56,16 @@ jobs:
       #       --data-urlencode 'content=The Package Vagrant VM Github Action has failed for Virtual-Box, this means the VM is not saved, and requires attention. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}/job/${{ steps.get-job-id.outputs.job_id }}'
   
   vagrant-up-qemu:
-    runs-on: macos-14
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: |
-          brew install qemu vagrant
+          sudo apt-get install qemu vagrant
           vagrant plugin install vagrant-qemu
-          sudo pwpolicy -u runner -sethashtypes SMB-NT on
+          # sudo pwpolicy -u runner -sethashtypes SMB-NT on
           # sudo launchctl start com.apple.smbfs_load_kext
       # - name: Get latest version
       #   id: get-version
