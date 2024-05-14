@@ -65,7 +65,7 @@ jobs:
         run: |
           brew install qemu vagrant
           vagrant plugin install vagrant-qemu
-          pwpolicy -u runner -sethashtypes SMB-NT on
+          sudo pwpolicy -u runner -sethashtypes SMB-NT on
           sudo launchctl start com.apple.smbfs_load_kext
       # - name: Get latest version
       #   id: get-version
