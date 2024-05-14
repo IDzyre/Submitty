@@ -65,7 +65,7 @@ jobs:
         run: |
           brew install qemu vagrant
           vagrant plugin install vagrant-qemu
-          sudo systemctl status nfs-kernel-server
+          showmount -e nas01
       # - name: Get latest version
       #   id: get-version
       #   run: |
