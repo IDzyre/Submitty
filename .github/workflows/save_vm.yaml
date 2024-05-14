@@ -77,7 +77,7 @@ jobs:
       #     echo "version=${TAG:1}" >> $GITHUB_OUTPUT
       - name: Vagrant Up
         run: |
-          CI=1 vagrant up --provider=qemu
+          sudo CI=1 vagrant up --provider=qemu
       # - name: Validate image
       #   run: curl --show-error --fail --include http://localhost:1511
       # - name: Save image
