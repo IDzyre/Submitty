@@ -39,18 +39,18 @@ def gen_script(machine_name, worker: false, base: false)
   reinstall = ENV.has_key?('VAGRANT_BOX') || base
   extra = ENV.fetch('EXTRA', '')  
   setup_cmd = 'bash ${GIT_PATH}/.setup/'
-  if reinstall || ON_CI
-    if worker
-      setup_cmd += 'install_worker.sh'
-    else
-      setup_cmd += 'vagrant/setup_vagrant.sh'
-      if no_submissions
-        setup_cmd += ' --no_submissions'
-      end
-    end
-  else
-    setup_cmd += 'install_success_from_cloud.sh'
-  end
+  # if reinstall || ON_CI
+  #   if worker
+  #     setup_cmd += 'install_worker.sh'
+  #   else
+  #     setup_cmd += 'vagrant/setup_vagrant.sh'
+  #     if no_submissions
+  #       setup_cmd += ' --no_submissions'
+  #     end
+  #   end
+  # else
+  setup_cmd += 'install_success_from_cloud.sh'
+  # end
   unless extra.empty?
     setup_cmd += " #{extra}"
   end
@@ -73,7 +73,7 @@ base_boxes = Hash[]
 base_boxes.default         = "SubmittyBot/ubuntu22-dev"
 base_boxes[:base]          = "bento/ubuntu-22.04"
 base_boxes[:arm_bento]     = "bento/ubuntu-22.04-arm64"
-base_boxes[:libvirt]       = "perk/ubuntu-2204-arm64"
+base_boxes[:libvirt]       = "generic/ubuntu2204"
 base_boxes[:arm_mac_qemu]  = "perk/ubuntu-2204-arm64"
 
 def mount_folders(config, mount_options)
@@ -83,13 +83,13 @@ def mount_folders(config, mount_options)
   # vagrant group so that they can write to this shared folder, primarily just for the log files
   owner = 'root'
   group = 'vagrant'
-  config.vm.synced_folder '.', '/usr/local/submitty/GIT_CHECKOUT/Submitty', create: true, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: 'runner', smb_password: 'runner'
+  config.vm.synced_folder '.', '/usr/local/submitty/GIT_CHECKOUT/Submitty', create: true, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp
 
   optional_repos = %w(AnalysisTools AnalysisToolsTS Lichen RainbowGrades Tutorial CrashCourseCPPSyntax LichenTestData)
   optional_repos.each {|repo|
     repo_path = File.expand_path("../" + repo)
     if File.directory?(repo_path)
-      config.vm.synced_folder repo_path, "/usr/local/submitty/GIT_CHECKOUT/" + repo, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: 'runner', smb_password: 'runner'
+      config.vm.synced_folder repo_path, "/usr/local/submitty/GIT_CHECKOUT/" + repo, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp
     end
   }
 end
@@ -249,7 +249,7 @@ Vagrant.configure(2) do |config|
     qe.smp = 2
 
     qe.ssh_port = ENV.fetch('VM_PORT_SSH', 2222)
-    smb_username = 'runner'
+
     mount_folders(override, [])
   end
 
