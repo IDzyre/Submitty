@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 0
       - name: Install qemu and vagrant
         run: |
-          sudo apt-get install qemu vagrant
+          sudo apt-get install qemu qemu-kvm libvirt-clients libvirt-daemon-system virtinst bridge-utils vagrant
           vagrant plugin install vagrant-qemu
           # sudo pwpolicy -u runner -sethashtypes SMB-NT on
           # sudo launchctl start com.apple.smbfs_load_kext
