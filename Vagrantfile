@@ -89,7 +89,7 @@ def mount_folders(config, mount_options)
   optional_repos.each {|repo|
     repo_path = File.expand_path("../" + repo)
     if File.directory?(repo_path)
-      config.vm.synced_folder repo_path, "/usr/local/submitty/GIT_CHECKOUT/" + repo, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp, smb_password: `whoami`.chomp
+      config.vm.synced_folder repo_path, "/usr/local/submitty/GIT_CHECKOUT/" + repo, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp, smb_password: `whoami`.chomp, disabled: true
     end
   }
 end
@@ -241,7 +241,6 @@ Vagrant.configure(2) do |config|
   config.vm.provider "qemu" do |qe, override|
     if ON_CI
       qe.qemu_dir = "/usr/local/share/qemu"
-      config.vm.box_provider = "qemu"
     end
     unless custom_box
       if apple_silicon || ON_CI
