@@ -68,9 +68,6 @@ jobs:
 
       - name: Build ARM64 Vagrant Box
         run: |
-          # Add your commands to build the ARM64 Vagrant box here
-          # For example:
           sudo pwpolicy -u runner -sethashtypes SMB-NT on
-          sudo CI=1 vagrant up --provider=qemmu
-          # vagrant package --output arm64-vagrant-box.box
-          # vagrant cloud publish --release <username>/<box-name> <version> <provider> arm64-vagrant-box.box --force
+          CI=1 vagrant up --provider=qemu
+        
