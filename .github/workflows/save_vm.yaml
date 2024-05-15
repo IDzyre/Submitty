@@ -65,7 +65,7 @@ jobs:
         run: |
           brew install qemu vagrant
           vagrant plugin install vagrant-qemu
-          qemu --version
+          sudo softwareupdate --install-rosetta
 
       - name: Build ARM64 Vagrant Box
         run: |
