@@ -239,6 +239,9 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provider "qemu" do |qe, override|
+    if ON_CI
+      qe.qemu_dir = "/usr/local/share/qemu"
+    end
     unless custom_box
       if apple_silicon || ON_CI
         override.vm.box = base_boxes[:arm_mac_qemu]
