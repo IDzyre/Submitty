@@ -39,18 +39,18 @@ def gen_script(machine_name, worker: false, base: false)
   reinstall = ENV.has_key?('VAGRANT_BOX') || base
   extra = ENV.fetch('EXTRA', '')  
   setup_cmd = 'bash ${GIT_PATH}/.setup/'
-  if reinstall || ON_CI
-    if worker
-      setup_cmd += 'install_worker.sh'
-    else
-      setup_cmd += 'vagrant/setup_vagrant.sh'
-      if no_submissions
-        setup_cmd += ' --no_submissions'
-      end
-    end
-  else
-    setup_cmd += 'install_success_from_cloud.sh'
-  end
+  # if reinstall || ON_CI
+  #   if worker
+  #     setup_cmd += 'install_worker.sh'
+  #   else
+  #     setup_cmd += 'vagrant/setup_vagrant.sh'
+  #     if no_submissions
+  #       setup_cmd += ' --no_submissions'
+  #     end
+  #   end
+  # else
+  setup_cmd += 'install_success_from_cloud.sh'
+  # end
   unless extra.empty?
     setup_cmd += " #{extra}"
   end
@@ -73,7 +73,7 @@ base_boxes = Hash[]
 base_boxes.default         = "SubmittyBot/ubuntu22-dev"
 base_boxes[:base]          = "bento/ubuntu-22.04"
 base_boxes[:arm_bento]     = "bento/ubuntu-22.04-arm64"
-base_boxes[:libvirt]       = "bento/ubuntu-22.04-arm64"
+base_boxes[:libvirt]       = "perk/ubuntu-2204-arm64"
 base_boxes[:arm_mac_qemu]  = "perk/ubuntu-2204-arm64"
 
 def mount_folders(config, mount_options)

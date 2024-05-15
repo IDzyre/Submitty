@@ -57,10 +57,6 @@ jobs:
 
   vagrant-up-qemu:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [arm64]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
