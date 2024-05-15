@@ -245,7 +245,7 @@ Vagrant.configure(2) do |config|
       end
     end
     
-    qe.qemu_dir = "/usr/local/share/qemu"
+    # qe.qemu_dir = "/usr/local/share/qemu"
     qe.memory = "2G"
     qe.smp = 2
 
