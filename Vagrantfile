@@ -73,7 +73,7 @@ base_boxes = Hash[]
 base_boxes.default         = "SubmittyBot/ubuntu22-dev"
 base_boxes[:base]          = "bento/ubuntu-22.04"
 base_boxes[:arm_bento]     = "bento/ubuntu-22.04-arm64"
-base_boxes[:libvirt]       = "perk/ubuntu-2204-arm64"
+base_boxes[:libvirt]       = "generic/ubuntu2204"
 base_boxes[:arm_mac_qemu]  = "perk/ubuntu-2204-arm64"
 
 def mount_folders(config, mount_options)

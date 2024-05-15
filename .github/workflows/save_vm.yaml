@@ -64,12 +64,12 @@ jobs:
       - name: Install QEMU and Vagrant
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu qemu-kvm libvirt-clients libvirt-daemon-system vagrant
+          sudo apt-get install -y vmware libvirt-clients libvirt-daemon-system vagrant
 
       - name: Build ARM64 Vagrant Box
         run: |
           # Add your commands to build the ARM64 Vagrant box here
           # For example:
-          sudo CI=1 vagrant up --provider=libvirt
+          sudo CI=1 vagrant up --provider=vmware
           # vagrant package --output arm64-vagrant-box.box
           # vagrant cloud publish --release <username>/<box-name> <version> <provider> arm64-vagrant-box.box --force
