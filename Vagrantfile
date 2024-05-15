@@ -33,9 +33,7 @@ $stderr.sync = true
 require 'json'
 
 ON_CI = !ENV.fetch('CI', '').empty?
-if ON_CI
-  qe.qemu_dir = "/usr/local/share/qemu"
-end
+
 def gen_script(machine_name, worker: false, base: false)
   no_submissions = !ENV.fetch('NO_SUBMISSIONS', '').empty?
   reinstall = ENV.has_key?('VAGRANT_BOX') || base
@@ -246,7 +244,8 @@ Vagrant.configure(2) do |config|
         override.vm.box = base_boxes[:arm_mac_qemu]
       end
     end
-
+    
+    qe.qemu_dir = "/usr/local/share/qemu"
     qe.memory = "2G"
     qe.smp = 2
 
