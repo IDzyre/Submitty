@@ -35,6 +35,7 @@ jobs:
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
           sudo systemctl start postgresql
+          netstat
         env:
           # The default PostgreSQL port
           POSTGRES_PASSWORD: submitty_dbuser
