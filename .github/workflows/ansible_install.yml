@@ -34,7 +34,6 @@ jobs:
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
-          su postgres -c "psql -c \"DO \\\$do\\\$ BEGIN IF NOT EXISTS ( SELECT FROM  pg_catalog.pg_roles WHERE  rolname = '${DB_USER}') THEN CREATE ROLE ${DB_USER} SUPERUSER LOGIN PASSWORD '${dbuser_password}'; END IF; END \\\$do\\\$;\""
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: localhost

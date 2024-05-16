@@ -63,8 +63,6 @@
     chdir: /usr/local/submitty/GIT_CHECKOUT/Submitty
   become: true
   become_user: root
-  ignore_errors: true
-  register: result
 
 - name: Check to see if installation succeeded
   ansible.builtin.shell: grep "INSTALLATION SUCCESS!" /usr/local/submitty/install.log
