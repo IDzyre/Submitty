@@ -8,7 +8,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     services:
       postgres:
         image: postgres
@@ -35,12 +35,10 @@ jobs:
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
           sudo su postgres -c "psql -c \"CREATE DATABASE submitty WITH OWNER submitty_dbuser\""
-
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: localhost
           # The default PostgreSQL port
-          POSTGRES_PORT: 5432
           POSTGRES_PASSWORD: submitty_dbuser
           POSTGRES_USER: postgres
       - name: Run ansible script
