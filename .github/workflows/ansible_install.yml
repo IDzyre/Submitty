@@ -34,7 +34,8 @@ jobs:
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
-          sudo su postgres
+          ps -ef | grep postgres
+          sudo find /tmp/ -name .s.PGSQL.5432
           psql -c "CREATE DATABASE submitty WITH OWNER submitty_dbuser"
         env:
           # The hostname used to communicate with the PostgreSQL service container
