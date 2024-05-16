@@ -35,11 +35,11 @@ jobs:
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
           # ps -ef | grep postgres
-          sudo systemctl status postgresql
+          sudo systemctl start postgresql
           sudo find /tmp/ -name .s.PGSQL.5432
           pg_lsclusters
           sudo pg_ctlcluster 14 main start
-          # psql -c "CREATE DATABASE submitty WITH OWNER submitty_dbuser"
+          psql -c "CREATE DATABASE submitty WITH OWNER submitty_dbuser"
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: localhost
