@@ -35,7 +35,7 @@ jobs:
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
           sudo su postgres
-          psql -c \"CREATE DATABASE submitty WITH OWNER submitty_dbuser\"
+          psql -c "CREATE DATABASE submitty WITH OWNER submitty_dbuser"
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: localhost
