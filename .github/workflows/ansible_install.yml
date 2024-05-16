@@ -36,8 +36,6 @@ jobs:
           ssh -T localhost
           sudo systemctl start postgresql
         env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: localhost
           # The default PostgreSQL port
           POSTGRES_PASSWORD: submitty_dbuser
           POSTGRES_USER: postgres
@@ -47,8 +45,6 @@ jobs:
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
         env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: localhost
           POSTGRES_PASSWORD: submitty_dbuser
           POSTGRES_USER: postgres
       - uses: actions/upload-artifact@v4
