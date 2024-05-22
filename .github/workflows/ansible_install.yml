@@ -24,8 +24,13 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-
+     
     steps: 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          while ! pg_isready -h localhost -p 5432 -U postgres; do
+            sleep 1
+          done
       - uses: actions/checkout@v4
       - name: Setup SSH 
         shell: bash
