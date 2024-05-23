@@ -52,7 +52,7 @@
         {{ email_enabled }}
         "{{ admin_email }}"
         "{{ admin_password }}"
-        "{{ submitty_ip }}"
+        {{ submitty_ip }}
         "{{ submitty_email }}"
         "{{ noreply_email }}"
         "{{ smtp_server }}"

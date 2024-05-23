@@ -18,6 +18,8 @@ jobs:
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
+          sudo apt-get install -y postgresql-14
+          sudo systemctl start postgres
           netstat
       - name: Run ansible script
         shell: bash 
