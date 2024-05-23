@@ -18,17 +18,14 @@ jobs:
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
-          sudo apt-get install -y postgresql-14
           sudo systemctl start postgresql
-          netstat
+
       - name: Run ansible script
         shell: bash 
         run: |
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
-        env:
-          POSTGRES_PASSWORD: submitty_dbuser
-          POSTGRES_USER: postgres
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
