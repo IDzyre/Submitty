@@ -35,10 +35,10 @@
       set -o pipefail
       echo  '{{ db_host }}
         {{ db_port }}
-        "{{ submitty_dbuser }}"
-        "{{ submitty_dbuser_password }}"
-        "{{ submitty_course_dbuser }}"
-        "{{ submitty_course_dbuser_password }}"
+        {{ submitty_dbuser }}
+        {{ submitty_dbuser_password }}
+        {{ submitty_course_dbuser }}
+        {{ submitty_course_dbuser_password }}
         "{{ timezone }}"
         "{{ language }}"
         "{{ 'https' if ssl_enabled else 'http' }}://{{ submitty_url }}"
