@@ -9,28 +9,7 @@ on:
 jobs:
   install:
     runs-on: ubuntu-22.04
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: submitty_dbuser
-          TZ: America/New_York
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-     
     steps: 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          while ! pg_isready -h localhost -p 5432 -U postgres; do
-            sleep 1
-          done
       - uses: actions/checkout@v4
       - name: Setup SSH 
         shell: bash
@@ -39,16 +18,10 @@ jobs:
           ssh-keyscan -t rsa,dsa,ecdsa,ed25519 localhost >> /home/runner/.ssh/known_hosts
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
-          sudo systemctl start postgresql
           netstat
-        env:
-          # The default PostgreSQL port
-          POSTGRES_PASSWORD: submitty_dbuser
-          POSTGRES_USER: postgres
       - name: Run ansible script
         shell: bash 
         run: |
-          sudo su postgres -c "psql -c \"CREATE DATABASE submitty WITH OWNER runner\""
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
         env:
