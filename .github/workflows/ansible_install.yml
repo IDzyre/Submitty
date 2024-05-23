@@ -19,7 +19,7 @@ jobs:
           cat /home/runner/.ssh/id_rsa.pub >> /home/runner/.ssh/authorized_keys
           ssh -T localhost
           sudo apt-get install -y postgresql-14
-          sudo systemctl start postgres
+          sudo systemctl start postgresql
           netstat
       - name: Run ansible script
         shell: bash 
