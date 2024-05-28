@@ -29,6 +29,34 @@ const replyToThread = (title, reply) => {
     cy.get('#posts_list').should('contain', reply);
 };
 
+const upduckPost = (thread_title) => {
+    cy.get('.thread-left-cont > .thread-list-item').contains(thread_title).click();
+    cy.get('.create-post-head').should('contain', thread_title);
+    cy.get('.post_box.first_post > [data-cy="like_count"]').should('have.text', 0);
+    cy.get('.post_box.first_post').find('.upduck-button').click();
+    cy.get('.post_box.first_post > [data-cy="like_count"]').should('have.text', 1);
+};
+
+const checkStatsUpducks = (fullName, numUpducks) => {
+    // Check the stats page for a user with fullName and
+    // number of upducks numUpducks
+    cy.get('.dropdown.more-dropdown').contains('More').click();
+    cy.get('#forum_stats').click();
+    let found = false;
+    cy.get('.user_stat').each(($el) => {
+        const name = $el.find('td').first().text().trim();
+        if (name === fullName) {
+            found = true;
+            const upducks = parseInt($el.find('.upduck_stat').text().trim());
+            expect(upducks).to.eq(numUpducks);
+            return false;
+        }
+    }).then(() => {
+        expect(found).to.be.true;
+        cy.get('[title="Back to threads"]').click();
+    });
+};
+
 const mergeThreads = (fromThread, toThread, mergedContent) => {
     // Add more to tests for uploading attachments
     cy.get('.thread-left-cont > .thread-list-item').contains(fromThread).click({ force: true });
@@ -89,6 +117,14 @@ describe('Test cases revolving around creating, replying to, merging, and removi
         replyToThread(title2, reply2);
         // Tutorial
         replyToThread(title3, reply3);
+
+        // Upduck the first post of each thread
+        upduckPost(title1);
+        upduckPost(title2);
+        upduckPost(title3);
+
+        // Check the stats page for instructor with 3 upducks
+        checkStatsUpducks('Instructor, Quinn', 3);
 
         // Tutorial into Questions
         mergeThreads(title3, title2, merged1);
