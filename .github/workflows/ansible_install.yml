@@ -26,7 +26,7 @@ jobs:
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
       - name: Validate image
-        run: curl --show-error --fail --include http://localhost:1511
+        run: curl --show-error --fail --include http://localhost
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
