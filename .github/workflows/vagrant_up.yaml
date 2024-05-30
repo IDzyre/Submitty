@@ -45,7 +45,6 @@ jobs:
           sudo systemctl enable --now libvirtd
           lscpu
           sudo systemctl start libvirtd
-          sudo systemctl start samba
           vagrant plugin install vagrant-libvirt
           NO_SUBMISSIONS=1 vagrant up --provider=libvirt
       # Installing this is skipped in CI as using it was causing some corruption in
