@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          sudo apt-get -y install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vagrant samba cifs-utils
+          sudo apt-get -y install qemu qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vagrant samba cifs-utils
           sudo systemctl enable --now libvirtd
           sudo systemctl start libvirtd
           vagrant plugin install vagrant-libvirt
