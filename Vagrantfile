@@ -26,21 +26,14 @@ Vagrant.configure("2") do |config|
   config.vm.box = "perk/ubuntu-2204-arm64"
   config.ssh.insert_key = false
   vm_name = 'ubuntu-22.04'
-  config.vm.provider :libvirt do |libvirt|
-      libvirt.features = ["apic"]
-      libvirt.cpu_mode = 'host-passthrough'
-      libvirt.cpus = 2
-      libvirt.machine_arch = "aarch64"
-      # appears these are needed otherwise most VMs appear to hang, possibly waiting for a key to pressed
-      libvirt.input :type => "mouse", :bus => "usb"
-      libvirt.input :type => "keyboard", :bus => "usb"
-      libvirt.usb_controller :model => "qemu-xhci"
-  
-      libvirt.machine_type = "virt-5.2"
-  
-      # javiervela/ubuntu20.04-arm64 requires the following settings in addition
-      #libvirt.machine_arch = "aarch64"
-      #libvirt.channel :type => 'unix', :target_type => 'virtio', :target_name => 'org.qemu.guest_agent.0', :target_port => '1', :source_path => '/var/lib/libvirt/qemu/channel/target/domain-1-ubuntu20.04/org.qemu.guest_agent.0', :source_mode => 'bind'
+  config.vm.provider "qemu" do |qe|
+    qe.qemu_dir = "/usr/local/share/qemu"
+    qe.machine = 'virt,accel=tcg,highmem=on'
+    qe.memory = '8G'
+    qe.net_device = "virtio-net-pci"
+    qe.cpu = "max"
+    qe.smp = 3
+    config.vm.boot_timeout = 600
   end
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.define vm_name, primary: true do |ubuntu|
