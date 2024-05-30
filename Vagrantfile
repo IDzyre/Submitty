@@ -31,6 +31,7 @@ Vagrant.configure("2") do |config|
     qe.memory = '8G'
     qe.net_device = "virtio-net-pci"
     qe.cpu = "max"
+    qe.qemu_dir = "/usr/local/share/qemu"
     qe.smp = 3
     config.vm.boot_timeout = 600
   end
