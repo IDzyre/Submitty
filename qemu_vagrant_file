@@ -32,6 +32,6 @@ Vagrant.configure("2") do |config|
     config.vm.boot_timeout = 600
   end
   config.vm.define vm_name, primary: true do |ubuntu|
-    ubuntu.vm.provision 'shell', type="nfs", inline: gen_script()
+    ubuntu.vm.provision 'shell', inline: gen_script()
   end
 end
