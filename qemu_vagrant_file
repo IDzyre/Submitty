@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
     qe.net_device = "virtio-net-pci"
     qe.cpu = "max"
     qe.smp = 3
+    qe.arch = "arm"
     config.vm.boot_timeout = 600
   end
   config.vm.define vm_name, primary: true do |ubuntu|
