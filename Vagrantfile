@@ -41,8 +41,8 @@ Vagrant.configure("2") do |config|
       # javiervela/ubuntu20.04-arm64 requires the following settings in addition
       #libvirt.machine_arch = "aarch64"
       #libvirt.channel :type => 'unix', :target_type => 'virtio', :target_name => 'org.qemu.guest_agent.0', :target_port => '1', :source_path => '/var/lib/libvirt/qemu/channel/target/domain-1-ubuntu20.04/org.qemu.guest_agent.0', :source_mode => 'bind'
-    end
   end
+  
   config.vm.define vm_name, primary: true do |ubuntu|
     ubuntu.vm.provision 'shell', inline: gen_script()
   end
