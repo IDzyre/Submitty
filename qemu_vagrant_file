@@ -11,9 +11,14 @@ def gen_script()
     cd /usr/local/submitty/GIT_CHECKOUT
     sudo rm Submitty -r
     git clone https://github.com/Submitty/Submitty.git
-    #{setup_cmd}
+    git clone https://github.com/Submitty/AnalysisTools.git
+    git clone https://github.com/Submitty/AnalysisToolsTS.git
+    git clone https://github.com/Submitty/Lichen.git
+    git clone https://github.com/Submitty/RainbowGrades.git
+    git clone https://github.com/Submitty/Tutorial.git
+    git clone https://github.com/Submitty/SysadminTools.git
+    git clone https://github.com/Submitty/Localization.git
 SCRIPT
-
   return script
 end
 
