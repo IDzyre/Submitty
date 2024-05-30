@@ -23,7 +23,7 @@ SCRIPT
 end
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "bento/ubuntu-22.04-arm64"
+  config.vm.box = "perk/ubuntu-2204-arm64"
   config.ssh.insert_key = false
   vm_name = 'ubuntu-22.04'
   config.vm.provider :libvirt do |libvirt|
@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
       #libvirt.machine_arch = "aarch64"
       #libvirt.channel :type => 'unix', :target_type => 'virtio', :target_name => 'org.qemu.guest_agent.0', :target_port => '1', :source_path => '/var/lib/libvirt/qemu/channel/target/domain-1-ubuntu20.04/org.qemu.guest_agent.0', :source_mode => 'bind'
   end
-  
+  config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.define vm_name, primary: true do |ubuntu|
     ubuntu.vm.provision 'shell', inline: gen_script()
   end
