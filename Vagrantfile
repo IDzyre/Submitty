@@ -27,7 +27,6 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   vm_name = 'ubuntu-22.04'
   config.vm.provider "qemu" do |qe|
-    qe.qemu_dir = "/usr/local/share/qemu"
     qe.machine = 'virt,accel=tcg,highmem=on'
     qe.memory = '8G'
     qe.net_device = "virtio-net-pci"
