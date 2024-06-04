@@ -132,7 +132,7 @@ Vagrant.configure(2) do |config|
     config.vm.define worker_name do |ubuntu|
       ubuntu.vm.network 'private_network', ip: data[:ip_addr]
       ubuntu.vm.network 'forwarded_port', guest: 22, host: data[:ssh_port], id: 'ssh'
-      ubuntu.vm.provision 'shell', inline: gen_script(worker_name, worker: true, base: base_box)
+      ubuntu.vm.provision 'shell', inline: gen_script()
     end
   end
 
@@ -143,7 +143,7 @@ Vagrant.configure(2) do |config|
     ubuntu.vm.network 'forwarded_port', guest: 5432, host: ENV.fetch('VM_PORT_DB',  16442)
     ubuntu.vm.network 'forwarded_port', guest: 7000, host: ENV.fetch('VM_PORT_SAML', 7000)
     ubuntu.vm.network 'forwarded_port', guest:   22, host: ENV.fetch('VM_PORT_SSH',  2222), id: 'ssh'
-    ubuntu.vm.provision 'shell', inline: gen_script(vm_name, base: base_box)
+    ubuntu.vm.provision 'shell', inline: gen_script()
   end
 
   config.vm.provider 'virtualbox' do |vb, override|
