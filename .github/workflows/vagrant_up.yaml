@@ -49,7 +49,7 @@ jobs:
           vagrant plugin install vagrant-libvirt
           vagrant plugin install vagrant-mutate
           vagrant box add perk/ubuntu-2204-arm64
-          vagrant box mutate perk/ubuntu-2204-arm64 libvirt
+          vagrant box mutate --input-provider=qemu perk/ubuntu-2204-arm64 libvirt
           CI=1 NO_SUBMISSIONS=1 vagrant up
       # Installing this is skipped in CI as using it was causing some corruption in
       # attempting to mount the shared folder. The guest and host guest additions
