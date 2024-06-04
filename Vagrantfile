@@ -226,7 +226,7 @@ Vagrant.configure(2) do |config|
       if base_box || ON_CI
         override.vm.box = base_boxes[:arm_bento]
       end
-      override.vm.box = base_boxes[:arm_mac_qemu]
+      override.vm.box = base_boxes[:arm_bento]
     end
 
     libvirt.qemu_use_session = true
