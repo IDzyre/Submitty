@@ -225,6 +225,7 @@ Vagrant.configure(2) do |config|
     unless custom_box
       if base_box || ON_CI
         override.vm.box = base_boxes[:arm_bento]
+        override.vm.box_version = "202309.08.0"
       end
       override.vm.box = base_boxes[:arm_bento]
     end
