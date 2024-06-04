@@ -43,8 +43,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install qemu uml-utilities virt-manager vagrant libguestfs-tools p7zip-full uml-utilities virt-viewer qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils -y
 
-          # sudo systemctl enable --now libvirtd
-          # sudo systemctl start libvirtd
+          sudo systemctl enable --now libvirtd
+          sudo systemctl start libvirtd
       - run: |
           vagrant plugin install vagrant-libvirt
           NO_SUBMISSIONS=1 vagrant up --provider=libvirt
