@@ -224,7 +224,7 @@ Vagrant.configure(2) do |config|
   config.vm.provider "libvirt" do |libvirt, override|
     unless custom_box
       if base_box || ON_CI
-        override.vm.box = "perk/ubuntu-2204-arm64"
+        override.vm.box = "submitty_temp/ubuntu-arm"
       else
         override.vm.box = base_boxes[:libvirt]
       end
