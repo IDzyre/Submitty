@@ -244,7 +244,7 @@ Vagrant.configure(2) do |config|
     libvirt.cpu_mode = "host-model"
     libvirt.forward_ssh_port = true
 
-    libvirt.vm.network :public_network,
+    libvirt.network :public_network,
       :dev => "virbr0",
       :mode => "bridge",
       :type => "bridge"
