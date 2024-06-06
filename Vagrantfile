@@ -224,10 +224,11 @@ Vagrant.configure(2) do |config|
   config.vm.provider "libvirt" do |libvirt, override|
     unless custom_box
       if base_box || ON_CI
-        override.vm.box = base_boxes[:arm_bento]
+        override.vm.box = "bento/ubuntu-22.04-arm64"
         override.vm.box_version = "202309.08.0"
+      else
+        override.vm.box = base_boxes[:libvirt]
       end
-      override.vm.box = base_boxes[:arm_bento]
     end
 
     libvirt.qemu_use_session = true
