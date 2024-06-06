@@ -230,11 +230,12 @@ Vagrant.configure(2) do |config|
       end
     end
 
-    libvirt.qemu_use_session = true
+    libvirt.qemu_use_session = false
     libvirt.driver = "qemu"
     libvirt.memory = 2048
-    libvirt.cpus = 2
-
+    # libvirt.cpus = 2
+    libvirt.cpus = Etc.nprocessors
+    libvirt.cpu_mode = "host-passthrough"
     libvirt.forward_ssh_port = true
 
     mount_folders_with_type(override, [], "rsync")
