@@ -1,23 +1,20 @@
-def gen_script()
-  setup_cmd = 'bash ${GIT_PATH}/.setup/'
+def gen_script(machine_name)
+  no_submissions = !ENV.fetch('NO_SUBMISSIONS', '').empty?
   
-  setup_cmd += 'vagrant/setup_vagrant.sh --no_submissions'
+  setup_cmd = 'bash ${GIT_PATH}/.setup/'
+  setup_cmd += 'vagrant/setup_vagrant.sh'
+  if no_submissions
+    setup_cmd += ' --no_submissions'
+  end
+  
+  setup_cmd += " 2>&1 | tee ${GIT_PATH}/.vagrant/logs/#{machine_name}.log"
 
   script = <<SCRIPT
     GIT_PATH=/usr/local/submitty/GIT_CHECKOUT/Submitty
     DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
     VERSION=$(lsb_release -sr | tr '[:upper:]' '[:lower:]')
     mkdir -p ${GIT_PATH}/.vagrant/logs
-    cd /usr/local/submitty/GIT_CHECKOUT
-    sudo rm Submitty -r
-    git clone https://github.com/Submitty/Submitty.git
-    git clone https://github.com/Submitty/AnalysisTools.git
-    git clone https://github.com/Submitty/AnalysisToolsTS.git
-    git clone https://github.com/Submitty/Lichen.git
-    git clone https://github.com/Submitty/RainbowGrades.git
-    git clone https://github.com/Submitty/Tutorial.git
-    git clone https://github.com/Submitty/SysadminTools.git
-    git clone https://github.com/Submitty/Localization.git
+    #{setup_cmd}
 SCRIPT
   return script
 end
