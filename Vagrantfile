@@ -238,11 +238,9 @@ Vagrant.configure(2) do |config|
       end
     end
 
-    libvirt.qemu_use_session = false
     libvirt.driver = "qemu"
     libvirt.memory = 2048
-    # libvirt.cpus = 2
-    libvirt.cpus = Etc.nprocessors
+    libvirt.cpus = 2
     libvirt.cpu_mode = "host-model"
     libvirt.forward_ssh_port = true
 
