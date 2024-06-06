@@ -33,8 +33,8 @@ Vagrant.configure(2) do |config|
 
   vm_name = 'ubuntu-22.04'
   config.vm.define vm_name, primary: true do |ubuntu|
-    ubuntu.vm.network :public_network,
-      :dev => "virtio",
+    ubuntu.vm.network,
+      :dev => "virbr0",
       :mode => "bridge",
       :type => "bridge"
     ubuntu.vm.network 'forwarded_port', guest: 1511, host: ENV.fetch('VM_PORT_SITE', 1511)
