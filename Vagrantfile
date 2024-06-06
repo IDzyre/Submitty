@@ -247,8 +247,6 @@ Vagrant.configure(2) do |config|
     libvirt.cpus = 2
     libvirt.cpu_mode = "host-model"
     libvirt.forward_ssh_port = true
-
-    mount_folders_with_type(override, [], "rsync")
   end
 
   config.vm.provider "qemu" do |qe, override|
