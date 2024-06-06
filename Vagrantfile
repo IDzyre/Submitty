@@ -235,7 +235,7 @@ Vagrant.configure(2) do |config|
     libvirt.memory = 2048
     # libvirt.cpus = 2
     libvirt.cpus = Etc.nprocessors
-    libvirt.cpu_mode = "host-passthrough"
+    libvirt.cpu_mode = "host-model"
     libvirt.forward_ssh_port = true
 
     mount_folders_with_type(override, [], "rsync")
