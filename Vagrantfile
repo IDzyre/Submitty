@@ -34,7 +34,7 @@ Vagrant.configure(2) do |config|
   vm_name = 'ubuntu-22.04'
   config.vm.define vm_name, primary: true do |ubuntu|
     ubuntu.vm.network :public_network,
-      :dev => "virbr0",
+      :dev => "virtio",
       :mode => "bridge",
       :type => "bridge"
     ubuntu.vm.network 'forwarded_port', guest: 1511, host: ENV.fetch('VM_PORT_SITE', 1511)
@@ -46,14 +46,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provider "libvirt" do |libvirt, override|
-    unless custom_box
-      if base_box || ON_CI
-        override.vm.box = "submitty_temp/ubuntu-arm"
-      else
-        override.vm.box = base_boxes[:libvirt]
-      end
-    end
-
+    override.vm.box = "submitty_temp/ubuntu-arm"
     libvirt.driver = "qemu"
     libvirt.memory = 2048
     libvirt.cpus = 2
