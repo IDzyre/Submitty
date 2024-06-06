@@ -230,6 +230,8 @@ Vagrant.configure(2) do |config|
       end
     end
 
+    libvirt.qemu_use_session = true
+    # libvirt.driver = "qemu"
     libvirt.memory = 2048
     libvirt.cpus = 2
 
