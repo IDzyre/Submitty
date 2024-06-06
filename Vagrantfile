@@ -119,7 +119,7 @@ Vagrant.configure(2) do |config|
   end
 
   mount_options = []
-
+  
   config.vm.box = ENV.fetch('VAGRANT_BOX', base_boxes.default)
   
   arch = `uname -m`.chomp
@@ -146,6 +146,10 @@ Vagrant.configure(2) do |config|
 
   vm_name = 'ubuntu-22.04'
   config.vm.define vm_name, primary: true do |ubuntu|
+    ubuntu.vm.network :public_network,
+      :dev => "virbr0",
+      :mode => "bridge",
+      :type => "bridge"
     ubuntu.vm.network 'forwarded_port', guest: 1511, host: ENV.fetch('VM_PORT_SITE', 1511)
     ubuntu.vm.network 'forwarded_port', guest: 8443, host: ENV.fetch('VM_PORT_WS',   8443)
     ubuntu.vm.network 'forwarded_port', guest: 5432, host: ENV.fetch('VM_PORT_DB',  16442)
@@ -243,11 +247,6 @@ Vagrant.configure(2) do |config|
     libvirt.cpus = 2
     libvirt.cpu_mode = "host-model"
     libvirt.forward_ssh_port = true
-
-    libvirt.network :public_network,
-      :dev => "virbr0",
-      :mode => "bridge",
-      :type => "bridge"
 
     mount_folders_with_type(override, [], "rsync")
   end
