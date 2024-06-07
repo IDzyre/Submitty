@@ -46,6 +46,7 @@ jobs:
           sudo systemctl enable --now libvirtd
           sudo systemctl start libvirtd
           sudo systemctl stop ufw
+          sudo su
           ls -alF /root/.local/share/libvirt/images
       - run: |
           vagrant plugin install vagrant-libvirt
