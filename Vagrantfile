@@ -33,7 +33,7 @@ Vagrant.configure(2) do |config|
 
   vm_name = 'ubuntu-22.04'
   config.vm.define vm_name, primary: true do |ubuntu|
-    ubuntu.vm.network "private_network", ip: "127.0.0.1",
+    ubuntu.vm.network "private_network",
       :dev => "virbr0",
       :mode => "bridge",
       :type => "bridge"
