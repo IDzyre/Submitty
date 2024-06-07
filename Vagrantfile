@@ -43,13 +43,15 @@ Vagrant.configure(2) do |config|
 
   config.vm.provider "libvirt" do |libvirt, override|
     override.vm.box = "submitty_temp/ubuntu-arm"
-    libvirt.qemu_use_session = true
-    libvirt.driver = "qemu"
-    libvirt.memory = 2048
-    libvirt.cpus = 2
-    libvirt.cpu_mode = "host-model"
-    libvirt.forward_ssh_port = true
-  end
+    libvirt.driver = "qemu" # Use QEMU as the driver
+    libvirt.memory = 2048 # Set memory size
+    libvirt.cpus = 2 # Set number of CPUs
+    libvirt.cpu_mode = "host-model" # Use host-model CPU mode
+    libvirt.qemu_use_session = true # Use QEMU session mode
+    libvirt.machine_type = "virt" # Use the 'virt' machine type for ARM
+    libvirt.arch = "aarch64" # Specify ARM architecture
+    libvirt.net_device = "virtio-net-device" # Use virtio network device
+    end
 
   config.vm.provision :shell, :inline => " sudo timedatectl set-timezone America/New_York", run: "once"
 end
