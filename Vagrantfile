@@ -51,7 +51,7 @@ Vagrant.configure(2) do |config|
     libvirt.machine_type = "virt" # Use the 'virt' machine type for ARM
     libvirt.arch = "aarch64" # Specify ARM architecture
     libvirt.net_device = "virtio-net-device" # Use virtio network device
-    end
+  end
 
   config.vm.provision :shell, :inline => " sudo timedatectl set-timezone America/New_York", run: "once"
 end
