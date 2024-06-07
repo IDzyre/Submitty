@@ -47,7 +47,7 @@ jobs:
           sudo systemctl start libvirtd
           sudo systemctl stop ufw
           sudo su
-          sudo ls -alF /root/.local/share/libvirt/images
+          sudo virsh capabilities
       - run: |
           vagrant plugin install vagrant-libvirt
           sudo CI=1 NO_SUBMISSIONS=1 vagrant up
