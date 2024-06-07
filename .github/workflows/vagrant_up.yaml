@@ -58,9 +58,9 @@ jobs:
       # attempting to mount the shared folder. The guest and host guest additions
       # versions are close enough that we are fine without it.
       # - run: vagrant plugin install vagrant-vbgues
-      - name: Acquire Job ID
-        if: failure()   
-        run: journalctl -f 
+      # - name: Acquire Job ID
+      #   if: failure()   
+      #   run: journalctl -f 
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
       
