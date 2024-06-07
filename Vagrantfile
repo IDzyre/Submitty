@@ -33,7 +33,7 @@ Vagrant.configure(2) do |config|
 
   vm_name = 'ubuntu-22.04'
   config.vm.define vm_name, primary: true do |ubuntu|
-    ubuntu.vm.network "private_network",
+    ubuntu.vm.network "private_network", ip: "127.0.0.2",
       :dev => "virbr0",
       :mode => "bridge",
       :type => "bridge"
@@ -47,7 +47,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provider "libvirt" do |libvirt, override|
     override.vm.box = "submitty_temp/ubuntu-arm"
-    libvirt.qemu_use_agent = true
+    libvirt.qemu_use_session = true
     libvirt.driver = "qemu"
     libvirt.memory = 2048
     libvirt.cpus = 2
