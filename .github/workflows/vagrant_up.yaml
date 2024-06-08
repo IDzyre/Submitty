@@ -49,9 +49,10 @@ jobs:
           # echo -e "user: 'runner'\ngroup:'users'" >> /etc/libvirt/qemu.conf
           sudo usermod -a -G libvirt runner
           sudo mkdir /etc/qemu
-          ls -alF
+       
           sudo mv ./bridge.conf /etc/qemu/bridge.conf
           sudo chmod u+r /etc/qemu/bridge.conf
+          ls -alF /etc/qemu
           systemctl status libvirtd
       - run: |
           vagrant plugin install vagrant-libvirt
