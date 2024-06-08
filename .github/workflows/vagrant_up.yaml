@@ -47,8 +47,6 @@ jobs:
           sudo systemctl start libvirtd
           sudo systemctl stop ufw
           sudo sh -c `echo -e "user: 'vagrant'\ngroup:'users'"`
-          group: "users"' >> /etc/libvirt/qemu.conf`
-
       - run: |
           vagrant plugin install vagrant-libvirt
           sudo CI=1 NO_SUBMISSIONS=1 vagrant up
