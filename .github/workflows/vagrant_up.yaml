@@ -50,7 +50,7 @@ jobs:
           sudo usermod -a -G libvirt runner
           sudo mkdir /etc/qemu
           ls
-          sudo mv bridge.conf /etc/qemu/bridge.conf
+          sudo mv ./bridge.conf /etc/qemu/bridge.conf
           sudo chmod u+r /etc/qemu/bridge.conf
       - run: |
           vagrant plugin install vagrant-libvirt
