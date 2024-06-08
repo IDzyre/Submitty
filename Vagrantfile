@@ -43,7 +43,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provider "libvirt" do |libvirt, override|
     override.vm.box = "submitty_temp/ubuntu-arm"
-    libvirt.driver = "kvm" # Use QEMU as the driver
+    libvirt.driver = "qemu" # Use QEMU as the driver
     libvirt.memory = 2048 # Set memory size
     libvirt.cpus = 2 # Set number of CPUs
     libvirt.cpu_mode = "host-model" # Use host-model CPU mode
