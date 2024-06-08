@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
     ubuntu.vm.network 'forwarded_port', guest: 5432, host: ENV.fetch('VM_PORT_DB',  16442)
     ubuntu.vm.network 'forwarded_port', guest: 7000, host: ENV.fetch('VM_PORT_SAML', 7000)
     ubuntu.vm.network 'forwarded_port', guest:   22, host: ENV.fetch('VM_PORT_SSH',  2222), id: 'ssh'
-    ubuntu.vm.provision 'shell', inline: gen_script(vm_name)
+    # ubuntu.vm.provision 'shell', inline: gen_script(vm_name)
   end
 
   config.vm.provider "libvirt" do |libvirt, override|
@@ -49,7 +49,8 @@ Vagrant.configure(2) do |config|
     libvirt.cpu_mode = "host-model" # Use host-model CPU mode
     libvirt.qemu_use_session = true # Use QEMU session mode
     libvirt.machine_type = "virt" # Use the 'virt' machine type for ARM
-    # libvirt.arch = "aarch64" # Specify ARM architecture
+    libvirt.graphics_type = 'none'
+    libvirt.machine_arch = "aarch64" # Specify ARM architecture
     # libvirt.net_device = "virtio-net-device" # Use virtio network device
   end
 
