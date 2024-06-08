@@ -48,6 +48,7 @@ Vagrant.configure(2) do |config|
     libvirt.cpus = 2 # Set number of CPUs
     libvirt.cpu_model = "arm1176"
     libvirt.cpu_mode = "custom"
+    libvirt.username = "root"
     libvirt.qemu_use_session = true # Use QEMU session mode
     libvirt.machine_type = "virt" # Use the 'virt' machine type for ARM
     libvirt.graphics_type = 'none'
