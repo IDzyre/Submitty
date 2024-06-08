@@ -49,6 +49,7 @@ jobs:
           # echo -e "user: 'runner'\ngroup:'users'" >> /etc/libvirt/qemu.conf
           sudo usermod -a -G libvirt runner
           sudo mkdir /etc/qemu
+          ls
           sudo mv ./GIT_CHECKOUT/Submitty/bridge.conf /etc/qemu/bridge.conf
           sudo chmod u+r /etc/qemu/bridge.conf
       - run: |
