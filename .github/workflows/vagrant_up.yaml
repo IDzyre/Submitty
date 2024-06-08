@@ -48,7 +48,7 @@ jobs:
           sudo systemctl stop ufw
           # echo -e "user: 'runner'\ngroup:'users'" >> /etc/libvirt/qemu.conf
           sudo usermod -a -G libvirt runner
-          touch /etc/qemu/bridge.conf
+          > /etc/qemu/bridge.conf
           echo allow virbr0 > /etc/qemu/bridge.conf
           sudo chmod u+r /etc/qemu/bridge.conf
       - run: |
