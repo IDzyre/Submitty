@@ -51,6 +51,7 @@ Vagrant.configure(2) do |config|
     libvirt.machine_type = "virt" # Use the 'virt' machine type for ARM
     libvirt.graphics_type = 'none'
     libvirt.features = []
+    libvirt.inputs = []
     libvirt.machine_arch = "aarch64" # Specify ARM architecture
     # libvirt.net_device = "virtio-net-device" # Use virtio network device
   end
