@@ -46,7 +46,7 @@ jobs:
           sudo systemctl enable --now libvirtd
           sudo systemctl start libvirtd
           sudo systemctl stop ufw
-          sudo sh -c 'echo -e `user: "vagrant"\ngroup:"users"`'
+          sudo sh -c `echo -e "user: 'vagrant'\ngroup:'users'"`
           group: "users"' >> /etc/libvirt/qemu.conf`
 
       - run: |
