@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           sudo apt-get update
-          sudo apt-get install qemu uml-utilities virt-manager vagrant libguestfs-tools p7zip-full uml-utilities virt-viewer qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils -y
+          sudo apt-get install qemu qemu-system-arm vagrant qemu-kvm
 
           sudo systemctl enable --now libvirtd
           sudo systemctl start libvirtd
