@@ -46,8 +46,7 @@ jobs:
           sudo systemctl enable --now libvirtd
           sudo systemctl start libvirtd
           sudo systemctl stop ufw
-          sudo su
-          echo user: "runner" >> /etc/libvirt/qemu.conf
+          sudo echo user: "runner" >> /etc/libvirt/qemu.conf
       - run: |
           vagrant plugin install vagrant-libvirt
           sudo CI=1 NO_SUBMISSIONS=1 vagrant up
