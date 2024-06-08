@@ -51,7 +51,8 @@ jobs:
           sudo mkdir /etc/qemu
        
           sudo mv ./bridge.conf /etc/qemu/bridge.conf
-          sudo chmod 0755 /etc/qemu/bridge.conf
+          sudo chmod 644 /etc/qemu/bridge.conf
+          sudo systemctl restart libvirtd
       - run: |
           vagrant plugin install vagrant-libvirt
           CI=1 NO_SUBMISSIONS=1 vagrant up
