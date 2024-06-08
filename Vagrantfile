@@ -46,7 +46,7 @@ Vagrant.configure(2) do |config|
     libvirt.driver = "qemu" # Use QEMU as the driver
     libvirt.memory = 2048 # Set memory size
     libvirt.cpus = 2 # Set number of CPUs
-    libvirt.cpu_mode = "host-model" # Use host-model CPU mode
+    libvirt.cpu_model = "arm1176"
     libvirt.qemu_use_session = true # Use QEMU session mode
     libvirt.machine_type = "virt" # Use the 'virt' machine type for ARM
     libvirt.graphics_type = 'none'
