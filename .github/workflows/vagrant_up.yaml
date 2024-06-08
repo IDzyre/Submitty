@@ -48,6 +48,8 @@ jobs:
           sudo systemctl stop ufw
           # echo -e "user: 'runner'\ngroup:'users'" >> /etc/libvirt/qemu.conf
           sudo usermod -a -G libvirt runner
+          echo allow virbr0 >> /etc/qemu/bridge.conf
+          sudo chmod u+r /etc/qemu/bridge.conf
       - run: |
           vagrant plugin install vagrant-libvirt
           CI=1 NO_SUBMISSIONS=1 vagrant up
