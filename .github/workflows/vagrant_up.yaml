@@ -50,7 +50,7 @@ jobs:
           # sudo usermod -a -G qemu runner
           sudo mkdir /etc/qemu
           sudo mv ./qemu.conf /etc/qemu/qemu.conf
-          sudo chmod +s /etc/qemu/bridge.conf
+          sudo chmod +s /etc/qemu/qemu.conf
           sudo mv ./bridge.conf /etc/qemu/bridge.conf
           sudo chmod +s /etc/qemu/bridge.conf
           sudo brctl addbr virtbr0
