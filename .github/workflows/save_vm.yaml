@@ -62,11 +62,11 @@ jobs:
           fetch-depth: 0
       - name: Install virtualbox and vagrant
         run: |
-          brew install qemu vagrant
-          vagrant plugin install vagrant-qemu
+          brew install libvirt vagrant
+          vagrant plugin install vagrant-libvirt
           sudo pwpolicy -u runner -sethashtypes SMB-NT on
-          rm ./Vagrantfile
-          mv qemu_vagrant_file Vagrantfile
+          # rm ./Vagrantfile
+          # mv qemu_vagrant_file Vagrantfile
       # - name: Get latest version
       #   id: get-version
       #   run: |
@@ -77,7 +77,7 @@ jobs:
       #     fi
       #     echo "version=${TAG:1}" >> $GITHUB_OUTPUT
       - name: Vagrant Up
-        run: sudo VAGRANT_DISABLE_SMBMFSYMLINKS=1 CI=1 vagrant up --provider=qemu
+        run: vagrant up
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
       - name: Save image
