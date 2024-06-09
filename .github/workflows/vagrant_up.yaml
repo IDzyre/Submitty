@@ -1,37 +1,91 @@
 name: Vagrant Up
-
 on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-
+  pull_request:
 permissions:
   contents: read
 
 jobs:
-  vagrant-up:
-    runs-on: macos-13
+  # vagrant-up:
+  #   runs-on: macos-13
 
-    steps:
-      - uses: actions/checkout@v4
-      - run: brew install virtualbox vagrant
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: brew install virtualbox vagrant
       # Installing this is skipped in CI as using it was causing some corruption in
       # attempting to mount the shared folder. The guest and host guest additions
       # versions are close enough that we are fine without it.
       # - run: vagrant plugin install vagrant-vbguest
-      - run: NO_SUBMISSIONS=1 vagrant up ubuntu-22.04
+      # - run: NO_SUBMISSIONS=1 vagrant up ubuntu-22.04
+      # - name: Validate image
+      #   run: curl --show-error --fail --include http://localhost:1511
+      # - name: Acquire Job ID
+      #   if: failure()
+      #   id: get-job-id
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id}}/attempts/${{ github.run_attempt }}/jobs)
+      #     job_id=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
+      #     echo "job_id=$job_id" >> $GITHUB_OUTPUT
+      # - name: Send zulip message on failure
+      #   if: failure()
+      #   run: |
+      #    curl -X POST https://submitty.zulipchat.com/api/v1/messages -u ${{ secrets.ZULIP_AUTHENTICATION }} --data-urlencode 'type=stream' --data-urlencode 'to=Submitty Developer Studio' --data-urlencode 'topic=Vagrant Up Failures' --data-urlencode 'content=The Vagrant Up Github Action has failed. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}/job/${{ steps.get-job-id.outputs.job_id }}'
+
+  vagrant-up-m1:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install qemu qemu-system-arm uml-utilities virt-manager vagrant libguestfs-tools p7zip-full uml-utilities virt-viewer qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils -y
+
+          sudo systemctl enable --now libvirtd
+          sudo systemctl start libvirtd
+          sudo systemctl stop ufw
+          sudo usermod -a -G libvirt runner
+          # sudo usermod -a -G qemu runner
+          sudo mkdir /etc/qemu
+          sudo mv ./qemu.conf /etc/qemu/qemu.conf
+          sudo chmod +s /etc/qemu/qemu.conf
+          sudo mv ./bridge.conf /etc/qemu/bridge.conf
+          sudo chmod +s /etc/qemu/bridge.conf
+          sudo brctl addbr virtbr0
+          # sudo brctl addif virtbr0 enp3s0
+          sudo ip addr add 192.168.0.20/24 dev virtbr0
+          sudo ip link set virtbr0 up
+          sudo systemctl restart libvirtd
+          systemctl status libvirtd
+          # sudo ls /root/.local/share/libvirt/images -alF
+      - run: |
+          vagrant plugin install vagrant-libvirt
+          CI=1 NO_SUBMISSIONS=1 vagrant up
+      # Installing this is skipped in CI as using it was causing some corruption in
+      # attempting to mount the shared folder. The guest and host guest additions
+      # versions are close enough that we are fine without it.
+      # - run: vagrant plugin install vagrant-vbgues
+  
+      # Installing this is skipped in CI as using it was causing some corruption in
+      # attempting to mount the shared folder. The guest and host guest additions
+      # versions are close enough that we are fine without it.
+      # - run: vagrant plugin install vagrant-vbgues
+      # - name: Acquire Job ID
+      #   if: failure()   
+      #   run: journalctl -f 
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
-      - name: Acquire Job ID
-        if: failure()
-        id: get-job-id
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id}}/attempts/${{ github.run_attempt }}/jobs)
-          job_id=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
-          echo "job_id=$job_id" >> $GITHUB_OUTPUT
-      - name: Send zulip message on failure
-        if: failure()
-        run: |
-         curl -X POST https://submitty.zulipchat.com/api/v1/messages -u ${{ secrets.ZULIP_AUTHENTICATION }} --data-urlencode 'type=stream' --data-urlencode 'to=Submitty Developer Studio' --data-urlencode 'topic=Vagrant Up Failures' --data-urlencode 'content=The Vagrant Up Github Action has failed. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}/job/${{ steps.get-job-id.outputs.job_id }}'
+      
+      #   id: get-job-id
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id}}/attempts/${{ github.run_attempt }}/jobs)
+      #     job_id=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
+      #     echo "job_id=$job_id" >> $GITHUB_OUTPUT
+      # - name: Send zulip message on failure
+      #   if: failure()
+      #   run: |
+      #    curl -X POST https://submitty.zulipchat.com/api/v1/messages -u ${{ secrets.ZULIP_AUTHENTICATION }} --data-urlencode 'type=stream' --data-urlencode 'to=Submitty Developer Studio' --data-urlencode 'topic=Vagrant Up Failures' --data-urlencode 'content=The Vagrant Up Github Action has failed. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}/job/${{ steps.get-job-id.outputs.job_id }}'
