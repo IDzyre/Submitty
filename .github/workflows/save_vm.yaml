@@ -67,6 +67,7 @@ jobs:
           sudo pwpolicy -u runner -sethashtypes SMB-NT on
           # rm ./Vagrantfile
           # mv qemu_vagrant_file Vagrantfile
+          brew services start libvirt
       # - name: Get latest version
       #   id: get-version
       #   run: |
