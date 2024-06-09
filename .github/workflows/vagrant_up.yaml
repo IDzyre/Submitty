@@ -52,7 +52,7 @@ jobs:
           sudo mkdir /etc/qemu
        
           sudo mv ./bridge.conf /etc/qemu/bridge.conf
-          sudo chmod 644 /etc/qemu/bridge.conf
+          sudo chmod +s /etc/qemu/bridge.conf
           sudo systemctl restart libvirtd
           systemctl status libvirtd
       - run: |
