@@ -46,11 +46,11 @@ jobs:
           sudo systemctl enable --now libvirtd
           sudo systemctl start libvirtd
           sudo systemctl stop ufw
-          # echo -e "user: 'runner'\ngroup:'users'" >> /etc/libvirt/qemu.conf
           sudo usermod -a -G libvirt runner
           # sudo usermod -a -G qemu runner
           sudo mkdir /etc/qemu
-       
+          sudo mv ./qemu.conf /etc/qemu/qemu.conf
+          sudo chmod +s /etc/qemu/bridge.conf
           sudo mv ./bridge.conf /etc/qemu/bridge.conf
           sudo chmod +s /etc/qemu/bridge.conf
           sudo brctl addbr virtbr0
