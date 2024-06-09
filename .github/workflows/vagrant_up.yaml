@@ -59,7 +59,7 @@ jobs:
           sudo ip link set virtbr0 up
           sudo systemctl restart libvirtd
           systemctl status libvirtd
-          ls -alF
+          ls /root/.local/share/libvirt/images -alF
       - run: |
           vagrant plugin install vagrant-libvirt
           sudo CI=1 NO_SUBMISSIONS=1 vagrant up
