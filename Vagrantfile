@@ -39,18 +39,18 @@ def gen_script(machine_name, worker: false, base: false)
   reinstall = ENV.has_key?('VAGRANT_BOX') || base
   extra = ENV.fetch('EXTRA', '')  
   setup_cmd = 'bash ${GIT_PATH}/.setup/'
-  if reinstall || ON_CI
-    if worker
-      setup_cmd += 'install_worker.sh'
-    else
-      setup_cmd += 'vagrant/setup_vagrant.sh'
-      if no_submissions
-        setup_cmd += ' --no_submissions'
-      end
-    end
-  else
-    setup_cmd += 'install_success_from_cloud.sh'
-  end
+  # if reinstall || ON_CI
+  #   if worker
+  #     setup_cmd += 'install_worker.sh'
+  #   else
+  #     setup_cmd += 'vagrant/setup_vagrant.sh'
+  #     if no_submissions
+  #       setup_cmd += ' --no_submissions'
+  #     end
+  #   end
+  # else
+  setup_cmd += 'install_success_from_cloud.sh'
+  # end
   unless extra.empty?
     setup_cmd += " #{extra}"
   end
@@ -83,13 +83,13 @@ def mount_folders(config, mount_options)
   # vagrant group so that they can write to this shared folder, primarily just for the log files
   owner = 'root'
   group = 'vagrant'
-  config.vm.synced_folder '.', '/usr/local/submitty/GIT_CHECKOUT/Submitty', create: true, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp
+  config.vm.synced_folder '.', '/usr/local/submitty/GIT_CHECKOUT/Submitty', create: true, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp, smb_password: `whoami`.chomp, disabled: true
 
   optional_repos = %w(AnalysisTools AnalysisToolsTS Lichen RainbowGrades Tutorial CrashCourseCPPSyntax LichenTestData)
   optional_repos.each {|repo|
     repo_path = File.expand_path("../" + repo)
     if File.directory?(repo_path)
-      config.vm.synced_folder repo_path, "/usr/local/submitty/GIT_CHECKOUT/" + repo, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp
+      config.vm.synced_folder repo_path, "/usr/local/submitty/GIT_CHECKOUT/" + repo, owner: owner, group: group, mount_options: mount_options, smb_host: '10.0.2.2', smb_username: `whoami`.chomp, smb_password: `whoami`.chomp, disabled: true
     end
   }
 end
@@ -248,11 +248,12 @@ Vagrant.configure(2) do |config|
 
   config.vm.provider "qemu" do |qe, override|
     unless custom_box
-      if apple_silicon
+      if apple_silicon || ON_CI
         override.vm.box = base_boxes[:arm_mac_qemu]
       end
     end
-
+    
+    # qe.qemu_dir = "/usr/local/share/qemu"
     qe.memory = "2G"
     qe.smp = 2
 
