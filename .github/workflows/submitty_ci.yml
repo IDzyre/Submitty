@@ -551,8 +551,7 @@ jobs:
       - name: Run integration tests
         run: sudo -E env "PATH=$PATH" python3 /usr/local/submitty/test_suite/integrationTests/run.py
 
-
-  ansible-install:
+  ansible-ci:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -570,8 +569,16 @@ jobs:
         run: |
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
       - name: Validate image
         run: curl --show-error --fail --include http://localhost/authentication/login
+      - name: Run Ansible cypress test
+        uses: cypress-io/github-action@v6
+        with:
+          config: baseUrl=http://localhost
+          spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
+          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+          browser: chrome
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
