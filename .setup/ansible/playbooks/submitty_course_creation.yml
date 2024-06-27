@@ -20,11 +20,11 @@
       ansible.builtin.include_role:
         name: submitty_add_user
       vars:
-        submitty_course_add_user_username: instructor
-        submitty_course_add_user_firstname: instructor
-        submitty_course_add_user_lastname: Quinn
-        submitty_course_add_user_email: email
-        submitty_course_add_user_password: instructor
+        submitty_add_user_username: instructor
+        submitty_add_user_firstname: instructor
+        submitty_add_user_lastname: Quinn
+        submitty_add_user_email: email
+        submitty_add_user_password: instructor
 
     - name: Course Creation
       ansible.builtin.include_role:
