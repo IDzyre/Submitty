@@ -26,6 +26,16 @@
         submitty_add_user_email: email
         submitty_add_user_password: instructor
 
+    - name: Add instructor
+      ansible.builtin.include_role:
+        name: submitty_add_user
+      vars:
+        submitty_add_user_username: runner
+        submitty_add_user_firstname: instructor
+        submitty_add_user_lastname: Quinn
+        submitty_add_user_email: email
+        submitty_add_user_password: instructor
+
     - name: Course Creation
       ansible.builtin.include_role:
         name: submitty_course_creation
