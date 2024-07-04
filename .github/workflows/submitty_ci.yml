@@ -571,7 +571,10 @@ jobs:
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
       - name: Validate image
-        run: curl --show-error --fail --include http://localhost/authentication/login
+        run: |
+          curl --show-error --fail --include http://localhost/authentication/login
+          ls -alF /usr/local/submitty/GIT_CHECKOUT/Submitty/site
+          ls -alF /usr/local/submitty/GIT_CHECKOUT/Submitty
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
         with:
