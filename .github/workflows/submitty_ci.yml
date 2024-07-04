@@ -574,8 +574,8 @@ jobs:
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
-          npm install file-saver --save
-          npm install --production=false
+          sudo npm install file-saver --save
+          sudo npm install --production=false
 
       - name: Validate image
         run: |
