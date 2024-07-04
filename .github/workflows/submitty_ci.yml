@@ -584,3 +584,9 @@ jobs:
         with:
           name: install-log
           path: /usr/local/submitty/install.log
+      
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: npm-error
+          path: /home/runner/.npm/_logs
