@@ -570,11 +570,17 @@ jobs:
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
+          
+      - name: Install node dependencies
+        working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+        run: |
+          npm install file-saver --save
+          npm install --production=false
+
       - name: Validate image
         run: |
           curl --show-error --fail --include http://localhost/authentication/login
-          ls -alF /usr/local/submitty/GIT_CHECKOUT/Submitty/site
-          ls -alF /usr/local/submitty/GIT_CHECKOUT/Submitty
+
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
         with:
@@ -582,6 +588,7 @@ jobs:
           spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
