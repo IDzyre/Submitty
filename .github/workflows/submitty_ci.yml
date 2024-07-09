@@ -483,7 +483,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: ./.github/actions/e2e-Setup-Composite
+      - name: Download Vagrant and Virtualbox
+        run: sudo apt-get install vagrant virtualbox
+      - name: Vagrant up
+        run: vagrant up --provider=virtualbox
       # TODO: Remove this block after upgrading jsPDF
       - name: Cache Node Modules
         uses: actions/cache@v4
