@@ -347,7 +347,6 @@ jobs:
             echo "No lines added. OK."
           fi
 
-
   db-check:
     name: DB Check
     runs-on: ubuntu-22.04
@@ -589,6 +588,14 @@ jobs:
             echo "::error:: Wrong provided dump, please check your database dumps"
             exit 1
           }
+
+      - name: Run git tests
+        run: |
+          cd $SUBMITTY_REPOSITORY
+          SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')
+          sudo python3 /usr/local/submitty/bin/generate_repos.py ${SEMESTER} sample open_homework
+          bash tests/git_test.sh
+        shell: bash
 
       - name: Pack Artifacts
         if: failure()
