@@ -587,6 +587,9 @@ jobs:
             exit 1
           }
 
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Run git tests
         run: |
           cd ${PR_REPO_PATH}
