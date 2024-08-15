@@ -404,6 +404,9 @@ jobs:
           ref: ${{ env.MBASE || 'main' }}
           path: main/GIT_CHECKOUT/Submitty
 
+      - name: Checkout 
+        uses: actions/checkout@v4
+
       - name: Download Required Packages
         run: |
           pip install -r <(
