@@ -38,6 +38,7 @@ set -ev
 mkdir /tmp/submitty_git
 pushd /tmp/submitty_git
 
+ls -alF
 test_git instructor instructor
 test_git instructor student
 test_git student student
