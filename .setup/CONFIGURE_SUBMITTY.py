@@ -310,15 +310,15 @@ else:
             INSTITUTION_HOMEPAGE = ''
         print()
 
-    # while True:
-    #     user_create_account = get_input("Enable Create New Account feature? [y/n]", 'y')
-    #     if (user_create_account.lower() in ['yes', 'y']):
-    #         USER_CREATE_ACCOUNT = True
-    #         break
-    #     elif (user_create_account.lower() in ['no', 'n']):
-    #         USER_CREATE_ACCOUNT = False
-    #         break
-    # print()
+    while True:
+        user_create_account = get_input("Enable Create New Account feature? [y/n]", 'y')
+        if (user_create_account.lower() in ['yes', 'y']):
+            USER_CREATE_ACCOUNT = True
+            break
+        elif (user_create_account.lower() in ['no', 'n']):
+            USER_CREATE_ACCOUNT = False
+            break
+    print()
     
     SYS_ADMIN_EMAIL = get_input("What is the email for system administration?", defaults['sys_admin_email'])
     SYS_ADMIN_URL = get_input("Where to report problems with Submitty (url for help link)?", defaults['sys_admin_url'])
@@ -455,7 +455,7 @@ else:
 
     config['institution_name'] = INSTITUTION_NAME
     config['institution_homepage'] = INSTITUTION_HOMEPAGE
-    # config['user_create_account'] = USER_CREATE_ACCOUNT
+    config['user_create_account'] = USER_CREATE_ACCOUNT
     config['debugging_enabled'] = DEBUGGING_ENABLED
 
 # site_log_path is a holdover name. This could more accurately be called the "log_path"
@@ -649,7 +649,7 @@ if not args.worker:
     config['timezone'] = TIMEZONE
     config['default_locale'] = DEFAULT_LOCALE
     config['duck_special_effects'] = False
-    # config['user_create_account'] = USER_CREATE_ACCOUNT
+    config['user_create_account'] = USER_CREATE_ACCOUNT
 
 config['worker'] = True if args.worker == 1 else False
 
