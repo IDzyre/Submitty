@@ -38,10 +38,11 @@ set -ev
 mkdir /tmp/submitty_git
 pushd /tmp/submitty_git
 
+ls -alF
 test_git instructor instructor
 test_git instructor student
 test_git student student
-
+ 
 EXIT_CODE=0
 git clone http://student:student@localhost/git/${SEMESTER}/sample/open_homework/instructor > /tmp/submitty_git/git_stdout 2> /tmp/submitty_git/git_stderr || EXIT_CODE=$?
 test ${EXIT_CODE} -ne 0
