@@ -638,6 +638,27 @@ if not args.worker:
     config['sys_admin_url'] = SYS_ADMIN_URL
 # site_log_path is a holdover name. This could more accurately be called the "log_path"
 config['site_log_path'] = TAGRADING_LOG_PATH
+user_id_requirements = {
+    "all": True,
+    "require_name": False,
+    "length": 25,
+    "name_requirements": {
+        "given_first": False,
+        "given_name": 2,
+        "family_name": 4
+    },
+    "require_email": False,
+    "email_requirements": {
+        "whole_email": False,
+        "whole_prefix": False,
+        "prefix_count": 6
+    }
+}
+
+accepted_emails = {
+    "gmail.com": True,
+    "rpi.edu": True
+}
 
 if not args.worker:
     config['submission_url'] = SUBMISSION_URL
@@ -650,6 +671,8 @@ if not args.worker:
     config['default_locale'] = DEFAULT_LOCALE
     config['duck_special_effects'] = False
     config['user_create_account'] = USER_CREATE_ACCOUNT
+    config['accepted_emails'] = accepted_emails
+    config['user_id_requirements'] = user_id_requirements
 
 config['worker'] = True if args.worker == 1 else False
 
