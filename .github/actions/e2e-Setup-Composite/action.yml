@@ -60,7 +60,7 @@ runs:
     - name: Install Test-specific python dependencies
       run: |
         # Install for local
-       time(python3 -m pip install --upgrade pip setuptools wheel
+        time(python3 -m pip install --upgrade pip setuptools wheel
         pip3 -V
         pip3 install selenium websocket_client
         # Install globally
@@ -92,7 +92,7 @@ runs:
 
     - name: Install PHP dependencies
       run: |
-       time(cd  ${SUBMITTY_INSTALL_DIR}/GIT_CHECKOUT/Submitty/site
+        time(cd  ${SUBMITTY_INSTALL_DIR}/GIT_CHECKOUT/Submitty/site
         composer install --prefer-dist
         )
       shell: bash
@@ -118,7 +118,7 @@ runs:
 
     - name: Install apt-get packages
       run: |
-       time(
+        time(
         sudo apt-get update
         sudo apt-get install libseccomp-dev
         sudo apt-get install libboost-all-dev
@@ -145,15 +145,15 @@ runs:
 
     - name: Configure Test suite
       run: |
-      time(
+        time(
         cd $SUBMITTY_REPOSITORY
         sudo -E env "PATH=$PATH" bash .setup/testing/setup.sh
         sudo jq '. |= . + {"verified_submitty_admin_user": "submitty-admin"}' /usr/local/submitty/config/submitty_users.json \
           | sudo sponge /usr/local/submitty/config/submitty_users.json
         sudo chown root:submitty_daemonphp /usr/local/submitty/config/submitty_users.json
         sudo chmod 440 /usr/local/submitty/config/submitty_users.json
+        )
       shell: bash
-      )
     - name: Setup ldap
       run: |
         time(
