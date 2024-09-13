@@ -701,7 +701,7 @@ jobs:
           browser: chrome
       - name: Switch to CI mode
         run: |
-          sudo sed -ie '/is_ci/c\ \"is_ci\" : true",' /usr/local/submitty/config/submitty.json
+          sudo sed -ie '/is_ci/c\ \"is_ci\" : true,' /usr/local/submitty/config/submitty.json
 
       - name: Run self-account-creation tests.
         uses: cypress-io/github-action@v6
