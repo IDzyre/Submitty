@@ -755,7 +755,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-videos
+          name: Cypress-System-Videos
           path: ${{env.SUBMITTY_REPOSITORY}}/site/cypress/videos
 
       - name: Check for site errors
