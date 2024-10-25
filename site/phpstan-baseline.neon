@@ -496,7 +496,7 @@ parameters:
 			path: app/controllers/MiscController.php
 
 		-
-			message: "#^Method app\\\\controllers\\\\MiscController\\:\\:downloadSubmissionZip\\(\\) has parameter \\$user_id with no type specified\\.$#"
+			message: "#^Method app\\\\controllers\\\\MiscController\\:\\:downloadSubmissionZip\\(\\) has parameter \\$submitter_id with no type specified\\.$#"
 			count: 1
 			path: app/controllers/MiscController.php
 
@@ -937,21 +937,6 @@ parameters:
 			path: app/controllers/admin/AdminGradeableController.php
 
 		-
-			message: "#^Method app\\\\controllers\\\\admin\\\\AdminGradeableController\\:\\:enqueueGenerateRepos\\(\\) has parameter \\$course with no type specified\\.$#"
-			count: 1
-			path: app/controllers/admin/AdminGradeableController.php
-
-		-
-			message: "#^Method app\\\\controllers\\\\admin\\\\AdminGradeableController\\:\\:enqueueGenerateRepos\\(\\) has parameter \\$g_id with no type specified\\.$#"
-			count: 1
-			path: app/controllers/admin/AdminGradeableController.php
-
-		-
-			message: "#^Method app\\\\controllers\\\\admin\\\\AdminGradeableController\\:\\:enqueueGenerateRepos\\(\\) has parameter \\$semester with no type specified\\.$#"
-			count: 1
-			path: app/controllers/admin/AdminGradeableController.php
-
-		-
 			message: "#^Method app\\\\controllers\\\\admin\\\\AdminGradeableController\\:\\:exportComponentsRequest\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: app/controllers/admin/AdminGradeableController.php
@@ -1342,6 +1327,11 @@ parameters:
 			path: app/controllers/admin/LateController.php
 
 		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(string\\)\\: bool\\)\\|null, 'strlen' given\\.$#"
+			count: 1
+			path: app/controllers/admin/LateController.php
+
+		-
 			message: "#^Parameter \\#2 \\$timestamp of method app\\\\libraries\\\\database\\\\DatabaseQueries\\:\\:updateLateDays\\(\\) expects string, DateTime given\\.$#"
 			count: 1
 			path: app/controllers/admin/LateController.php
@@ -1451,12 +1441,12 @@ parameters:
 
 		-
 			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
-			count: 2
+			count: 1
 			path: app/controllers/admin/ReportController.php
 
 		-
 			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
-			count: 2
+			count: 1
 			path: app/controllers/admin/ReportController.php
 
 		-
@@ -1833,6 +1823,16 @@ parameters:
 
 		-
 			message: "#^PHPDoc tag @var with type app\\\\repositories\\\\course\\\\CourseMaterialRepository is not subtype of type app\\\\repositories\\\\course\\\\CourseMaterialRepository\\<app\\\\entities\\\\course\\\\CourseMaterial\\>\\.$#"
+			count: 1
+			path: app/controllers/course/CourseMaterialsController.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/controllers/course/CourseMaterialsController.php
+
+		-
+			message: "#^Variable \\$title in isset\\(\\) always exists and is always null\\.$#"
 			count: 1
 			path: app/controllers/course/CourseMaterialsController.php
 
@@ -2263,7 +2263,7 @@ parameters:
 
 		-
 			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
-			count: 21
+			count: 19
 			path: app/controllers/grading/ElectronicGraderController.php
 
 		-
@@ -2877,6 +2877,11 @@ parameters:
 			path: app/controllers/grading/ElectronicGraderController.php
 
 		-
+			message: "#^Strict comparison using \\=\\=\\= between mixed and null will always evaluate to false\\.$#"
+			count: 2
+			path: app/controllers/grading/ElectronicGraderController.php
+
+		-
 			message: "#^Call to function in_array\\(\\) requires parameter \\#3 to be set\\.$#"
 			count: 2
 			path: app/controllers/grading/ImagesController.php
@@ -3401,79 +3406,14 @@ parameters:
 			path: app/entities/Session.php
 
 		-
-			message: "#^Method app\\\\entities\\\\course\\\\CourseMaterial\\:\\:getSections\\(\\) return type with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/course/CourseMaterial.php
-
-		-
-			message: "#^Property app\\\\entities\\\\course\\\\CourseMaterial\\:\\:\\$accesses with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/course/CourseMaterial.php
-
-		-
-			message: "#^Property app\\\\entities\\\\course\\\\CourseMaterial\\:\\:\\$sections with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/course/CourseMaterial.php
-
-		-
 			message: "#^Property app\\\\entities\\\\course\\\\CourseMaterialAccess\\:\\:\\$course_material type mapping mismatch\\: database can contain app\\\\entities\\\\course\\\\CourseMaterial\\|null but property expects app\\\\entities\\\\course\\\\CourseMaterial\\.$#"
 			count: 1
 			path: app/entities/course/CourseMaterialAccess.php
 
 		-
-			message: "#^Method app\\\\entities\\\\db\\\\Table\\:\\:getColumns\\(\\) return type with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/db/Table.php
-
-		-
-			message: "#^Property app\\\\entities\\\\db\\\\Table\\:\\:\\$columns with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/db/Table.php
-
-		-
 			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
 			count: 1
 			path: app/entities/email/EmailEntity.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Category\\:\\:\\$threads with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Category.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Post\\:\\:\\$children with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Post.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Post\\:\\:\\$history with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Post.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Post\\:\\:\\$merged_threads with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Post.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Thread\\:\\:\\$categories with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Thread.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Thread\\:\\:\\$merged_on_this with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Thread.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Thread\\:\\:\\$posts with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Thread.php
-
-		-
-			message: "#^Property app\\\\entities\\\\forum\\\\Thread\\:\\:\\$viewers with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/forum/Thread.php
 
 		-
 			message: "#^Call to function in_array\\(\\) requires parameter \\#3 to be set\\.$#"
@@ -3546,11 +3486,6 @@ parameters:
 			path: app/entities/plagiarism/PlagiarismConfig.php
 
 		-
-			message: "#^Property app\\\\entities\\\\plagiarism\\\\PlagiarismConfig\\:\\:\\$access_times with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/plagiarism/PlagiarismConfig.php
-
-		-
 			message: "#^Property app\\\\entities\\\\plagiarism\\\\PlagiarismConfig\\:\\:\\$ignore_submissions type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: app/entities/plagiarism/PlagiarismConfig.php
@@ -3591,32 +3526,12 @@ parameters:
 			path: app/entities/plagiarism/PlagiarismRunAccess.php
 
 		-
-			message: "#^Method app\\\\entities\\\\poll\\\\Option\\:\\:getUserResponses\\(\\) return type with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/poll/Option.php
-
-		-
-			message: "#^Property app\\\\entities\\\\poll\\\\Option\\:\\:\\$user_responses with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/poll/Option.php
-
-		-
 			message: "#^Method app\\\\entities\\\\poll\\\\Poll\\:\\:addResponse\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: app/entities/poll/Poll.php
 
 		-
-			message: "#^Method app\\\\entities\\\\poll\\\\Poll\\:\\:getOptions\\(\\) return type with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/poll/Poll.php
-
-		-
 			message: "#^Method app\\\\entities\\\\poll\\\\Poll\\:\\:getSelectedOptionIds\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/entities/poll/Poll.php
-
-		-
-			message: "#^Method app\\\\entities\\\\poll\\\\Poll\\:\\:getUserResponses\\(\\) return type with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
 			count: 1
 			path: app/entities/poll/Poll.php
 
@@ -3632,11 +3547,6 @@ parameters:
 
 		-
 			message: "#^Property app\\\\entities\\\\poll\\\\Poll\\:\\:\\$name has no type specified\\.$#"
-			count: 1
-			path: app/entities/poll/Poll.php
-
-		-
-			message: "#^Property app\\\\entities\\\\poll\\\\Poll\\:\\:\\$options with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
 			count: 1
 			path: app/entities/poll/Poll.php
 
@@ -3657,16 +3567,6 @@ parameters:
 
 		-
 			message: "#^Property app\\\\entities\\\\poll\\\\Poll\\:\\:\\$release_histogram has no type specified\\.$#"
-			count: 1
-			path: app/entities/poll/Poll.php
-
-		-
-			message: "#^Property app\\\\entities\\\\poll\\\\Poll\\:\\:\\$responses with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
-			count: 1
-			path: app/entities/poll/Poll.php
-
-		-
-			message: "#^Property app\\\\entities\\\\poll\\\\Poll\\:\\:\\$status has no type specified\\.$#"
 			count: 1
 			path: app/entities/poll/Poll.php
 
@@ -3811,11 +3711,6 @@ parameters:
 			path: app/libraries/Access.php
 
 		-
-			message: "#^Class app\\\\libraries\\\\CascadingIterator implements generic interface Iterator but does not specify its types\\: TKey, TValue$#"
-			count: 1
-			path: app/libraries/CascadingIterator.php
-
-		-
 			message: "#^Method app\\\\libraries\\\\CascadingIterator\\:\\:seek\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: app/libraries/CascadingIterator.php
@@ -3957,11 +3852,6 @@ parameters:
 
 		-
 			message: "#^Only booleans are allowed in a negated boolean, int given\\.$#"
-			count: 1
-			path: app/libraries/Core.php
-
-		-
-			message: "#^Only booleans are allowed in an if condition, Doctrine\\\\DBAL\\\\Logging\\\\DebugStack\\|null given\\.$#"
 			count: 1
 			path: app/libraries/Core.php
 
@@ -4821,21 +4711,6 @@ parameters:
 			path: app/libraries/Output.php
 
 		-
-			message: "#^Method app\\\\libraries\\\\Output\\:\\:getCss\\(\\) return type with generic class Ds\\\\Set does not specify its types\\: TValue$#"
-			count: 1
-			path: app/libraries/Output.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\Output\\:\\:getJs\\(\\) return type with generic class Ds\\\\Set does not specify its types\\: TValue$#"
-			count: 1
-			path: app/libraries/Output.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\Output\\:\\:getModuleJs\\(\\) return type with generic class Ds\\\\Set does not specify its types\\: TValue$#"
-			count: 1
-			path: app/libraries/Output.php
-
-		-
 			message: "#^Method app\\\\libraries\\\\Output\\:\\:getOutput\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: app/libraries/Output.php
@@ -5016,22 +4891,7 @@ parameters:
 			path: app/libraries/Output.php
 
 		-
-			message: "#^Property app\\\\libraries\\\\Output\\:\\:\\$css with generic class Ds\\\\Set does not specify its types\\: TValue$#"
-			count: 1
-			path: app/libraries/Output.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\Output\\:\\:\\$js with generic class Ds\\\\Set does not specify its types\\: TValue$#"
-			count: 1
-			path: app/libraries/Output.php
-
-		-
 			message: "#^Property app\\\\libraries\\\\Output\\:\\:\\$loaded_views has no type specified\\.$#"
-			count: 1
-			path: app/libraries/Output.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\Output\\:\\:\\$module_js with generic class Ds\\\\Set does not specify its types\\: TValue$#"
 			count: 1
 			path: app/libraries/Output.php
 
@@ -5176,11 +5036,6 @@ parameters:
 			path: app/libraries/database/AbstractDatabase.php
 
 		-
-			message: "#^Foreach overwrites \\$result with its value variable\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
 			message: "#^Loose comparison via \"\\!\\=\" is not allowed\\.$#"
 			count: 1
 			path: app/libraries/database/AbstractDatabase.php
@@ -5216,16 +5071,6 @@ parameters:
 			path: app/libraries/database/AbstractDatabase.php
 
 		-
-			message: "#^Method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:getColumnData\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:getDSN\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
 			message: "#^Method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:getQueries\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: app/libraries/database/AbstractDatabase.php
@@ -5247,26 +5092,6 @@ parameters:
 
 		-
 			message: "#^Method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:rows\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:transformResult\\(\\) has parameter \\$columns with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:transformResult\\(\\) has parameter \\$result with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:\\$all_queries type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/libraries/database/AbstractDatabase.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:\\$columns has no type specified\\.$#"
 			count: 1
 			path: app/libraries/database/AbstractDatabase.php
 
@@ -5314,9 +5139,6 @@ parameters:
 			message: "#^Call to function is_null\\(\\) with DateTime will always evaluate to false\\.$#"
 			count: 2
 			path: app/libraries/database/DatabaseQueries.php
-
-		-
-			message: "#^Comparison operation \"\\>\" between int\\<min, 0\\> and 0 is always false\\.$#"
 
 		-
 			message: "#^Call to method app\\\\libraries\\\\database\\\\AbstractDatabase\\:\\:getRowCount\\(\\) with incorrect case\\: getrowcount$#"
@@ -5845,21 +5667,6 @@ parameters:
 
 		-
 			message: "#^Method app\\\\libraries\\\\database\\\\DatabaseQueries\\:\\:deleteMarks\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseQueries.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\DatabaseQueries\\:\\:deleteOverallComment\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseQueries.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\DatabaseQueries\\:\\:deleteOverallComment\\(\\) has parameter \\$gradeable_id with no type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseQueries.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\DatabaseQueries\\:\\:deleteOverallComment\\(\\) has parameter \\$grader_id with no type specified\\.$#"
 			count: 1
 			path: app/libraries/database/DatabaseQueries.php
 
@@ -8144,17 +7951,7 @@ parameters:
 			path: app/libraries/database/DatabaseQueries.php
 
 		-
-			message: "#^Class app\\\\libraries\\\\database\\\\DatabaseRowIterator implements generic interface Iterator but does not specify its types\\: TKey, TValue$#"
-			count: 1
-			path: app/libraries/database/DatabaseRowIterator.php
-
-		-
 			message: "#^Method app\\\\libraries\\\\database\\\\DatabaseRowIterator\\:\\:close\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseRowIterator.php
-
-		-
-			message: "#^PHPDoc tag @var with type mixed is not subtype of native type \\$this\\(app\\\\libraries\\\\database\\\\DatabaseRowIterator\\)\\.$#"
 			count: 1
 			path: app/libraries/database/DatabaseRowIterator.php
 
@@ -8164,27 +7961,7 @@ parameters:
 			path: app/libraries/database/DatabaseRowIterator.php
 
 		-
-			message: "#^Property app\\\\libraries\\\\database\\\\DatabaseRowIterator\\:\\:\\$columns has no type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseRowIterator.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\database\\\\DatabaseRowIterator\\:\\:\\$database has no type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseRowIterator.php
-
-		-
 			message: "#^Property app\\\\libraries\\\\database\\\\DatabaseRowIterator\\:\\:\\$key has no type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseRowIterator.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\database\\\\DatabaseRowIterator\\:\\:\\$result has no type specified\\.$#"
-			count: 1
-			path: app/libraries/database/DatabaseRowIterator.php
-
-		-
-			message: "#^Property app\\\\libraries\\\\database\\\\DatabaseRowIterator\\:\\:\\$statement has no type specified\\.$#"
 			count: 1
 			path: app/libraries/database/DatabaseRowIterator.php
 
@@ -8240,11 +8017,6 @@ parameters:
 
 		-
 			message: "#^Method app\\\\libraries\\\\database\\\\PostgresqlDatabase\\:\\:fromPHPToDatabaseArray\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/libraries/database/PostgresqlDatabase.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\PostgresqlDatabase\\:\\:getDSN\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: app/libraries/database/PostgresqlDatabase.php
 
@@ -8305,11 +8077,6 @@ parameters:
 
 		-
 			message: "#^Method app\\\\libraries\\\\database\\\\SqliteDatabase\\:\\:fromPHPToDatabaseArray\\(\\) has parameter \\$array with no type specified\\.$#"
-			count: 1
-			path: app/libraries/database/SqliteDatabase.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\database\\\\SqliteDatabase\\:\\:getDSN\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: app/libraries/database/SqliteDatabase.php
 
@@ -8420,11 +8187,6 @@ parameters:
 
 		-
 			message: "#^Method app\\\\libraries\\\\routers\\\\AnnotatedRouteLoader\\:\\:configureRoute\\(\\) has parameter \\$annot with no type specified\\.$#"
-			count: 1
-			path: app/libraries/routers/AnnotatedRouteLoader.php
-
-		-
-			message: "#^Method app\\\\libraries\\\\routers\\\\AnnotatedRouteLoader\\:\\:configureRoute\\(\\) has parameter \\$class with generic class ReflectionClass but does not specify its types\\: T$#"
 			count: 1
 			path: app/libraries/routers/AnnotatedRouteLoader.php
 
@@ -9560,118 +9322,8 @@ parameters:
 			path: app/models/RainbowCustomization.php
 
 		-
-			message: "#^Call to function in_array\\(\\) requires parameter \\#3 to be set\\.$#"
-			count: 4
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Casting to float something that's already float\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
-			count: 4
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Loose comparison via \"\\!\\=\" is not allowed\\.$#"
-			count: 2
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:addBenchmarkPercent\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:addDisplay\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:addDisplayBenchmarks\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:addGradeable\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:addMessage\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:addSection\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:getDisplayBenchmarks\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:getGradeables\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:getMessages\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:loadFromJsonFile\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Method app\\\\models\\\\RainbowCustomizationJSON\\:\\:saveToJsonFile\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Property app\\\\models\\\\RainbowCustomizationJSON\\:\\:\\$benchmark_percent has no type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Property app\\\\models\\\\RainbowCustomizationJSON\\:\\:\\$display has no type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Property app\\\\models\\\\RainbowCustomizationJSON\\:\\:\\$display_benchmark has no type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Property app\\\\models\\\\RainbowCustomizationJSON\\:\\:\\$gradeables has no type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Property app\\\\models\\\\RainbowCustomizationJSON\\:\\:\\$messages has no type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Property app\\\\models\\\\RainbowCustomizationJSON\\:\\:\\$section has no type specified\\.$#"
-			count: 1
-			path: app/models/RainbowCustomizationJSON.php
-
-		-
-			message: "#^Variable property access on mixed\\.$#"
-			count: 2
+			message: "#^Variable property access on object\\.$#"
+			count: 3
 			path: app/models/RainbowCustomizationJSON.php
 
 		-
@@ -9950,6 +9602,11 @@ parameters:
 			path: app/models/User.php
 
 		-
+			message: "#^Variable \\$random on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: app/models/User.php
+
+		-
 			message: "#^Call to function ctype_digit\\(\\) with \\*NEVER\\* will always evaluate to true\\.$#"
 			count: 1
 			path: app/models/gradeable/AutoGradedGradeable.php
@@ -9966,6 +9623,11 @@ parameters:
 
 		-
 			message: "#^Method app\\\\models\\\\gradeable\\\\AutoGradedGradeable\\:\\:__construct\\(\\) has parameter \\$details with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: app/models/gradeable/AutoGradedGradeable.php
+
+		-
+			message: "#^Method app\\\\models\\\\gradeable\\\\AutoGradedGradeable\\:\\:getMetrics_Sum\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: app/models/gradeable/AutoGradedGradeable.php
 
@@ -9991,7 +9653,7 @@ parameters:
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between app\\\\models\\\\gradeable\\\\AutoGradedVersion and null will always evaluate to false\\.$#"
-			count: 6
+			count: 8
 			path: app/models/gradeable/AutoGradedGradeable.php
 
 		-
@@ -10086,6 +9748,11 @@ parameters:
 
 		-
 			message: "#^Method app\\\\models\\\\gradeable\\\\AutoGradedVersion\\:\\:getMetaFiles\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: app/models/gradeable/AutoGradedVersion.php
+
+		-
+			message: "#^Method app\\\\models\\\\gradeable\\\\AutoGradedVersion\\:\\:getMetrics_Sum\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: app/models/gradeable/AutoGradedVersion.php
 
@@ -10230,6 +9897,11 @@ parameters:
 			path: app/models/gradeable/AutoGradedVersion.php
 
 		-
+			message: "#^Offset 0 on array\\{total_elapsed_time\\: float, total_max_rss_size\\: int\\} in isset\\(\\) does not exist\\.$#"
+			count: 1
+			path: app/models/gradeable/AutoGradedVersion.php
+
+		-
 			message: "#^Property app\\\\models\\\\gradeable\\\\AutoGradedVersion\\:\\:\\$files type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: app/models/gradeable/AutoGradedVersion.php
@@ -10241,6 +9913,11 @@ parameters:
 
 		-
 			message: "#^Property app\\\\models\\\\gradeable\\\\AutoGradedVersion\\:\\:\\$results_public_files type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: app/models/gradeable/AutoGradedVersion.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: app/models/gradeable/AutoGradedVersion.php
 
@@ -12075,29 +11752,9 @@ parameters:
 			path: app/models/notebook/UserSpecificNotebook.php
 
 		-
-			message: "#^Class app\\\\repositories\\\\SessionRepository extends generic class Doctrine\\\\ORM\\\\EntityRepository but does not specify its types\\: TEntityClass$#"
-			count: 1
-			path: app/repositories/SessionRepository.php
-
-		-
 			message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
 			count: 1
 			path: app/repositories/SessionRepository.php
-
-		-
-			message: "#^Class app\\\\repositories\\\\VcsAuthTokenRepository extends generic class Doctrine\\\\ORM\\\\EntityRepository but does not specify its types\\: TEntityClass$#"
-			count: 1
-			path: app/repositories/VcsAuthTokenRepository.php
-
-		-
-			message: "#^Class app\\\\repositories\\\\course\\\\CourseMaterialRepository extends generic class Doctrine\\\\ORM\\\\EntityRepository but does not specify its types\\: TEntityClass$#"
-			count: 1
-			path: app/repositories/course/CourseMaterialRepository.php
-
-		-
-			message: "#^Class app\\\\repositories\\\\email\\\\EmailRepository extends generic class Doctrine\\\\ORM\\\\EntityRepository but does not specify its types\\: TEntityClass$#"
-			count: 1
-			path: app/repositories/email/EmailRepository.php
 
 		-
 			message: "#^Loose comparison via \"\\!\\=\" is not allowed\\.$#"
@@ -12155,19 +11812,9 @@ parameters:
 			path: app/repositories/email/EmailRepository.php
 
 		-
-			message: "#^Class app\\\\repositories\\\\poll\\\\OptionRepository extends generic class Doctrine\\\\ORM\\\\EntityRepository but does not specify its types\\: TEntityClass$#"
-			count: 1
-			path: app/repositories/poll/OptionRepository.php
-
-		-
 			message: "#^Method app\\\\repositories\\\\poll\\\\OptionRepository\\:\\:findByPollWithResponseCounts\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: app/repositories/poll/OptionRepository.php
-
-		-
-			message: "#^Class app\\\\repositories\\\\poll\\\\PollRepository extends generic class Doctrine\\\\ORM\\\\EntityRepository but does not specify its types\\: TEntityClass$#"
-			count: 1
-			path: app/repositories/poll/PollRepository.php
 
 		-
 			message: "#^Method app\\\\views\\\\AuthTokenView\\:\\:showAuthTokenPage\\(\\) has no return type specified\\.$#"
@@ -12566,7 +12213,7 @@ parameters:
 
 		-
 			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
-			count: 20
+			count: 21
 			path: app/views/NavigationView.php
 
 		-
@@ -12683,111 +12330,6 @@ parameters:
 			message: "#^Method app\\\\views\\\\NotificationView\\:\\:showNotifications\\(\\) has parameter \\$show_all with no type specified\\.$#"
 			count: 1
 			path: app/views/NotificationView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderCurrentQueue\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderCurrentQueue\\(\\) has parameter \\$viewer with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderNewAnnouncement\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderNewAnnouncement\\(\\) has parameter \\$viewer with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderNewStatus\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderNewStatus\\(\\) has parameter \\$viewer with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderPart\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderPart\\(\\) has parameter \\$twig_location with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderPart\\(\\) has parameter \\$viewer with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderQueueHistory\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:renderQueueHistory\\(\\) has parameter \\$viewer with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStats\\(\\) has parameter \\$overallData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStats\\(\\) has parameter \\$queueData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStats\\(\\) has parameter \\$todayData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStats\\(\\) has parameter \\$weekDayData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStats\\(\\) has parameter \\$weekDayThisWeekData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStats\\(\\) has parameter \\$weekNumberData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStudentStats\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showQueueStudentStats\\(\\) has parameter \\$studentData with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showTheQueue\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
-
-		-
-			message: "#^Method app\\\\views\\\\OfficeHoursQueueView\\:\\:showTheQueue\\(\\) has parameter \\$viewer with no type specified\\.$#"
-			count: 1
-			path: app/views/OfficeHoursQueueView.php
 
 		-
 			message: "#^Method app\\\\views\\\\PDFView\\:\\:downloadPDFEmbedded\\(\\) has parameter \\$annotation_jsons with no value type specified in iterable type array\\.$#"
@@ -13030,11 +12572,6 @@ parameters:
 			path: app/views/admin/ReportView.php
 
 		-
-			message: "#^Method app\\\\views\\\\admin\\\\ReportView\\:\\:showReportUpdates\\(\\) has parameter \\$grade_summaries_last_run with no type specified\\.$#"
-			count: 1
-			path: app/views/admin/ReportView.php
-
-		-
 			message: "#^Method app\\\\views\\\\admin\\\\ReportView\\:\\:showReportUpdates\\(\\) has parameter \\$json with no type specified\\.$#"
 			count: 1
 			path: app/views/admin/ReportView.php
@@ -13260,11 +12797,6 @@ parameters:
 			path: app/views/email/EmailStatusView.php
 
 		-
-			message: "#^Call to function array_search\\(\\) requires parameter \\#3 to be set\\.$#"
-			count: 1
-			path: app/views/forum/ForumThreadView.php
-
-		-
 			message: "#^Call to function in_array\\(\\) requires parameter \\#3 to be set\\.$#"
 			count: 2
 			path: app/views/forum/ForumThreadView.php
@@ -13286,7 +12818,7 @@ parameters:
 
 		-
 			message: "#^Loose comparison via \"\\=\\=\" is not allowed\\.$#"
-			count: 17
+			count: 15
 			path: app/views/forum/ForumThreadView.php
 
 		-
@@ -13736,11 +13268,6 @@ parameters:
 
 		-
 			message: "#^Method app\\\\views\\\\forum\\\\ForumThreadView\\:\\:statPage\\(\\) has parameter \\$users with no type specified\\.$#"
-			count: 1
-			path: app/views/forum/ForumThreadView.php
-
-		-
-			message: "#^Offset int\\<1, max\\> does not exist on non\\-empty\\-array\\<0, \\(float\\|int\\)\\>\\.$#"
 			count: 1
 			path: app/views/forum/ForumThreadView.php
 
