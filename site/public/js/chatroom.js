@@ -14,7 +14,8 @@ function fetchMessages(chatroomId, my_id, when = new Date(0)) {
                     if (msg.user_id === my_id) {
                         display_name = 'me';
                     }
-                    appendMessage(display_name, msg.role, msg.timestamp, msg.content);
+                    
+                    appendMessage(display_name, msg.role, msg.timestamp, msg.content, false);
                 });
                 const messages_area = document.querySelector('.messages-area');
                 messages_area.scrollTop = messages_area.scrollHeight;
@@ -42,6 +43,7 @@ function sendMessage(chatroomId, userId, displayName, role, content) {
         success: function (response) {
             try {
                 // eslint-disable-next-line no-unused-vars
+                console.log(response);
                 const json = JSON.parse(response);
             }
             catch (e) {
@@ -58,7 +60,7 @@ function sendMessage(chatroomId, userId, displayName, role, content) {
     appendMessage(displayName, role, null, content);
 }
 
-function appendMessage(displayName, role, ts, content) {
+function appendMessage(displayName, role, ts, content, pin) {
     let timestamp = ts;
     if (!timestamp) {
         timestamp = new Date(Date.now()).toLocaleString('en-us',  { year:'numeric', month:'short', day:'numeric', hour:'numeric', minute:'numeric'});
@@ -74,6 +76,9 @@ function appendMessage(displayName, role, ts, content) {
 
     const messages_area = document.querySelector('.messages-area');
     const message = document.createElement('div');
+    if(pin) {
+        message.classList.add('pinned-message');
+    }
     message.classList.add('message-container');
     if (role === 'instructor') {
         message.classList.add('admin-message');

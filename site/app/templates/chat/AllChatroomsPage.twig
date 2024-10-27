@@ -64,7 +64,7 @@
                                 <a href="{{ base_url }}/{{ chatroom.getId() }}" class="btn btn-primary">join</a>
                                 {% if chatroom.isAllowAnon() %}
                                     <i> or </i>
-                                    <a href="{{ base_url }}/{{ chatroom.getId() }}/anonymous" class="btn btn-default">join as anon.</a>
+                                    <a href="{{ base_url }}/{{ chatroom.getId() }}/anonymous" class="btn btn-default">Join Anonymously</a>
                                 {% endif %}
                             </td>
                         </tr>
@@ -103,8 +103,8 @@
                                 <td>
                                     <a href="{{ base_url }}/{{ chatroom.getId() }}" class="btn btn-primary">Join</a>
                                     {% if chatroom.isAllowAnon() %}
-                                        <i> or </i>
-                                        <a href="{{ base_url }}/{{ chatroom.getId() }}/anonymous" class="btn btn-default">join as anon.</a>
+                                        <i> or  </i>
+                                        <a href="{{ base_url }}/{{ chatroom.getId() }}/anonymous" class="btn btn-primary">Join Anonymously</a>
                                     {% endif %}
                                 </td>
                             </tr>

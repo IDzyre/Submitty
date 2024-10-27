@@ -33,6 +33,8 @@ def up(config, database, semester, course):
             chatroom_id integer NOT NULL REFERENCES chatrooms(id) ON DELETE CASCADE,
             user_id character varying NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
             display_name character varying,
+            is_pinned boolean,
+            who_pinned character varying,
             role character varying,
             content text NOT NULL,
             timestamp timestamp(0) with time zone NOT NULL

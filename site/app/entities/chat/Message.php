@@ -26,6 +26,12 @@ class Message {
     #[ORM\Column(type: Types::STRING)]
     private string $display_name;
 
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $is_pinned;
+
+    #[ORM\Column(type: Types::STRING)]
+    private string $who_pinned;
+
     #[ORM\Column(type: Types::STRING)]
     private string $role;
 
@@ -42,10 +48,28 @@ class Message {
         $this->setTimestamp(new \DateTime("now"));
         $this->setContent($text);
         $this->setChatroom($chatroom);
+        $this->setIsPinned(false);
+        $this->setWhoPinned('');
     }
 
     public function getId(): int {
         return $this->id;
+    }
+
+    public function isPinned(): bool {
+        return $this->is_pinned;
+    }
+
+    public function setIsPinned(bool $is_pinned): void {
+        $this->is_pinned = $is_pinned;
+    }
+
+    public function getWhoPinned(): string {
+        return $this->who_pinned;
+    }
+
+    public function setWhoPinned(string $who_pinned): void {
+        $this->who_pinned = $who_pinned;
     }
 
     public function getUserId(): string {

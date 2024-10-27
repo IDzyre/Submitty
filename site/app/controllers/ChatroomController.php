@@ -186,7 +186,9 @@ class ChatroomController extends AbstractController {
                 'timestamp' => $message->getTimestamp()->format('Y-m-d H:i:s'),
                 'user_id' => $message->getUserId(),
                 'display_name' => $message->getDisplayName(),
-                'role' => $message->getRole()
+                'role' => $message->getRole(),
+                'is_pinned' => $message->isPinned(),
+                'pinned_by' => $message->getWhoPinned()
             ];
         }, $messages);
 
@@ -205,6 +207,20 @@ class ChatroomController extends AbstractController {
         $chatroom = $em->getRepository(Chatroom::class)->find($chatroom_id);
 
         $message = new Message($userId, $displayName, $role, $content, $chatroom);
+
+        $em->persist($message);
+        $em->flush();
+
+        return JsonResponse::getSuccessResponse($message);
+    }
+
+    /**
+     * @Route("/courses/{_semester}/{_course}/chat/{chatroom_id}/{message_id}/pin", methods={"POST"})
+     */
+    public function pinMessage(string $chatroom_id, string $message_id): JsonResponse {
+        $em = $this->core->getCourseEntityManager();
+        $chatroom = $em->getRepository(Chatroom::class)->find($chatroom_id);
+        $message = $chatroom->getRepository(Message::class)->find($message_id);
 
         $em->persist($message);
         $em->flush();
