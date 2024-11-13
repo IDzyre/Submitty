@@ -58,7 +58,7 @@ jobs:
 
       - name: Publish image
         run: |
-          export VAGRANT_CLOUD_TOKEN=${{ secrets.VAGRANT_CLOUD_TOKEN }};${{ steps.hcp-token.outputs.HCP_TOKEN }}
+          export VAGRANT_CLOUD_TOKEN="${{ secrets.VAGRANT_CLOUD_TOKEN }};${{ steps.hcp-token.outputs.HCP_TOKEN }}"
           vagrant cloud auth login
           vagrant cloud publish testing-apoi/camvax 99.88.0.$(date +"%y%m%d%H%M") virtualbox submitty.box --release --force
           vagrant cloud auth logout
