@@ -41,12 +41,6 @@ jobs:
           brew install hashicorp/tap/hcp
           brew upgrade hashicorp/tap/hcp
 
-      - name: Get HCP token
-        id: hcp-token
-        run: |
-          hcp auth login --client-id=${{ secrets.HCP_CLIENT_ID }} --client-secret=${{ secrets.HCP_CLIENT_SECRET }}
-          echo "HCP_TOKEN=$(hcp auth print-access-token)" >> $GITHUB_OUTPUT
-
       - name: Vagrant Up
         run: CI=1 vagrant up
 
@@ -55,6 +49,12 @@ jobs:
 
       - name: Save image
         run: vagrant package --output submitty.box
+
+      - name: Get HCP token
+        id: hcp-token
+        run: |
+          hcp auth login --client-id=${{ secrets.HCP_CLIENT_ID }} --client-secret=${{ secrets.HCP_CLIENT_SECRET }}
+          echo "HCP_TOKEN=$(hcp auth print-access-token)" >> $GITHUB_OUTPUT
 
       - name: Publish image
         run: |
