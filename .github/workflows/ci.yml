@@ -878,16 +878,17 @@ jobs:
           ssh -T localhost
           sudo systemctl start postgresql
 
-      - name: Install node dependencies
-        working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
-        run: npm ci
-
       - name: Run ansible script
         shell: bash
         run: |
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
+          
+      - name: Install node dependencies
+        working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+        run: |
+          npm ci
 
       - name: Validate image
         run: |
