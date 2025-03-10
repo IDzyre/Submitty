@@ -885,10 +885,16 @@ jobs:
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_install.yml
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
           
+      - name: Set perms
+        shell: bash
+        run: |
+          sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
+          sudo chmod -R a+rwx /tmp/
+
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
-          sudo npm ci
+          npm ci
 
       - name: Validate image
         run: |
