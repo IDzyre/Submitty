@@ -888,7 +888,7 @@ jobs:
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
-          npm ci
+          sudo npm ci
 
       - name: Validate image
         run: |
