@@ -912,7 +912,7 @@ jobs:
         if: failure()
         with:
           name: install-log
-          path: /usr/local/submitty/install.log
+          path: /usr/local/submitty/GIT_CHECKOUT/Submitty/site/cypress
       
       - uses: actions/upload-artifact@v4
         if: failure()
