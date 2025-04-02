@@ -657,7 +657,7 @@ if [ ! -d "${clangsrc}" ]; then
     echo 'GOING TO PREPARE CLANG INSTALLATION FOR STATIC ANALYSIS'
 
     mkdir -p ${clangsrc}
-    clang --version
+    echo clang --version
     # clone the clang sources, circa Nov. 2018
     git clone --depth 1 --branch llvmorg-7.1.0 https://github.com/llvm/llvm-project.git ${clangsrc}/source
     cp -R ${clangsrc}/source/llvm ${clangsrc}/llvm
