@@ -942,7 +942,7 @@ jobs:
       - name: Create Homework
         shell: bash
         run:
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_homework_creation.yml -e "localhost/api/${SEMESTER}/course/upload" -e "${{ fromJson(env.RESPONSE).token }}"
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_homework_creation.yml -e 'localhost/api/${SEMESTER}/course/upload' -e '${{ fromJson(env.RESPONSE).token }}'
 
       - name: Set perms
         shell: bash
