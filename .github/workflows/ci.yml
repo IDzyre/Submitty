@@ -926,22 +926,26 @@ jobs:
           ssh -T localhost
           sudo systemctl start postgresql
 
-      - name: Run ansible scripts
-        shell: bash
+      - name: Set SEMESTER environment variable
+        run: echo "SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')" >> $GITHUB_ENV
+
+      - name: Run Ansible scripts
         run: |
-          echo `SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')`
           cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git' -i inventory/submitty playbooks/submitty_install.yml
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
-       
-      - name: Get API key
-        shell: bash
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git" -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner" -i inventory/submitty playbooks/submitty_course_creation.yml
+
+      - name: Get API token
+        id: get_token
         run: |
-          echo 'RESPONSE=(curl -s -X POST http://localhost:1511/api/token -H "Content-Type: application/x-www-form-urlencoded" -d "user_id=instructor&password=instructor")' >> $GITHUB_ENV
-      
+          RESPONSE=$(curl -s -X POST http://localhost:1511/api/token -H "Content-Type: application/x-www-form-urlencoded" -d "user_id=instructor&password=instructor")
+          TOKEN=$(echo "$RESPONSE" | jq -r '.token')
+          echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
+
       - name: Create Homework
-        shell: bash
-        run: ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner api_url=localhost/api/${{env.SEMESTER}}/course/upload token=${{ fromJson(env.RESPONSE).token }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
+        run: |
+          cd .setup/ansible
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner api_url=localhost/api/${{ env.SEMESTER }}/course/upload token=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
 
       - name: Set perms
         shell: bash
