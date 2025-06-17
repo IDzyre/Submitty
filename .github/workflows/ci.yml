@@ -934,6 +934,10 @@ jobs:
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git" -i inventory/submitty playbooks/submitty_install.yml
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner" -i inventory/submitty playbooks/submitty_course_creation.yml
+      
+      - name: Validate image
+        run: |
+          curl --show-error --fail --include http://localhost/authentication/login
 
       - name: Get API token
         id: get_token
@@ -968,10 +972,6 @@ jobs:
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
           npm ci
-
-      - name: Validate image
-        run: |
-          curl --show-error --fail --include http://localhost/authentication/login
 
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
