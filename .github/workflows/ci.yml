@@ -949,7 +949,7 @@ jobs:
       - name: Create Homework
         run: |
           cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/${{ env.SEMESTER }}/course/upload submitty_homework_creation_passed_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/${{ env.SEMESTER }}/course/upload submitty_homework_creation_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
 
       - name: Set perms
         shell: bash
