@@ -926,14 +926,11 @@ jobs:
           ssh -T localhost
           sudo systemctl start postgresql
 
-      - name: Set SEMESTER environment variable
-        run: echo "SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')" >> $GITHUB_ENV
-
       - name: Run Ansible scripts
         run: |
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git" -i inventory/submitty playbooks/submitty_install.yml
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_course_creation_course=course" -i inventory/submitty playbooks/submitty_course_creation.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner" -i inventory/submitty playbooks/submitty_course_creation.yml
       
       - name: Validate image
         run: |
@@ -949,7 +946,7 @@ jobs:
       - name: Create Homework
         run: |
           cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/${{ env.SEMESTER }}/course/upload submitty_homework_creation_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/term/course/upload submitty_homework_creation_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
 
       - name: Set perms
         shell: bash
