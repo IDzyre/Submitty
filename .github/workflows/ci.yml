@@ -940,7 +940,8 @@ jobs:
         id: get_token
         run: |
           RESPONSE=$(curl -s -X POST http://localhost/api/token -H "Content-Type: application/x-www-form-urlencoded" -d "user_id=instructor&password=instructor")
-          TOKEN=$(echo "$RESPONSE" | jq -r '.token')
+          echo "$RESPONSE"
+          TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
           echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
 
       - name: Create Homework
