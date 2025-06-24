@@ -965,6 +965,11 @@ jobs:
           restore-keys: |
                 ${{ runner.os }}-cache-node-modules-
 
+      - name: Debug env
+        if: failure()
+        run: |
+          echo ${{ env.API_TOKEN }} 
+
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
