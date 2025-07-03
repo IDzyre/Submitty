@@ -941,7 +941,13 @@ jobs:
         run: |
           RESPONSE=$(curl -s -X POST http://localhost/api/token -F user_id=instructor -F password=instructor)
           echo "$RESPONSE"
+          status=$(echo "$RESPONSE" | jq -r '.status')
+          if [ "$status" = "fail" ]; then
+            echo "❌ API returned failure status"
+            exit 1
+          fi
           TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
+          
           echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
 
       - name: Create Homework

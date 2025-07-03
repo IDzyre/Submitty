@@ -60,8 +60,36 @@
         submitty_course_add_instructor_lastname: lastname
         submitty_course_add_instructor_email: email
         submitty_course_add_instructor_password: instructor2
-
+    
     - name: Add Users
+      ansible.builtin.include_role:
+        name: submitty_add_user
+      vars:
+        submitty_add_user_username: "{{ user.username }}"
+        submitty_add_user_firstname: "{{ user.firstname }}"
+        submitty_add_user_lastname: "{{ user.lastname }}"
+        submitty_add_user_email: "{{ user.email }}"
+        submitty_add_user_password: "{{ user.password }}"
+      loop:
+        - username: aphacker
+          firstname: firstname
+          lastname: lastname
+          email: email
+          password: aphacker
+        - username: bitdiddle
+          firstname: firstname
+          lastname: lastname
+          email: email
+          password: bitdiddle
+        - username: adamsg
+          firstname: firstname
+          lastname: lastname
+          email: email
+          password: adamsg
+      loop_control:
+        loop_var: user
+    
+    - name: Add users to course
       ansible.builtin.include_role:
         name: submitty_course_add_user
       vars:
