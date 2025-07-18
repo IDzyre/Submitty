@@ -62,7 +62,7 @@ class ExceptionHandler {
      *                   exception message depending on the value of $display_exceptions
      */
     public static function handleException($exception, $user_id) {
-        $display_message = false;
+        $display_message = true;
         $is_base_exception = false;
         $log_exception = static::$log_exceptions;
         if (is_a($exception, '\app\exceptions\BaseException')) {
