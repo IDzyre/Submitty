@@ -983,7 +983,12 @@ jobs:
         with:
           name: install-log
           path: /usr/local/submitty/install.log
-
+      
+      - uses: actions/upload-artifact@v4 
+        if: failure()
+        with: 
+          name: npm-log
+          path: /home/runner/.npm/_logs
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

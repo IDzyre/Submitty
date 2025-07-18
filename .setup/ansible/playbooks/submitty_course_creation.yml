@@ -1,6 +1,7 @@
 ---
 - name: Submitty Course Creation
   hosts: submitty
+  remote_user: runner
   become: true
 
   vars:
