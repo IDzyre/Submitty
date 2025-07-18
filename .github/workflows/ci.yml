@@ -926,30 +926,15 @@ jobs:
           ssh -T localhost
           sudo systemctl start postgresql
 
-      - name: Run ansible scripts
-        shell: bash
+      - name: Run Ansible scripts
         run: |
-          SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')
           cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git' -i inventory/submitty playbooks/submitty_install.yml
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
-       
-      - name: Get API key
-        shell: bash
-        run: |
-          echo 'RESPONSE=(curl -s -X POST http://localhost:1511/api/token -H "Content-Type: application/x-www-form-urlencoded" -d "user_id=instructor&password=instructor")' >> $GITHUB_ENV
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git" -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner" -i inventory/submitty playbooks/submitty_course_creation.yml
       
-      - name: Create Homework
-        shell: bash
-        run:
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_homework_creation.yml -e "localhost/api/${SEMESTER}/course/upload" -e "${{ fromJson(env.RESPONSE).token }}"
-
-      - name: Set perms
-        shell: bash
+      - name: Validate image
         run: |
-          sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
-          sudo chmod -R a+rwx /tmp/
-
+          curl --show-error --fail --include http://localhost/authentication/login
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -961,14 +946,57 @@ jobs:
           restore-keys: |
                 ${{ runner.os }}-cache-node-modules-
 
+      - name: Debug env
+        if: failure()
+        run: |
+          echo ${{ env.API_TOKEN }} 
+
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
           npm ci
 
-      - name: Validate image
+      - name: Run Ansible cypress test
+        uses: cypress-io/github-action@v6
+        with:
+          config: baseUrl=http://localhost
+          spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
+          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+          browser: chrome
+
+
+      - name: Get API token
+        id: get_token
         run: |
-          curl --show-error --fail --include http://localhost/authentication/login
+          RESPONSE=$(curl -s -X POST http://localhost/api/token -F user_id=instructor -F password=instructor)
+          echo "$RESPONSE"
+          status=$(echo "$RESPONSE" | jq -r '.status')
+          if [ "$status" = "fail" ]; then
+            echo "❌ API returned failure status"
+            exit 1
+          fi
+          TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
+          
+          echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Create Homework
+        run: |
+          cd .setup/ansible
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/term/course/upload submitty_homework_creation_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
+      
+      - name: Run Ansible cypress test
+        uses: cypress-io/github-action@v6
+        with:
+          config: baseUrl=http://localhost
+          spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
+          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
+          browser: chrome
+
+      - name: Set perms
+        shell: bash
+        run: |
+          sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
+          sudo chmod -R a+rwx /tmp/
 
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
