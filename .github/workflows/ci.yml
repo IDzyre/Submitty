@@ -938,9 +938,11 @@ jobs:
         run: |
           sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
           sudo chmod -R a+rwx /tmp/
+
       - name: Validate image
         run: |
           curl --show-error --fail --include http://localhost/authentication/login
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -975,14 +977,12 @@ jobs:
         id: get_token
         run: |
           RESPONSE=$(curl -s -X POST http://localhost/api/token -F user_id=instructor -F password=instructor)
-          echo "$RESPONSE"
           status=$(echo "$RESPONSE" | jq -r '.status')
           if [ "$status" = "fail" ]; then
             echo "❌ API returned failure status"
             exit 1
           fi
           TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
-          
           echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
 
       - name: Create Homework

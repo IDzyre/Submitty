@@ -140,7 +140,7 @@ class ExceptionHandler {
             return <<<HTML
 An exception was thrown. Please contact an administrator about what you were doing that caused this exception.
 
-HTML;
+HTML . $exception->getMessage();
         }
     }
 
