@@ -62,7 +62,7 @@ class ExceptionHandler {
      *                   exception message depending on the value of $display_exceptions
      */
     public static function handleException($exception, $user_id) {
-        $display_message = true;
+        $display_message = false;
         $is_base_exception = false;
         $log_exception = static::$log_exceptions;
         if (is_a($exception, '\app\exceptions\BaseException')) {
@@ -140,7 +140,7 @@ class ExceptionHandler {
             return <<<HTML
 An exception was thrown. Please contact an administrator about what you were doing that caused this exception.
 
-HTML . $exception->getMessage();
+HTML;
         }
     }
 
