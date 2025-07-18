@@ -930,9 +930,11 @@ jobs:
         shell: bash
         run: |
           cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git" -i inventory/submitty playbooks/submitty_install.yml
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner" -i inventory/submitty playbooks/submitty_course_creation.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git' -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
+      
       - name: Set perms
+        shell: bash
         run: |
           sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
           sudo chmod -R a+rwx /tmp/
