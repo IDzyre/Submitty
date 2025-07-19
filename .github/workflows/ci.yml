@@ -954,11 +954,6 @@ jobs:
           restore-keys: |
                 ${{ runner.os }}-cache-node-modules-
 
-      - name: Debug env
-        if: failure()
-        run: |
-          echo ${{ env.API_TOKEN }} 
-
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
         run: |
@@ -971,7 +966,6 @@ jobs:
           spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
-
 
       - name: Get API token
         id: get_token
@@ -986,6 +980,11 @@ jobs:
           TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
           echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
 
+      - name: Debug env
+        if: failure()
+        run: |
+          echo ${{ env.API_TOKEN }} 
+
       - name: Create Homework
         run: |
           cd .setup/ansible
@@ -998,12 +997,6 @@ jobs:
           spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
-
-      - name: Set perms
-        shell: bash
-        run: |
-          sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
-          sudo chmod -R a+rwx /tmp/
 
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
