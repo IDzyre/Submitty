@@ -977,6 +977,7 @@ jobs:
         id: get_token
         run: |
           RESPONSE=$(curl -s -X POST http://localhost/api/token -H "Content-Type: application/x-www-form-urlencoded" -d "user_id=instructor&password=instructor")
+          echo "$RESPONSE"
           status=$(echo "$RESPONSE" | jq -r '.status')
           if [ "$status" = "fail" ]; then
             echo "❌ API returned failure status"
