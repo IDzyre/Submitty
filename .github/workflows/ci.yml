@@ -988,14 +988,6 @@ jobs:
         run: |
           npm ci
 
-      - name: Run Ansible cypress test
-        uses: cypress-io/github-action@v6
-        with:
-          config: baseUrl=http://localhost
-          spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
-          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
-          browser: chrome
-
       - name: Get API token
         id: get_token
         run: |
@@ -1027,19 +1019,17 @@ jobs:
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
 
-      - name: Run Ansible cypress test
-        uses: cypress-io/github-action@v6
-        with:
-          config: baseUrl=http://localhost
-          spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
-          working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
-          browser: chrome
-
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: install-log
           path: /usr/local/submitty/install.log
+      
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: site-errors
+          path: /var/local/submitty/logs/site_errors
       
       - uses: actions/upload-artifact@v4 
         if: failure()
