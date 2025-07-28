@@ -1019,6 +1019,12 @@ jobs:
           spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
+      
+      - name: Set perms for error file
+        if: failure()
+        shell: bash
+        run: |
+          sudo chmod -R a+rwx /var/local/submitty/logs/site_errors
 
       - uses: actions/upload-artifact@v4
         if: failure()
