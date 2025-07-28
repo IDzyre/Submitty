@@ -934,14 +934,22 @@ jobs:
           sudo systemctl start postgresql
 
       - name: Run Ansible scripts
+        shell: bash
         run: |
           cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git" -i inventory/submitty playbooks/submitty_install.yml
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner" -i inventory/submitty playbooks/submitty_course_creation.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git' -i inventory/submitty playbooks/submitty_install.yml
+          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
       
+      - name: Set perms
+        shell: bash
+        run: |
+          sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
+          sudo chmod -R a+rwx /tmp/
+
       - name: Validate image
         run: |
           curl --show-error --fail --include http://localhost/authentication/login
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -952,11 +960,6 @@ jobs:
           key: ${{ runner.os }}-cache-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
                 ${{ runner.os }}-cache-node-modules-
-
-      - name: Debug env
-        if: failure()
-        run: |
-          echo ${{ env.API_TOKEN }} 
 
       - name: Install node dependencies
         working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
@@ -971,11 +974,10 @@ jobs:
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
 
-
       - name: Get API token
         id: get_token
         run: |
-          RESPONSE=$(curl -s -X POST http://localhost/api/token -F user_id=instructor -F password=instructor)
+          RESPONSE=$(curl -s -X POST http://localhost/api/token -H "Content-Type: application/x-www-form-urlencoded" -d "user_id=instructor&password=instructor")
           echo "$RESPONSE"
           status=$(echo "$RESPONSE" | jq -r '.status')
           if [ "$status" = "fail" ]; then
@@ -983,8 +985,12 @@ jobs:
             exit 1
           fi
           TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
-          
           echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Debug env
+        if: failure()
+        run: |
+          echo ${{ env.API_TOKEN }} 
 
       - name: Create Homework
         run: |
@@ -999,12 +1005,6 @@ jobs:
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
 
-      - name: Set perms
-        shell: bash
-        run: |
-          sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
-          sudo chmod -R a+rwx /tmp/
-
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
         with:
@@ -1018,7 +1018,12 @@ jobs:
         with:
           name: install-log
           path: /usr/local/submitty/install.log
-
+      
+      - uses: actions/upload-artifact@v4 
+        if: failure()
+        with: 
+          name: npm-log
+          path: /home/runner/.npm/_logs
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -1,6 +1,7 @@
 ---
 - name: Submitty Homework Creation
   hosts: localhost
+  remote_user: instructor
   connection: local
 
   tasks:
