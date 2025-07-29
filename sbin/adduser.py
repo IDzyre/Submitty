@@ -114,6 +114,7 @@ def main():
         password = input('User password{}: '.format(extra))
         if password != '':
             print(password)
+            print(get_php_db_password(password))
             update['user_password'] = get_php_db_password(password)
             break
         elif user is not None and password == '':
