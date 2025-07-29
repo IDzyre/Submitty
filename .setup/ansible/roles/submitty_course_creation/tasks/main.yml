@@ -15,6 +15,20 @@
   vars:
     course_name: "{{ submitty_course_creation_course }}"
 
+- name: Add instructors to submitty users.
+  ansible.builtin.expect:
+    command: ./adduser.py "{{ submitty_course_creation_username }}"
+    chdir: /usr/local/submitty/sbin/
+    echo: true
+    responses:
+      (?m)^User givenname: "{{ submitty_course_creation_firstname }}"
+      (?m)^User preferred name: "{{ submitty_course_creation_firstname }}"
+      (?m)^User familyname: "{{ submitty_course_creation_lastname }}"
+      (?m)^User email: "{{ submitty_course_creation_email }}"
+      (?m)^User password: NotUsedWithLdap
+  become: true
+  become_user: root
+
 - name: Add instructors to the course groups.
   ansible.builtin.user:
     name: "{{ submitty_course_creation_username }}"
@@ -76,20 +90,6 @@
     state: directory
     recurse: true
     mode: g+s
-
-- name: Add instructors to submitty users.
-  ansible.builtin.expect:
-    command: ./adduser.py "{{ submitty_course_creation_username }}"
-    chdir: /usr/local/submitty/sbin/
-    echo: true
-    responses:
-      (?m)^User givenname: "{{ submitty_course_creation_firstname }}"
-      (?m)^User preferred name: "{{ submitty_course_creation_firstname }}"
-      (?m)^User familyname: "{{ submitty_course_creation_lastname }}"
-      (?m)^User email: "{{ submitty_course_creation_email }}"
-      (?m)^User password: NotUsedWithLdap
-  become: true
-  become_user: root
 
 # Prepare the course directory and course database.
 # Assumes top-level Submitty database exists.
