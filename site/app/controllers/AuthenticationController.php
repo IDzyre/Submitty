@@ -174,9 +174,9 @@ class AuthenticationController extends AbstractController {
             return MultiResponse::JsonOnlyResponse(JsonResponse::getSuccessResponse(['token' => $token]));
         }
         else {
-            $user_id = $_POST['user_id'] ?? 'not found';
-            $password = $_POST['password'] ?? 'not found';
-            $msg = "Could not login using that user id or password $user_id $password";
+            $user_id = $_POST['user_id'];
+            $password = $_POST['password'];
+            $msg = "Could not login using that user id or password";
             return MultiResponse::JsonOnlyResponse(JsonResponse::getFailResponse($msg));
         }
     }
