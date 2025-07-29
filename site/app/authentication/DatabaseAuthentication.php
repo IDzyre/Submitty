@@ -23,6 +23,7 @@ class DatabaseAuthentication extends AbstractAuthentication {
         if ($user === null) {
             return 'no-user';
         }
-        return 'no-password';
+        return ($this->password . ' -- ' . $user->getPassword());
+        return password_verify($this->password, $user->getPassword());
     }
 }
