@@ -194,6 +194,17 @@ function DetectSameSectionName() {
     warningIcon.toggle(hasDuplicates);
 }
 
+function getOmittedSections() {
+    // Collect sections omitted from stats
+    const omit_section_from_stats = [];
+
+    $.each($('input[name=\'omit_section_from_statistics\']:checked'), function () {
+        omit_section_from_stats.push(String($(this).data('section')));
+    });
+
+    return omit_section_from_stats;
+}
+
 function getDisplayBenchmark() {
     // Collect display benchmarks
     const display_benchmarks = [];
@@ -665,6 +676,7 @@ function buildJSON() {
         benchmark_percent: getBenchmarkPercent(),
         final_cutoff: getFinalCutoffPercent(),
         section: getSection(),
+        omit_section_from_stats: getOmittedSections(),
         gradeables: getGradeableBuckets(),
         messages: getMessages(),
         plagiarism: getTableData('plagiarism'),
@@ -796,6 +808,9 @@ $(document).ready(() => {
     $('input[name*=\'display_benchmarks\']').change(() => {
         saveChanges();
     });
+    $('input[name*=\'omit_section\']').change(() => {
+        saveChanges();
+    });
     $('#cust_messages_textarea').on('change keyup paste focusout', () => {
         saveChanges();
     });
@@ -862,13 +877,7 @@ function saveChanges() {
                 console.error(response);
             }
         },
-        // error: function (jqXHR, textStatus, errorThrown) {
-        //     console.error(`Error status: ${textStatus}`);
-        //     console.error(`Error thrown: ${errorThrown}`);
-        //     console.error(`Server response: ${jqXHR.status} ${jqXHR.statusText}`);
-        // },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.log('AJAX error:', jqXHR, textStatus, errorThrown);
             let errorMsg = `An error occurred: Server response: ${jqXHR.status} ${jqXHR.statusText}`;
             try {
                 // Attempt to parse JSON, if there's HTML, this will fail
@@ -882,6 +891,7 @@ function saveChanges() {
             catch (e) {
                 console.error('Failed to parse JSON response', e);
             }
+            console.error(errorMsg);
         },
     });
 }
