@@ -21,9 +21,8 @@ class DatabaseAuthentication extends AbstractAuthentication {
         }
         $user = $this->core->getQueries()->getSubmittyUser($this->user_id);
         if ($user === null) {
-            return 'no-user';
+            return false;
         }
-        return ($this->password . ' -- ' . $user->getPassword());
         return password_verify($this->password, $user->getPassword());
     }
 }
