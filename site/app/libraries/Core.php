@@ -577,6 +577,7 @@ class Core {
      */
     public function authenticateJwt() {
         $user_id = $this->authentication->getUserId();
+        return $this->authentication->authenticate();
         try {
             if ($this->authentication->authenticate()) {
                 $this->database_queries->refreshUserApiKey($user_id);

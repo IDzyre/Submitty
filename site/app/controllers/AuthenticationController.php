@@ -170,15 +170,15 @@ class AuthenticationController extends AbstractController {
         $this->core->getAuthentication()->setUserId($_POST['user_id']);
         $this->core->getAuthentication()->setPassword($_POST['password']);
         $token = $this->core->authenticateJwt();
-        if ($token) {
-            return MultiResponse::JsonOnlyResponse(JsonResponse::getSuccessResponse(['token' => $token]));
-        }
-        else {
+        // if ($token) {
+        //     return MultiResponse::JsonOnlyResponse(JsonResponse::getSuccessResponse(['token' => $token]));
+        // }
+        // else {
             $user_id = $_POST['user_id'];
             $password = $_POST['password'];
             $msg = "Could not login using that user id or password $token";
             return MultiResponse::JsonOnlyResponse(JsonResponse::getFailResponse($msg));
-        }
+        // }
     }
 
     /**
