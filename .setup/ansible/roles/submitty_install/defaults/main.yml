@@ -15,7 +15,7 @@ submitty_install_institution_name: Example University
 submitty_install_sysadmin_email: sysadmin@localhost
 submitty_install_submitty_email: submitty@localhost
 submitty_install_institution_url: localhost
-submitty_install_authentication_method: 1
+submitty_install_authentication_method: 2
 submitty_install_email_enabled: y
 submitty_install_ssl_enabled: false
 submitty_install_admin_email: admin@localhost
