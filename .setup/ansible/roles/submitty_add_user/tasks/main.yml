@@ -5,7 +5,7 @@
     chdir: /usr/local/submitty/sbin/
     echo: true
     responses:
-      (?m)^User givenname: "{{ submitty_add_user_username }}"
+      (?m)^User givenname: "{{ submitty_add_user_firstname }}"
       (?m)^User preferred name: "{{ submitty_add_user_firstname }}"
       (?m)^User familyname: "{{ submitty_add_user_lastname }}"
       (?m)^User email: "{{ submitty_add_user_email }}"
