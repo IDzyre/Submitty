@@ -988,27 +988,27 @@ jobs:
         run: |
           npm ci
 
-      - name: Get API token
-        id: get_token
-        run: |
-          RESPONSE=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "user_id=instructor&password=instructor" http://localhost/api/token)
-          echo "$RESPONSE"
-          status=$(echo "$RESPONSE" | jq -r '.status')
-          if [ "$status" = "fail" ]; then
-            exit 1
-          fi
-          TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
-          echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
+      # - name: Get API token
+      #   id: get_token
+      #   run: |
+      #     RESPONSE=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "user_id=instructor&password=instructor" http://localhost/api/token)
+      #     echo "$RESPONSE"
+      #     status=$(echo "$RESPONSE" | jq -r '.status')
+      #     if [ "$status" = "fail" ]; then
+      #       exit 1
+      #     fi
+      #     TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
+      #     echo "API_TOKEN=$TOKEN" >> $GITHUB_ENV
 
-      - name: Debug env
-        if: failure()
-        run: |
-          echo ${{ env.API_TOKEN }} 
+      # - name: Debug env
+      #   if: failure()
+      #   run: |
+      #     echo ${{ env.API_TOKEN }} 
 
-      - name: Create Homework
-        run: |
-          cd .setup/ansible
-          ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/term/course/upload submitty_homework_creation_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
+      # - name: Create Homework
+      #   run: |
+      #     cd .setup/ansible
+      #     ansible-playbook --private-key /home/runner/.ssh/id_rsa -e "ansible_user=runner submitty_homework_creation_api_url=http://localhost/api/term/course/upload submitty_homework_creation_api_key=${{ env.API_TOKEN }}" -i inventory/submitty playbooks/submitty_homework_creation.yml
       
       - name: Run Ansible cypress test
         uses: cypress-io/github-action@v6
