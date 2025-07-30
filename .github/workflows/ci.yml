@@ -961,13 +961,12 @@ jobs:
           cd .setup/ansible
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner submitty_install_submitty_version=${{ github.sha }} submitty_install_github_url=https://github.com/${{ github.repository }}.git' -i inventory/submitty playbooks/submitty_install.yml
           ansible-playbook --private-key /home/runner/.ssh/id_rsa -e 'ansible_user=runner' -i inventory/submitty playbooks/submitty_course_creation.yml
-      
+
       - name: Set perms
         shell: bash
         run: |
           sudo chmod -R a+rwx  ${SUBMITTY_INSTALL_DIR}
           sudo chmod -R a+rwx /tmp/
-          sudo chmod -R a+rwx /var/local/submitty
 
       - name: Validate image
         run: |
@@ -992,11 +991,10 @@ jobs:
       - name: Get API token
         id: get_token
         run: |
-          RESPONSE=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "user_id=instructor&password=instructor" http://localhost/api/token)
+          RESPONSE=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "user_id=instructor  &password=instructor" http://localhost/api/token)
           echo "$RESPONSE"
           status=$(echo "$RESPONSE" | jq -r '.status')
           if [ "$status" = "fail" ]; then
-            echo "❌ API returned failure status"
             exit 1
           fi
           TOKEN=$(echo "$RESPONSE" | jq -r '.data.token')
@@ -1037,12 +1035,7 @@ jobs:
         with:
           name: site-errors
           path: /var/local/submitty/logs/site_errors
-      
-      - uses: actions/upload-artifact@v4 
-        if: failure()
-        with: 
-          name: npm-log
-          path: /home/runner/.npm/_logs
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

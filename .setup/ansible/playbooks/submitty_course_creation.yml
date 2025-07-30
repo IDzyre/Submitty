@@ -56,11 +56,11 @@
       vars:
         submitty_course_add_instructor_term: term
         submitty_course_add_instructor_course: course
-        submitty_course_add_instructor_username: instructor
+        submitty_course_add_instructor_username: instructor2
         submitty_course_add_instructor_firstname: firstname
         submitty_course_add_instructor_lastname: lastname
         submitty_course_add_instructor_email: email
-        submitty_course_add_instructor_password: instructor
+        submitty_course_add_instructor_password: instructor2
 
     - name: Add runner
       ansible.builtin.include_role:
