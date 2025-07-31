@@ -1,0 +1,25 @@
+- name: Read JSON content from a file
+  ansible.builtin.set_fact:
+    var_json_list: "config_files/{{ lookup('file', 'json_list.txt') | split('\n')  }}"
+
+- name: Get API key
+  ansible.builtin.uri:
+    url: "http://localhost/api/token"
+    method: POST
+    body_format: json
+    body: {
+      "user_id": "{{ submitty_homework_creation_user_id }}",
+      "password": "{{ submitty_homework_creation_password }}"
+    }
+    return_content: yes
+  register: submitty_homework_creation_api_response
+
+- name: Use task list to loop through gradeables
+  ansible.builtin.include_tasks:
+    file: create_gradeable.yml
+  loop: "{{ submitty_homework_creation_json_list }}"
+  loop_control:
+    loop_var: submitty_homework_creation_json_file
+  vars:
+    submitty_homework_creation_json_file: "{{ submitty_homework_creation_json_file }}"
+    submitty_homework_creation_api_key: "{{ submitty_homework_creation_passed_api_key }}"
