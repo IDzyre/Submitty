@@ -17,3 +17,6 @@
     - name: submitty_homework_creation_passed_api_key
       prompt: Enter your API key
       private: yes
+    - name: submitty_homework_creation_password
+      prompt: Enter your password
+      private: yes
