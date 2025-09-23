@@ -136,14 +136,15 @@ describe('Test sidebars', () => {
             cy.get(`[data-testid="${element}-upload-button"]`).click();
             cy.get(`[data-testid="${element}-delete-button"]`).should('exist');
         });
-
-        ['student', 'ta', 'grader'].forEach((user) => {
+        sidebarContainsButton('Syllabus', 'http://www.cs.rpi.edu/academics/courses/fall18/csci1200/syllabus.php');
+        cy.logout();
+        ['student', 'ta', 'instructor', 'grader'].forEach((user) => {
+            cy.login(user);
             cy.visit(['sample']);
             extendedBaseSidebar();
             cy.get('body').should('have.css', 'background-image').and('include', 'http://www.cs.rpi.edu/~cutler/classes/visualization/S18/images/vinca_minor_mirrored.jpg');
             cy.get('#submitty-body').should('have.css', 'background-color', 'rgba(240, 240, 240, 0.85)');
             cy.logout();
-            cy.login(user);
         });
         cy.logout();
 
