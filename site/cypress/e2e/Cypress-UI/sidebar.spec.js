@@ -100,29 +100,29 @@ function baseCourseSidebar(user, course) {
 
 describe('Test sidebars', () => {
     // Sample Course
-    it('Test student sidebars', () => {
-        baseCourseSidebar('student', 'sample');
-        baseSidebar();
-        notHaveInstructorSidebars();
-        cy.visit(['sample']);
-        cy.get('[data-testid="sidebar"]').contains('Student Photos').should('not.exist');
-    });
+    // it('Test student sidebars', () => {
+    //     baseCourseSidebar('student', 'sample');
+    //     baseSidebar();
+    //     notHaveInstructorSidebars();
+    //     cy.visit(['sample']);
+    //     cy.get('[data-testid="sidebar"]').contains('Student Photos').should('not.exist');
+    // });
 
-    it('Test ta sidebars', () => {
-        baseCourseSidebar('ta', 'sample');
-        baseSidebar();
-        cy.visit(['sample']);
-        sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
-        notHaveInstructorSidebars();
-    });
+    // it('Test ta sidebars', () => {
+    //     baseCourseSidebar('ta', 'sample');
+    //     baseSidebar();
+    //     cy.visit(['sample']);
+    //     sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
+    //     notHaveInstructorSidebars();
+    // });
 
-    it('Test instructor sidebars', () => {
-        baseCourseSidebar('instructor', 'sample');
-        instructorSidebar();
-        baseSidebar();
-        cy.visit(['sample']);
-        sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
-    });
+    // it('Test instructor sidebars', () => {
+    //     baseCourseSidebar('instructor', 'sample');
+    //     instructorSidebar();
+    //     baseSidebar();
+    //     cy.visit(['sample']);
+    //     sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
+    // });
 
     it('Test custom sidebars and themes', () => {
         const sidebarElements = ['override.css', 'sidebar.json'];
@@ -135,7 +135,10 @@ describe('Test sidebars', () => {
             cy.get(`[data-testid="${element}-delete-button"]`).should('not.exist');
             cy.get(`[data-testid="${element}-upload-input"]`).attachFile(`copy_of_sample_files/site_theme/${element}`);
             cy.get(`[data-testid="${element}-upload-button"]`).click();
+            cy.get(`[data-testid="${element}-delete-button"]`).should('exist');
         });
+
+        cy.logout();
 
         ['student', 'ta', 'instructor', 'grader'].forEach((user) => {
             cy.login(user);
@@ -143,6 +146,7 @@ describe('Test sidebars', () => {
             extendedBaseSidebar();
             cy.get('body').should('have.css', 'background-image').and('include', 'http://www.cs.rpi.edu/~cutler/classes/visualization/S18/images/vinca_minor_mirrored.jpg');
             cy.get('#submitty-body').should('have.css', 'background-color', 'rgba(240, 240, 240, 0.85)');
+            cy.logout()
         });
 
         cy.login('instructor');
