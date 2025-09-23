@@ -99,30 +99,29 @@ function baseCourseSidebar(user, course) {
 }
 
 describe('Test sidebars', () => {
-    // Sample Course
-    // it('Test student sidebars', () => {
-    //     baseCourseSidebar('student', 'sample');
-    //     baseSidebar();
-    //     notHaveInstructorSidebars();
-    //     cy.visit(['sample']);
-    //     cy.get('[data-testid="sidebar"]').contains('Student Photos').should('not.exist');
-    // });
+    it('Test student sidebars', () => {
+        baseCourseSidebar('student', 'sample');
+        baseSidebar();
+        notHaveInstructorSidebars();
+        cy.visit(['sample']);
+        cy.get('[data-testid="sidebar"]').contains('Student Photos').should('not.exist');
+    });
 
-    // it('Test ta sidebars', () => {
-    //     baseCourseSidebar('ta', 'sample');
-    //     baseSidebar();
-    //     cy.visit(['sample']);
-    //     sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
-    //     notHaveInstructorSidebars();
-    // });
+    it('Test ta sidebars', () => {
+        baseCourseSidebar('ta', 'sample');
+        baseSidebar();
+        cy.visit(['sample']);
+        sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
+        notHaveInstructorSidebars();
+    });
 
-    // it('Test instructor sidebars', () => {
-    //     baseCourseSidebar('instructor', 'sample');
-    //     instructorSidebar();
-    //     baseSidebar();
-    //     cy.visit(['sample']);
-    //     sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
-    // });
+    it('Test instructor sidebars', () => {
+        baseCourseSidebar('instructor', 'sample');
+        instructorSidebar();
+        baseSidebar();
+        cy.visit(['sample']);
+        sidebarContains('Student Photos', `/courses/${currentSemester}/sample/student_photos`);
+    });
 
     it('Test custom sidebars and themes', () => {
         const sidebarElements = ['override.css', 'sidebar.json'];
