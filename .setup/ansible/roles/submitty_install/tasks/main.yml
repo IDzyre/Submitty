@@ -28,6 +28,7 @@
     refspec: "{{ submitty_install_submitty_version }}"
     force: true
     update: true
+    depth: 1
 
 - name: Run install_system.sh script
   ansible.builtin.shell:
