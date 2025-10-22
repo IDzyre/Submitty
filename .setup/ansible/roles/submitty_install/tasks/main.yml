@@ -4,6 +4,14 @@
     update_cache: true
     cache_valid_time: 300
 
+- name: Run the equivalent of "apt-get autoremove" as a seperate stop
+  ansible.builtin.apt:
+    autoremove: true
+
+- name: Run the equivalent of "apt get clean" as a seperate stop
+  ansible.builtin.apt:
+    clean: true
+
 - name: Install PHP
   ansible.builtin.apt:
     name: php
