@@ -66,7 +66,7 @@ export UTM=0
 export VAGRANT=0
 export NO_SUBMISSIONS=0
 export WORKER=0
-
+export JSON_CONFIG_FILE=""
 # Read through the flags passed to the script reading them in and setting
 # appropriate bash variables, breaking out of this once we hit something we
 # don't recognize as a flag
@@ -92,6 +92,11 @@ while :; do
             export NO_SUBMISSIONS=1
             echo "no_submissions"
             ;;
+        --json-file)
+            export JSON_CONFIG_FILE=$2
+            shift
+            echo "use_json_file"
+            ;;
         *) # No more options, so break out of the loop.
             break
     esac
@@ -99,6 +104,14 @@ while :; do
     shift
 done
 
+# Check if json file exists
+if [ -n "$JSON_CONFIG_FILE" ]; then
+    if [ ! -f "$JSON_CONFIG_FILE" ]; then 
+        echo "Provided json file does not exist"
+        exit 1
+    fi
+fi
+echo "$JSON_CONFIG_FILE"
 if [ ${VAGRANT} == 1 ]; then
     echo "Non-interactive vagrant script..."
     export DEBIAN_FRONTEND=noninteractive
@@ -665,59 +678,6 @@ if [ ! -d "${clangsrc}" ]; then
     echo 'add_subdirectory(UnionTool)'  >> ${clangsrc}/llvm/tools/clang/tools/extra/CMakeLists.txt
 
     echo 'DONE PREPARING CLANG INSTALLATION'
-fi
-
-#################################################################
-# SUBMITTY SETUP
-#################
-echo Beginning Submitty Setup
-
-#If in worker mode, run configure with --worker option.
-if [ ${WORKER} == 1 ]; then
-    echo "Running configure submitty in worker mode"
-    if [ ${DEV_VM} == 1 ]; then
-        echo "submitty" | python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --worker
-    else
-        python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --worker
-    fi
-else
-    if [ ${DEV_VM} == 1 ]; then
-        # This should be set by setup_distro.sh for whatever distro we have, but
-        # in case it is not, default to our primary URL
-        if [ -z "${SUBMISSION_URL}" ]; then
-            SUBMISSION_URL='http://192.168.56.101'
-        fi
-        echo -e "/var/run/postgresql
-${DB_USER}
-${DATABASE_PASSWORD}
-${DB_COURSE_USER}
-${DB_COURSE_PASSWORD}
-America/New_York
-en_US
-100
-${SUBMISSION_URL}
-
-
-sysadmin@example.com
-https://example.com
-1
-submitty-admin
-y
-
-
-submitty@vagrant
-do-not-reply@vagrant
-localhost
-25
-" | python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --debug --setup-for-sample-courses --websocket-port ${WEBSOCKET_PORT}
-
-        # Set these manually as they're not asked about during CONFIGURE_SUBMITTY.py
-        sed -i -e 's/"url": ""/"url": "ldap:\/\/localhost"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
-        sed -i -e 's/"uid": ""/"uid": "uid"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
-        sed -i -e 's/"bind_dn": ""/"bind_dn": "ou=users,dc=vagrant,dc=local"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
-    else
-        python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py
-    fi
 fi
 
 if [ ${WORKER} == 1 ]; then

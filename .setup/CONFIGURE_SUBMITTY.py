@@ -9,7 +9,7 @@ import pwd
 import secrets
 import shutil
 import string
-import tzlocal
+# import tzlocal
 import tempfile
 
 
@@ -67,18 +67,18 @@ parser.add_argument('--setup-for-sample-courses', action='store_true', default=F
 parser.add_argument('--worker', action='store_true', default=False, help='Configure Submitty with autograding only')
 parser.add_argument('--install-dir', default='/usr/local/submitty', help='Set the install directory for Submitty')
 parser.add_argument('--data-dir', default='/var/local/submitty', help='Set the data directory for Submitty')
+parser.add_argument('--json-file', default='', type=str, help='Location to Json file with parameters.')
 parser.add_argument('--websocket-port', default=8443, type=int, help='Port to use for websocket')
-parser.add_argument('--json-file', default='', action='store_true', help='Location to Json file with parameters.')
 
 args = parser.parse_args()
 
+print(args)
 # determine location of SUBMITTY GIT repository
 # this script (CONFIGURES_SUBMITTY.py) is in the top level directory of the repository
 # (this command works even if we run configure from a different directory)
 SETUP_SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 SUBMITTY_REPOSITORY = os.path.dirname(SETUP_SCRIPT_DIRECTORY)
 SETUP_JSON_FILE = args.json_file
-if os.path.exists(SETUP_JSON_FILE):
 # recommended (default) directory locations
 # FIXME: Check that directories exist and are readable/writeable?
 SUBMITTY_INSTALL_DIR = args.install_dir
@@ -161,6 +161,7 @@ SETUP_REPOSITORY_DIR = os.path.join(SUBMITTY_REPOSITORY, '.setup')
 
 INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
 CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
+DEFAULTS_JSON = os.path.join(SUBMITTY_REPOSITORY, 'data/defaults.json')
 SITE_CONFIG_DIR = os.path.join(SUBMITTY_INSTALL_DIR, "site", "config")
 CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
 SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
@@ -183,6 +184,13 @@ if os.path.isfile(CONFIGURATION_JSON):
 else:
     with open(DEFAULTS_JSON) as defaults_file:
         defaults = json.load(defaults_file)
+
+if os.path.exists(SETUP_JSON_FILE):
+    with open(SETUP_JSON_FILE) as provided_file:
+        loaded_defaults = json.load(provided_file)
+        for key in defaults.keys():
+            if key not in loaded_defaults:
+                raise SystemExit(f'Key {key} not found in given JSON file.')
 
 if os.path.isfile(SUBMITTY_ADMIN_JSON):
     with open(SUBMITTY_ADMIN_JSON) as submitty_admin_file:
@@ -223,9 +231,8 @@ print()
 if args.worker:
     SUPERVISOR_USER = get_input('What is the id for your submitty user?', defaults['supervisor_user'])
     print('SUPERVISOR USER : {}'.format(SUPERVISOR_USER))
-elif not ASK_QUESTIONS and :
     print('Using configured JSON file')
-else:
+elif SETUP_JSON_FILE == '':
     DATABASE_HOST = get_input('What is the database host?', defaults['database_host'])
     print()
 
@@ -378,7 +385,6 @@ os.chmod(SETUP_INSTALL_DIR, 0o751)
 
 ##############################################################################
 # WRITE CONFIG FILES IN ${SUBMITTY_INSTALL_DIR}/.setup
-if 
 config = OrderedDict()
 
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR

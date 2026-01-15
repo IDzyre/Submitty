@@ -41,7 +41,7 @@ resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
 
 # Start installation
 # shellcheck disable=2068
-if ! sudo bash ${SUBMITTY_REPOSITORY}/.setup/install_system.sh --vagrant ${@}; then
+if ! sudo bash ${SUBMITTY_REPOSITORY}/.setup/install_system.sh --vagrant --json-file ${SUBMITTY_REPOSITORY}/.setup/data/defaults.json ${@}; then
     DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
     VERSION=$(lsb_release -sr | tr '[:upper:]' '[:lower:]')
     >&2 echo -e "
