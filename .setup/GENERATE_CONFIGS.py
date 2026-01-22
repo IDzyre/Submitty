@@ -2,15 +2,8 @@
 
 import argparse
 from collections import OrderedDict
-import grp
-import json
 import os
-import pwd
-import secrets
-import shutil
-import string
 import tzlocal
-import tempfile
 
 
 def get_input(question, default=""):
@@ -38,23 +31,6 @@ class StrToBoolAction(argparse.Action):
 def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
     # recommended (default) directory locations
     # FIXME: Check that directories exist and are readable/writeable?
-
-    SETUP_INSTALL_DIR = os.path.join(submitty_install_dir, '.setup')
-    CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
-    CONFIG_INSTALL_DIR = os.path.join(submitty_install_dir, 'config')
-    SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
-    EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
-    AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
-    SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
-   
-    if not os.path.isdir(submitty_install_dir) or not os.access(submitty_install_dir, os.R_OK | os.W_OK):
-        raise SystemExit('Install directory {} does not exist or is not accessible'.format(submitty_install_dir))
-
-    if not os.path.isdir(submitty_data_dir) or not os.access(submitty_data_dir, os.R_OK | os.W_OK):
-        raise SystemExit('Data directory {} does not exist or is not accessible'.format(submitty_data_dir))
-
-    SETUP_INSTALL_DIR = os.path.join(submitty_install_dir, '.setup')
-    CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
 
     ##########################################################################
 
@@ -100,33 +76,6 @@ def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
         },
         'course_material_file_upload_limit_mb': 100
     }
-
-    loaded_defaults = {}
-    if os.path.isfile(CONFIGURATION_JSON):
-        with open(CONFIGURATION_JSON) as conf_file:
-            loaded_defaults = json.load(conf_file)
-    if os.path.isfile(SUBMITTY_ADMIN_JSON):
-        with open(SUBMITTY_ADMIN_JSON) as submitty_admin_file:
-            loaded_defaults.update(json.load(submitty_admin_file))
-    if os.path.isfile(EMAIL_JSON):
-        with open(EMAIL_JSON) as email_file:
-            loaded_defaults.update(json.load(email_file))
-
-    if os.path.isfile(AUTHENTICATION_JSON):
-        with open(AUTHENTICATION_JSON) as authentication_file:
-            loaded_defaults.update(json.load(authentication_file))
-
-    # no need to authenticate on a worker machine (no website)
-    if not worker:
-        if 'authentication_method' in loaded_defaults:
-            loaded_defaults['authentication_method'] = authentication_methods.index(loaded_defaults['authentication_method']) + 1
-
-    # grab anything not loaded in (useful for backwards compatibility if a new default is added that
-    # is not in an existing config file.)
-    for key in defaults.keys():
-        if key not in loaded_defaults:
-            loaded_defaults[key] = defaults[key]
-    defaults = loaded_defaults
 
     print("\nWelcome to the Submitty Homework Submission Server Configuration\n")
     DEBUGGING_ENABLED = debug is True
@@ -327,17 +276,15 @@ def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
             config['vcs_url'] = VCS_URL
             config['submission_url'] = SUBMISSION_URL
             config['cgi_url'] = CGI_URL
-            
+            config['duck_special_effects'] = False
 
     config['institution_name'] = INSTITUTION_NAME
     config['institution_homepage'] = INSTITUTION_HOMEPAGE
     config['user_create_account'] = USER_CREATE_ACCOUNT
         
-# site_log_path is a holdover name. This could more accurately be called the "log_path"
-config['site_log_path'] = TAGRADING_LOG_PATH
-config['autograding_log_path'] = AUTOGRADING_LOG_PATH
 
-if args.worker:
-    config['worker'] = 1
-else:
-    config['worker'] = 0
+
+    if worker:
+        config['worker'] = 1
+    else:
+        config['worker'] = 0

@@ -48,6 +48,43 @@ CGI_USER = 'submitty_cgi'
 DAEMON_USER = 'submitty_daemon'
 DAEMON_GROUP = 'submitty_daemon'
 
+SUBMITTY_INSTALL_DIR = args.install_dir
+SUBMITTY_DATA_DIR = args.data_dir
+SETUP_SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+SUBMITTY_REPOSITORY = os.path.dirname(SETUP_SCRIPT_DIRECTORY)
+SETUP_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, '.setup')
+SETUP_REPOSITORY_DIR = os.path.join(SUBMITTY_REPOSITORY, '.setup')
+
+INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
+CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
+SITE_CONFIG_DIR = os.path.join(SUBMITTY_INSTALL_DIR, "site", "config")
+CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
+SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
+EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
+AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
+
+####
+loaded_defaults = {}
+if os.path.isfile(CONFIGURATION_JSON):
+    with open(CONFIGURATION_JSON) as conf_file:
+        loaded_defaults = json.load(conf_file)
+if os.path.isfile(SUBMITTY_ADMIN_JSON):
+    with open(SUBMITTY_ADMIN_JSON) as submitty_admin_file:
+        loaded_defaults.update(json.load(submitty_admin_file))
+if os.path.isfile(EMAIL_JSON):
+    with open(EMAIL_JSON) as email_file:
+        loaded_defaults.update(json.load(email_file))
+
+if os.path.isfile(AUTHENTICATION_JSON):
+    with open(AUTHENTICATION_JSON) as authentication_file:
+        loaded_defaults.update(json.load(authentication_file))
+
+if not os.path.isdir(SUBMITTY_INSTALL_DIR) or not os.access(SUBMITTY_INSTALL_DIR, os.R_OK | os.W_OK):
+        raise SystemExit('Install directory {} does not exist or is not accessible'.format(SUBMITTY_INSTALL_DIR))
+
+if not os.path.isdir(SUBMITTY_DATA_DIR) or not os.access(SUBMITTY_DATA_DIR, os.R_OK | os.W_OK):
+    raise SystemExit('Data directory {} does not exist or is not accessible'.format(SUBMITTY_DATA_DIR))
+
 if not args.worker:
     PHP_UID, PHP_GID = get_ids(PHP_USER)
     CGI_UID, CGI_GID = get_ids(CGI_USER)
@@ -100,22 +137,7 @@ for i in range(1, NUM_UNTRUSTED):
 NUM_GRADING_SCHEDULER_WORKERS = 5
 
 ##############################################################################
-SUBMITTY_INSTALL_DIR = args.install_dir
-SUBMITTY_DATA_DIR = args.data_dir
-SETUP_SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-SUBMITTY_REPOSITORY = os.path.dirname(SETUP_SCRIPT_DIRECTORY)
-SETUP_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, '.setup')
-SETUP_REPOSITORY_DIR = os.path.join(SUBMITTY_REPOSITORY, '.setup')
 
-INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
-CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
-SITE_CONFIG_DIR = os.path.join(SUBMITTY_INSTALL_DIR, "site", "config")
-CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
-SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
-EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
-AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
-
-####
 
 
 generated_config = generate_config(SUBMITTY_INSTALL_DIR, SUBMITTY_DATA_DIR, args.worker, args.debug)
@@ -356,6 +378,9 @@ config = submitty_config
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR
 config['submitty_repository'] = SUBMITTY_REPOSITORY
 config['submitty_data_dir'] = SUBMITTY_DATA_DIR
+# site_log_path is a holdover name. This could more accurately be called the "log_path"
+config['site_log_path'] = TAGRADING_LOG_PATH
+config['autograding_log_path'] = AUTOGRADING_LOG_PATH
 config['autograding_log_path'] = AUTOGRADING_LOG_PATH
 if not args.worker:
     config['sys_admin_email'] = SYS_ADMIN_EMAIL
