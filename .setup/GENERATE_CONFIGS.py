@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
-
-import argparse
 from collections import OrderedDict
 import os
-import tzlocal
-
 
 def get_input(question, default=""):
     add = "[{}] ".format(default) if default != "" else ""
@@ -14,82 +9,11 @@ def get_input(question, default=""):
     return user
 
 
-class StrToBoolAction(argparse.Action):
-    """
-    Custom action that parses strings to boolean values. All values that come
-    from bash are strings, and so need to parse that into the appropriate
-    bool value.
-    """
-    def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        if nargs is not None:
-            raise ValueError("nargs not allowed")
-        super().__init__(option_strings, dest, **kwargs)
 
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values != '0' and values.lower() != 'false')
-
-def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
-    # recommended (default) directory locations
-    # FIXME: Check that directories exist and are readable/writeable?
-
-    ##########################################################################
-
-    authentication_methods = [
-        'PamAuthentication',
-        'DatabaseAuthentication',
-        'LdapAuthentication',
-        'SamlAuthentication'
-    ]
-
-    defaults = {
-        'database_host': 'localhost',
-        'database_port': 5432,
-        'database_user': 'submitty_dbuser',
-        'database_course_user': 'submitty_course_dbuser',
-        'submission_url': '',
-        'supervisor_user': 'submitty',
-        'vcs_url': '',
-        'authentication_method': 0,
-        'institution_name' : '',
-        'institution_homepage' : '',
-        'user_create_account' : False,
-        'timezone' : str(tzlocal.get_localzone()),
-        'submitty_admin_username': '',
-        'email_user': '',
-        'email_password': '',
-        'email_sender': 'submitty@myuniversity.edu',
-        'email_reply_to': 'submitty_do_not_reply@myuniversity.edu',
-        'email_server_hostname': 'mail.myuniversity.edu',
-        'email_server_port': 25,
-        'email_internal_domain': 'example.com',
-        'course_code_requirements': "Please follow your school's convention for course code.",
-        'sys_admin_email': '',
-        'sys_admin_url': '',
-        'ldap_options': {
-            'url': '',
-            'uid': '',
-            'bind_dn': ''
-        },
-        'saml_options': {
-            'name': '',
-            'username_attribute': ''
-        },
-        'course_material_file_upload_limit_mb': 100
-    }
-
-    print("\nWelcome to the Submitty Homework Submission Server Configuration\n")
-    DEBUGGING_ENABLED = debug is True
-
-    if DEBUGGING_ENABLED:
-        print('!! DEBUG MODE ENABLED !!')
-        print()
-
-    if worker:
-        print("CONFIGURING SUBMITTY AS A WORKER !!")
-
+def generate_config(defaults, worker, authentication_methods):
     print('Hit enter to use default in []')
     print()
-
+        
     if worker:
         SUPERVISOR_USER = get_input('What is the id for your submitty user?', defaults['supervisor_user'])
         print('SUPERVISOR USER : {}'.format(SUPERVISOR_USER))
@@ -231,16 +155,35 @@ def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
                 EMAIL_INTERNAL_DOMAIN = defaults['email_internal_domain']
                 break
         print()
-    
         full_config = OrderedDict()
-        config = OrderedDict()
+        general_config = OrderedDict()
+        database_config = OrderedDict()
+        authentication_config = OrderedDict()
+        submitty_config = OrderedDict()
+        email_config = OrderedDict()
         if worker:
-            config['supervisor_user'] = SUPERVISOR_USER
-        else:
-            database_config = OrderedDict()
-            auth_config = OrderedDict()
-            email_config = OrderedDict()
+            general_config['supervisor_user'] = SUPERVISOR_USER
+            
+        else: 
 
+            general_config['database_host'] = DATABASE_HOST
+            general_config['database_port'] = DATABASE_PORT
+            general_config['database_user'] = DATABASE_USER
+            general_config['database_password'] = DATABASE_PASS
+            general_config['database_course_user'] = DATABASE_COURSE_USER
+            general_config['database_course_password'] = DATABASE_COURSE_PASSWORD
+            general_config['timezone'] = TIMEZONE
+            general_config['default_locale'] = DEFAULT_LOCALE
+
+            general_config['authentication_method'] = AUTHENTICATION_METHOD
+            general_config['vcs_url'] = VCS_URL
+            general_config['submission_url'] = SUBMISSION_URL
+            general_config['cgi_url'] = CGI_URL
+            
+            general_config['institution_name'] = INSTITUTION_NAME
+            general_config['institution_homepage'] = INSTITUTION_HOMEPAGE
+            general_config['user_create_account'] = USER_CREATE_ACCOUNT
+            
             database_config['authentication_method'] = AUTHENTICATION_METHOD
             database_config['database_host'] = DATABASE_HOST
             database_config['database_port'] = DATABASE_PORT
@@ -248,17 +191,25 @@ def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
             database_config['database_password'] = DATABASE_PASS
             database_config['database_course_user'] = DATABASE_COURSE_USER
             database_config['database_course_password'] = DATABASE_COURSE_PASSWORD
-            database_config['debugging_enabled'] = DEBUGGING_ENABLED
+            
+            authentication_config['authentication_method'] = AUTHENTICATION_METHOD
+            authentication_config['ldap_options'] = LDAP_OPTIONS
+            authentication_config['saml_options'] = SAML_OPTIONS
 
-            full_config['database'] = database_config
+            submitty_config['sys_admin_email'] = SYS_ADMIN_EMAIL
+            submitty_config['sys_admin_url'] = SYS_ADMIN_URL
+            submitty_config['submission_url'] = SUBMISSION_URL
+            submitty_config['vcs_url'] = VCS_URL
+            submitty_config['cgi_url'] = CGI_URL
+            submitty_config['institution_name'] = INSTITUTION_NAME
+            submitty_config['institution_homepage'] = INSTITUTION_HOMEPAGE
+            submitty_config['timezone'] = TIMEZONE
+            submitty_config['default_locale'] = DEFAULT_LOCALE
+
+            submitty_config['course_material_file_upload_limit_mb'] = COURSE_MATERIAL_UPLOAD_LIMIT_MB
+            submitty_config['user_create_account'] = USER_CREATE_ACCOUNT
+            submitty_config['user_id_requirements'] = defaults['user_id_requirements']
                 
-            auth_config['authentication_method'] = AUTHENTICATION_METHOD
-            auth_config['ldap_options'] = LDAP_OPTIONS
-            auth_config['saml_options'] = SAML_OPTIONS
-
-            full_config['authentication'] = auth_config
-
-            email_config = OrderedDict()
             email_config['email_enabled'] = EMAIL_ENABLED
             email_config['email_user'] = EMAIL_USER
             email_config['email_password'] = EMAIL_PASSWORD
@@ -267,24 +218,11 @@ def generate_config(submitty_install_dir, submitty_data_dir, worker, debug):
             email_config['email_server_hostname'] = EMAIL_SERVER_HOSTNAME
             email_config['email_server_port'] = EMAIL_SERVER_PORT
             email_config['email_internal_domain'] = EMAIL_INTERNAL_DOMAIN
-            email_config['timezone'] = TIMEZONE
-            email_config['default_locale'] = DEFAULT_LOCALE
-            
+
+            full_config['database'] = database_config
+            full_config['authentication'] = authentication_config
+            full_config['submitty'] = submitty_config
+            full_config['general'] = general_config
             full_config['email'] = email_config
-
-            config['authentication_method'] = AUTHENTICATION_METHOD
-            config['vcs_url'] = VCS_URL
-            config['submission_url'] = SUBMISSION_URL
-            config['cgi_url'] = CGI_URL
-            config['duck_special_effects'] = False
-
-    config['institution_name'] = INSTITUTION_NAME
-    config['institution_homepage'] = INSTITUTION_HOMEPAGE
-    config['user_create_account'] = USER_CREATE_ACCOUNT
-        
-
-
-    if worker:
-        config['worker'] = 1
-    else:
-        config['worker'] = 0
+            full_config['admin_username'] = SUBMITTY_ADMIN_USERNAME
+    return full_config

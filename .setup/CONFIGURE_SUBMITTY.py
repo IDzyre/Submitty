@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from collections import OrderedDict
 import grp
@@ -9,13 +11,16 @@ import shutil
 import string
 import tempfile
 
-from GENERATE_CONFIGS import generate_config
+from y import generate_config
+
 
 def get_uid(user):
     return pwd.getpwnam(user).pw_uid
 
+
 def get_gid(user):
     return pwd.getpwnam(user).pw_gid
+
 
 def get_ids(user):
     try:
@@ -23,10 +28,97 @@ def get_ids(user):
     except KeyError:
         raise SystemExit("ERROR: Could not find user: " + user)
 
+class StrToBoolAction(argparse.Action):
+    """
+    Custom action that parses strings to boolean values. All values that come
+    from bash are strings, and so need to parse that into the appropriate
+    bool value.
+    """
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        super().__init__(option_strings, dest, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values != '0' and values.lower() != 'false')
+
+
 ##############################################################################
+# this script must be run by root or sudo
 if os.getuid() != 0:
     raise SystemExit('ERROR: This script must be run by root or sudo')
 
+authentication_methods = [
+    'PamAuthentication',
+    'DatabaseAuthentication',
+    'LdapAuthentication',
+    'SamlAuthentication'
+]
+
+defaults = {
+    'database_host': 'localhost',
+    'database_port': 5432,
+    'database_user': 'submitty_dbuser',
+    'database_course_user': 'submitty_course_dbuser',
+    'submission_url': '',
+    'supervisor_user': 'submitty',
+    'vcs_url': '',
+    'authentication_method': 0,
+    'institution_name' : '',
+    'institution_homepage' : '',
+    'user_create_account' : False,
+    'timezone' : str(tzlocal.get_localzone()),
+    'submitty_admin_username': '',
+    'email_user': '',
+    'email_password': '',
+    'email_sender': 'submitty@myuniversity.edu',
+    'email_reply_to': 'submitty_do_not_reply@myuniversity.edu',
+    'email_server_hostname': 'mail.myuniversity.edu',
+    'email_server_port': 25,
+    'email_internal_domain': 'example.com',
+    'course_code_requirements': "Please follow your school's convention for course code.",
+    'sys_admin_email': '',
+    'sys_admin_url': '',
+    'ldap_options': {
+        'url': '',
+        'uid': '',
+        'bind_dn': ''
+    },
+    'saml_options': {
+        'name': '',
+        'username_attribute': ''
+    },
+    'course_material_file_upload_limit_mb': 100,
+    'user_id_requirements': {
+        'any_user_id': True,
+        'require_name': False,
+        'min_length': 6,
+        'max_length': 25,
+        # Example for Alyssa Hacker : hackal -- Allows for shorter names. If they are shorter, then it will just take the entire name. 
+        # Example for Joseph Wo : wojo
+        'name_requirements': {
+            'given_first': False,
+            'given_name': 2,
+            'family_name': 4
+        },
+        'require_email': False,
+        # If the user_id must contain part of the email. If whole_email is true, it must match the email.
+        # If whole_prefix is true, then the user_id must equal everything before the final @ sign.
+        # Else, it must be a certain number of characters of the prefix. 
+        # Examples for myemail@email.com:
+        # Whole email: myemail@gmail.com
+        # Whole prefix: myemail
+        # Part of prefix: myemai
+        'email_requirements': {
+            'whole_email': False,
+            'whole_prefix': False,
+            'prefix_count': 6
+        },
+        'accepted_emails': [
+            'gmail.com'
+        ]
+    }
+}
 
 parser = argparse.ArgumentParser(description='Submitty configuration script',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -41,49 +133,37 @@ parser.add_argument('--data-dir', default='/var/local/submitty', help='Set the d
 parser.add_argument('--websocket-port', default=8443, type=int, help='Port to use for websocket')
 
 args = parser.parse_args()
+full_config = generate_config(defaults, args.worker, authentication_methods)
+
+# determine location of SUBMITTY GIT repository
+# this script (CONFIGURES_SUBMITTY.py) is in the top level directory of the repository
+# (this command works even if we run configure from a different directory)
+SETUP_SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+SUBMITTY_REPOSITORY = os.path.dirname(SETUP_SCRIPT_DIRECTORY)
+
+# recommended (default) directory locations
+# FIXME: Check that directories exist and are readable/writeable?
+SUBMITTY_INSTALL_DIR = args.install_dir
+if not os.path.isdir(SUBMITTY_INSTALL_DIR) or not os.access(SUBMITTY_INSTALL_DIR, os.R_OK | os.W_OK):
+    raise SystemExit('Install directory {} does not exist or is not accessible'.format(SUBMITTY_INSTALL_DIR))
+
+SUBMITTY_DATA_DIR = args.data_dir
+if not os.path.isdir(SUBMITTY_DATA_DIR) or not os.access(SUBMITTY_DATA_DIR, os.R_OK | os.W_OK):
+    raise SystemExit('Data directory {} does not exist or is not accessible'.format(SUBMITTY_DATA_DIR))
+
+TAGRADING_LOG_PATH = os.path.join(SUBMITTY_DATA_DIR, 'logs')
+AUTOGRADING_LOG_PATH = os.path.join(SUBMITTY_DATA_DIR, 'logs', 'autograding')
+
+WEBSOCKET_PORT = args.websocket_port
+
+##############################################################################
+
 # recommended names for special users & groups related to the SUBMITTY system
 PHP_USER = 'submitty_php'
 PHP_GROUP = 'submitty_php'
 CGI_USER = 'submitty_cgi'
 DAEMON_USER = 'submitty_daemon'
 DAEMON_GROUP = 'submitty_daemon'
-
-SUBMITTY_INSTALL_DIR = args.install_dir
-SUBMITTY_DATA_DIR = args.data_dir
-SETUP_SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-SUBMITTY_REPOSITORY = os.path.dirname(SETUP_SCRIPT_DIRECTORY)
-SETUP_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, '.setup')
-SETUP_REPOSITORY_DIR = os.path.join(SUBMITTY_REPOSITORY, '.setup')
-
-INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
-CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
-SITE_CONFIG_DIR = os.path.join(SUBMITTY_INSTALL_DIR, "site", "config")
-CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
-SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
-EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
-AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
-
-####
-loaded_defaults = {}
-if os.path.isfile(CONFIGURATION_JSON):
-    with open(CONFIGURATION_JSON) as conf_file:
-        loaded_defaults = json.load(conf_file)
-if os.path.isfile(SUBMITTY_ADMIN_JSON):
-    with open(SUBMITTY_ADMIN_JSON) as submitty_admin_file:
-        loaded_defaults.update(json.load(submitty_admin_file))
-if os.path.isfile(EMAIL_JSON):
-    with open(EMAIL_JSON) as email_file:
-        loaded_defaults.update(json.load(email_file))
-
-if os.path.isfile(AUTHENTICATION_JSON):
-    with open(AUTHENTICATION_JSON) as authentication_file:
-        loaded_defaults.update(json.load(authentication_file))
-
-if not os.path.isdir(SUBMITTY_INSTALL_DIR) or not os.access(SUBMITTY_INSTALL_DIR, os.R_OK | os.W_OK):
-        raise SystemExit('Install directory {} does not exist or is not accessible'.format(SUBMITTY_INSTALL_DIR))
-
-if not os.path.isdir(SUBMITTY_DATA_DIR) or not os.access(SUBMITTY_DATA_DIR, os.R_OK | os.W_OK):
-    raise SystemExit('Data directory {} does not exist or is not accessible'.format(SUBMITTY_DATA_DIR))
 
 if not args.worker:
     PHP_UID, PHP_GID = get_ids(PHP_USER)
@@ -138,9 +218,57 @@ NUM_GRADING_SCHEDULER_WORKERS = 5
 
 ##############################################################################
 
+SETUP_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, '.setup')
+SETUP_REPOSITORY_DIR = os.path.join(SUBMITTY_REPOSITORY, '.setup')
+
+INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
+CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
+SITE_CONFIG_DIR = os.path.join(SUBMITTY_INSTALL_DIR, "site", "config")
+CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
+SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
+EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
+AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
+
+##############################################################################
+
+loaded_defaults = {}
+if os.path.isfile(CONFIGURATION_JSON):
+    with open(CONFIGURATION_JSON) as conf_file:
+        loaded_defaults = json.load(conf_file)
+if os.path.isfile(SUBMITTY_ADMIN_JSON):
+    with open(SUBMITTY_ADMIN_JSON) as submitty_admin_file:
+        loaded_defaults.update(json.load(submitty_admin_file))
+if os.path.isfile(EMAIL_JSON):
+    with open(EMAIL_JSON) as email_file:
+        loaded_defaults.update(json.load(email_file))
+
+if os.path.isfile(AUTHENTICATION_JSON):
+    with open(AUTHENTICATION_JSON) as authentication_file:
+        loaded_defaults.update(json.load(authentication_file))
+
+# no need to authenticate on a worker machine (no website)
+if not args.worker:
+    if 'authentication_method' in loaded_defaults:
+        loaded_defaults['authentication_method'] = authentication_methods.index(loaded_defaults['authentication_method']) + 1
+
+# grab anything not loaded in (useful for backwards compatibility if a new default is added that
+# is not in an existing config file.)
+for key in defaults.keys():
+    if key not in loaded_defaults:
+        loaded_defaults[key] = defaults[key]
+defaults = loaded_defaults
+
+print("\nWelcome to the Submitty Homework Submission Server Configuration\n")
+DEBUGGING_ENABLED = args.debug is True
+
+if DEBUGGING_ENABLED:
+    print('!! DEBUG MODE ENABLED !!')
+    print()
+
+if args.worker:
+    print("CONFIGURING SUBMITTY AS A WORKER !!")
 
 
-generated_config = generate_config(SUBMITTY_INSTALL_DIR, SUBMITTY_DATA_DIR, args.worker, args.debug)
 ##############################################################################
 # make the installation setup directory
 
@@ -153,8 +281,8 @@ os.chmod(SETUP_INSTALL_DIR, 0o751)
 
 ##############################################################################
 # WRITE CONFIG FILES IN ${SUBMITTY_INSTALL_DIR}/.setup
-# Prompt for user configurable values
 
+config = full_config['general_config']
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR
 config['submitty_repository'] = SUBMITTY_REPOSITORY
 config['submitty_data_dir'] = SUBMITTY_DATA_DIR
@@ -165,6 +293,7 @@ config['num_untrusted'] = NUM_UNTRUSTED
 config['first_untrusted_uid'] = FIRST_UNTRUSTED_UID
 config['first_untrusted_gid'] = FIRST_UNTRUSTED_UID
 config['num_grading_scheduler_workers'] = NUM_GRADING_SCHEDULER_WORKERS
+
 
 config['daemon_user'] = DAEMON_USER
 config['daemon_uid'] = DAEMON_UID
@@ -178,8 +307,18 @@ if not args.worker:
     config['daemonphpcgi_group'] = DAEMONPHPCGI_GROUP
     config['php_uid'] = PHP_UID
     config['php_gid'] = PHP_GID
+    config['websocket_port'] = WEBSOCKET_PORT
+    config['debugging_enabled'] = DEBUGGING_ENABLED
 
-    config['websocket_port'] = args.websocket_port
+# site_log_path is a holdover name. This could more accurately be called the "log_path"
+config['site_log_path'] = TAGRADING_LOG_PATH
+config['autograding_log_path'] = AUTOGRADING_LOG_PATH
+
+if args.worker:
+    config['worker'] = 1
+else:
+    config['worker'] = 0
+
 
 with open(INSTALL_FILE, 'w') as open_file:
     def write(x=''):
@@ -311,96 +450,37 @@ if not args.worker:
 # Write database json
 
 if not args.worker:
-    # config = OrderedDict()
-    config = generated_config['database']
-    # config['authentication_method'] = AUTHENTICATION_METHOD
-    # config['database_host'] = DATABASE_HOST
-    # config['database_port'] = DATABASE_PORT
-    # config['database_user'] = DATABASE_USER
-    # config['database_password'] = DATABASE_PASS
-    # config['database_course_user'] = DATABASE_COURSE_USER
-    # config['database_course_password'] = DATABASE_COURSE_PASSWORD
-    # config['debugging_enabled'] = DEBUGGING_ENABLED
-
+    database_config = full_config['database']
+    database_config['debugging_enabled'] = DEBUGGING_ENABLED
     with open(DATABASE_JSON, 'w') as json_file:
-        json.dump(config, json_file, indent=2)
+        json.dump(database_config, json_file, indent=2)
     shutil.chown(DATABASE_JSON, 'root', DAEMONPHP_GROUP)
     os.chmod(DATABASE_JSON, 0o440)
 
 ##############################################################################
 # Write authentication json
 if not args.worker:
-    config = OrderedDict()
-    # config['authentication_method'] = AUTHENTICATION_METHOD
-    # config['ldap_options'] = LDAP_OPTIONS
-    # config['saml_options'] = SAML_OPTIONS
-
+    auth_config = full_config['authentication']
     with open(AUTHENTICATION_JSON, 'w') as json_file:
-        json.dump(config, json_file, indent=4)
+        json.dump(auth_config, json_file, indent=4)
     shutil.chown(AUTHENTICATION_JSON, 'root', DAEMONPHP_GROUP)
     os.chmod(AUTHENTICATION_JSON, 0o440)
 
 ##############################################################################
-# Write submitty json
-# Full documentation at submitty.org/...
-user_id_requirements = {
-    "any_user_id": True,
-    "require_name": False,
-    "min_length": 6,
-    "max_length": 25,
-    # Example for Alyssa Hacker : hackal -- Allows for shorter names. If they are shorter, then it will just take the entire name. 
-    # Example for Joseph Wo : wojo
-    "name_requirements": {
-        "given_first": False,
-        "given_name": 2,
-        "family_name": 4
-    },
-    "require_email": False,
-    # If the user_id must contain part of the email. If whole_email is true, it must match the email.
-    # If whole_prefix is true, then the user_id must equal everything before the final @ sign.
-    # Else, it must be a certain number of characters of the prefix. 
-    # Examples for myemail@email.com:
-    # Whole email: myemail@gmail.com
-    # Whole prefix: myemail
-    # Part of prefix: myemai
-    "email_requirements": {
-        "whole_email": False,
-        "whole_prefix": False,
-        "prefix_count": 6
-    },
-    "accepted_emails": [
-        "gmail.com"
-    ]
-}
-
 
 config = submitty_config
+generated_submitty_config = full_config['submitty_config']
+config = config + submitty_config
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR
 config['submitty_repository'] = SUBMITTY_REPOSITORY
 config['submitty_data_dir'] = SUBMITTY_DATA_DIR
-# site_log_path is a holdover name. This could more accurately be called the "log_path"
-config['site_log_path'] = TAGRADING_LOG_PATH
 config['autograding_log_path'] = AUTOGRADING_LOG_PATH
-config['autograding_log_path'] = AUTOGRADING_LOG_PATH
-if not args.worker:
-    config['sys_admin_email'] = SYS_ADMIN_EMAIL
-    config['sys_admin_url'] = SYS_ADMIN_URL
 # site_log_path is a holdover name. This could more accurately be called the "log_path"
 config['site_log_path'] = TAGRADING_LOG_PATH
 
 if not args.worker:
-    config['submission_url'] = SUBMISSION_URL
-    config['vcs_url'] = VCS_URL
-    config['cgi_url'] = CGI_URL
     config['websocket_port'] = WEBSOCKET_PORT
-    config['institution_name'] = INSTITUTION_NAME
-    config['institution_homepage'] = INSTITUTION_HOMEPAGE
-    config['timezone'] = TIMEZONE
-    config['default_locale'] = DEFAULT_LOCALE
     config['duck_special_effects'] = False
-    config['course_material_file_upload_limit_mb'] = COURSE_MATERIAL_UPLOAD_LIMIT_MB
-    config['user_create_account'] = USER_CREATE_ACCOUNT
-    config['user_id_requirements'] = user_id_requirements
     
 config['worker'] = True if args.worker == 1 else False
 
@@ -430,7 +510,7 @@ if not args.worker:
     config['daemoncgi_group'] = DAEMONCGI_GROUP
     config['daemonphpcgi_group'] = DAEMONPHPCGI_GROUP
 else:
-    config['supervisor_user'] = SUPERVISOR_USER
+    config['supervisor_user'] = full_config['general']['supervisor_user']
 
 with open(SUBMITTY_USERS_JSON, 'w') as json_file:
     json.dump(config, json_file, indent=2)
@@ -455,7 +535,7 @@ if not args.worker:
 
 if not args.worker:
     config = OrderedDict()
-    config['submitty_admin_username'] = SUBMITTY_ADMIN_USERNAME
+    config['submitty_admin_username'] = full_config['admin_username']
 
     with open(SUBMITTY_ADMIN_JSON, 'w') as json_file:
         json.dump(config, json_file, indent=2)
@@ -466,16 +546,7 @@ if not args.worker:
 # Write email json
 
 if not args.worker:
-    # config = OrderedDict()
-    # config['email_enabled'] = EMAIL_ENABLED
-    # config['email_user'] = EMAIL_USER
-    # config['email_password'] = EMAIL_PASSWORD
-    # config['email_sender'] = EMAIL_SENDER
-    # config['email_reply_to'] = EMAIL_REPLY_TO
-    # config['email_server_hostname'] = EMAIL_SERVER_HOSTNAME
-    # config['email_server_port'] = EMAIL_SERVER_PORT
-    # config['email_internal_domain'] = EMAIL_INTERNAL_DOMAIN
-
+    config = full_config['email']
     with open(EMAIL_JSON, 'w') as json_file:
         json.dump(config, json_file, indent=2)
     shutil.chown(EMAIL_JSON, 'root', DAEMONPHP_GROUP)
