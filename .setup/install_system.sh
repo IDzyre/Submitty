@@ -41,13 +41,9 @@ LICHEN_REPOSITORY=/usr/local/submitty/GIT_CHECKOUT/Lichen
 SUBMITTY_INSTALL_DIR=/usr/local/submitty
 SUBMITTY_DATA_DIR=/var/local/submitty
 
-# Sources
-source ${CURRENT_DIR}/bin/versions.sh
-source ${CURRENT_DIR}/distro_setup/setup_distro.sh
-
 # create directory and fix permissions
 mkdir -p ${SUBMITTY_DATA_DIR}
-
+mkdir -p ${SUBMITTY_INSTALL_DIR}/config
 INSTALL_SYS_DIR=$(mktemp -d)
 chmod 777 "${INSTALL_SYS_DIR}"
 pushd "${INSTALL_SYS_DIR}" > /dev/null
@@ -59,7 +55,6 @@ PHP_USER=submitty_php
 PHP_GROUP=submitty_php
 CGI_USER=submitty_cgi
 CGI_GROUP=submitty_cgi
-
 
 COURSE_BUILDERS_GROUP=submitty_course_builders
 DB_USER=submitty_dbuser
@@ -126,18 +121,14 @@ fi
 #################################################################
 # DISTRO SETUP
 #################
-
-bash "${SUBMITTY_REPOSITORY}/.setup/update_system.sh" "config=${SUBMITTY_DIRECTORY}"
-
+# Sources
+source ${CURRENT_DIR}/bin/versions.sh
+source ${CURRENT_DIR}/distro_setup/variables.sh
 #################################################################
 # SUBMITTY SETUP
 #################
-echo Beginning Submitty Setup
-sudo apt-get update
-sudo add-apt-repository universe
-sudo apt update
-sudo apt install python3-pip -y
-
+apt-get update
+apt-get install -qqy python3 python3-pip
 pip3 install tzlocal
 #If in worker mode, run configure with --worker option.
 if [ ${WORKER} == 1 ]; then
@@ -154,6 +145,7 @@ else
         if [ -z "${SUBMISSION_URL}" ]; then
             SUBMISSION_URL='http://192.168.56.101'
         fi
+        mkdir /var/run/postgresql
         echo -e "/var/run/postgresql
 ${DB_USER}
 ${DATABASE_PASSWORD}
@@ -287,6 +279,8 @@ else
 
 fi
 
+source ${CURRENT_DIR}/distro_setup/setup_distro.sh
+
 #################################################################
 # STACK SETUP
 #################
@@ -410,6 +404,13 @@ sudo chown "${DAEMON_USER}:${DAEMON_USER}" "$gitconfig_path"
 
 usermod -a -G docker "${DAEMON_USER}"
 
+#If in worker mode, run configure with --worker option.
+if [ ${WORKER} == 1 ]; then
+    echo "Using users to update config files"
+    python3 ${SUBMITTY_REPOSITORY}/.setup/USER_SETUP.py --worker
+else
+    python3 ${SUBMITTY_REPOSITORY}/.setup/USER_SETUP.py
+fi
 #################################################################
 # JAR SETUP
 #################

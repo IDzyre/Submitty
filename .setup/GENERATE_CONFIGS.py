@@ -8,8 +8,6 @@ def get_input(question, default=""):
         user = default
     return user
 
-
-
 def generate_config(defaults, worker, authentication_methods):
     print('Hit enter to use default in []')
     print()
@@ -19,7 +17,7 @@ def generate_config(defaults, worker, authentication_methods):
         print('SUPERVISOR USER : {}'.format(SUPERVISOR_USER))
     else:
         DATABASE_HOST = get_input('What is the database host?', defaults['database_host'])
-        print()
+        print(DATABASE_HOST)
 
         if not os.path.isdir(DATABASE_HOST):
             DATABASE_PORT = int(get_input('What is the database port?', defaults['database_port']))

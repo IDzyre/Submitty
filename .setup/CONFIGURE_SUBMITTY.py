@@ -2,31 +2,14 @@
 
 import argparse
 from collections import OrderedDict
-import grp
 import json
 import os
-import pwd
 import secrets
 import shutil
 import string
-import tempfile
+import tzlocal
 
 from GENERATE_CONFIGS import generate_config
-
-
-def get_uid(user):
-    return pwd.getpwnam(user).pw_uid
-
-
-def get_gid(user):
-    return pwd.getpwnam(user).pw_gid
-
-
-def get_ids(user):
-    try:
-        return get_uid(user), get_gid(user)
-    except KeyError:
-        raise SystemExit("ERROR: Could not find user: " + user)
 
 class StrToBoolAction(argparse.Action):
     """
@@ -133,7 +116,6 @@ parser.add_argument('--data-dir', default='/var/local/submitty', help='Set the d
 parser.add_argument('--websocket-port', default=8443, type=int, help='Port to use for websocket')
 
 args = parser.parse_args()
-full_config = generate_config(defaults, args.worker, authentication_methods)
 
 # determine location of SUBMITTY GIT repository
 # this script (CONFIGURES_SUBMITTY.py) is in the top level directory of the repository
@@ -164,51 +146,7 @@ PHP_GROUP = 'submitty_php'
 CGI_USER = 'submitty_cgi'
 DAEMON_USER = 'submitty_daemon'
 DAEMON_GROUP = 'submitty_daemon'
-
-if not args.worker:
-    PHP_UID, PHP_GID = get_ids(PHP_USER)
-    CGI_UID, CGI_GID = get_ids(CGI_USER)
-    # System Groups
-    DAEMONPHP_GROUP = 'submitty_daemonphp'
-    try:
-        grp.getgrnam(DAEMONPHP_GROUP)
-    except KeyError:
-        raise SystemExit("ERROR: Could not find group: " + DAEMONPHP_GROUP)
-    DAEMONCGI_GROUP = 'submitty_daemoncgi'
-    try:
-        grp.getgrnam(DAEMONCGI_GROUP)
-    except KeyError:
-        raise SystemExit("ERROR: Could not find group: " + DAEMONCGI_GROUP)
-    DAEMONPHPCGI_GROUP = 'submitty_daemonphpcgi'
-    try:
-        grp.getgrnam(DAEMONPHPCGI_GROUP)
-    except KeyError:
-        raise SystemExit("ERROR: Could not find group: " + DAEMONPHPCGI_GROUP)
-
-DAEMON_UID, DAEMON_GID = get_ids(DAEMON_USER)
-
 COURSE_BUILDERS_GROUP = 'submitty_course_builders'
-try:
-    grp.getgrnam(COURSE_BUILDERS_GROUP)
-except KeyError:
-    raise SystemExit("ERROR: Could not find group: " + COURSE_BUILDERS_GROUP)
-
-##############################################################################
-
-# This is the upper limit of the number of parallel grading threads on
-# this machine
-NUM_UNTRUSTED = 60
-
-FIRST_UNTRUSTED_UID, FIRST_UNTRUSTED_GID = get_ids('untrusted00')
-
-# confirm that the uid/gid of the untrusted users are sequential
-for i in range(1, NUM_UNTRUSTED):
-    untrusted_user = "untrusted{:0=2d}".format(i)
-    uid, gid = get_ids(untrusted_user)
-    if uid != FIRST_UNTRUSTED_UID + i:
-        raise SystemExit('CONFIGURATION ERROR: untrusted UID not sequential: ' + untrusted_user)
-    elif gid != FIRST_UNTRUSTED_GID + i:
-        raise SystemExit('CONFIGURATION ERROR: untrusted GID not sequential: ' + untrusted_user)
 
 ##############################################################################
 
@@ -225,6 +163,7 @@ INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
 CONFIGURATION_JSON = os.path.join(SETUP_INSTALL_DIR, 'submitty_conf.json')
 SITE_CONFIG_DIR = os.path.join(SUBMITTY_INSTALL_DIR, "site", "config")
 CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
+SUBMITTY_USERS_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_users.json')
 SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
 EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
 AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
@@ -268,6 +207,7 @@ if DEBUGGING_ENABLED:
 if args.worker:
     print("CONFIGURING SUBMITTY AS A WORKER !!")
 
+full_config = generate_config(defaults, args.worker, authentication_methods)
 
 ##############################################################################
 # make the installation setup directory
@@ -275,38 +215,28 @@ if args.worker:
 if os.path.isdir(SETUP_INSTALL_DIR):
     shutil.rmtree(SETUP_INSTALL_DIR)
 os.makedirs(SETUP_INSTALL_DIR, exist_ok=True)
-
-shutil.chown(SETUP_INSTALL_DIR, 'root', COURSE_BUILDERS_GROUP)
 os.chmod(SETUP_INSTALL_DIR, 0o751)
 
 ##############################################################################
 # WRITE CONFIG FILES IN ${SUBMITTY_INSTALL_DIR}/.setup
+config = full_config['general']
 
-config = full_config['general_config']
+if args.worker: 
+    config['supervisor_user'] = config['supervisor_user']
+    with open(SUBMITTY_USERS_JSON, 'w') as json_file:
+        json.dump(config, json_file, indent=2)
+
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR
 config['submitty_repository'] = SUBMITTY_REPOSITORY
 config['submitty_data_dir'] = SUBMITTY_DATA_DIR
-
 config['course_builders_group'] = COURSE_BUILDERS_GROUP
-
-config['num_untrusted'] = NUM_UNTRUSTED
-config['first_untrusted_uid'] = FIRST_UNTRUSTED_UID
-config['first_untrusted_gid'] = FIRST_UNTRUSTED_UID
 config['num_grading_scheduler_workers'] = NUM_GRADING_SCHEDULER_WORKERS
-
-
 config['daemon_user'] = DAEMON_USER
-config['daemon_uid'] = DAEMON_UID
-config['daemon_gid'] = DAEMON_GID
 
 if not args.worker:
     config['php_user'] = PHP_USER
     config['cgi_user'] = CGI_USER
-    config['daemonphp_group'] = DAEMONPHP_GROUP
-    config['daemoncgi_group'] = DAEMONCGI_GROUP
-    config['daemonphpcgi_group'] = DAEMONPHPCGI_GROUP
-    config['php_uid'] = PHP_UID
-    config['php_gid'] = PHP_GID
+    
     config['websocket_port'] = WEBSOCKET_PORT
     config['debugging_enabled'] = DEBUGGING_ENABLED
 
@@ -351,43 +281,6 @@ try:
         submitty_config = json.load(json_file, object_pairs_hook=OrderedDict)
 except FileNotFoundError:
     pass
-
-#Rescue the autograding_workers and _containers files if they exist.
-rescued = list()
-tmp_folder = tempfile.mkdtemp()
-if not args.worker:
-    for full_file_name, file_name in [(WORKERS_JSON, 'autograding_workers.json'), (CONTAINERS_JSON, 'autograding_containers.json')]:
-        if os.path.isfile(full_file_name):
-            #make a tmp folder and copy autograding workers to it
-            tmp_file = os.path.join(tmp_folder, file_name)
-            shutil.move(full_file_name, tmp_file)
-            rescued.append((full_file_name, tmp_file))
-
-IGNORED_FILES_AND_DIRS = ['saml', 'login.md']
-
-if os.path.isdir(CONFIG_INSTALL_DIR):
-    for file in os.scandir(CONFIG_INSTALL_DIR):
-        if file.name not in IGNORED_FILES_AND_DIRS:
-            if file.is_file():
-                os.remove(os.path.join(CONFIG_INSTALL_DIR, file.name))
-            else:
-                os.rmdir(os.path.join(CONFIG_INSTALL_DIR, file.name))
-elif os.path.exists(CONFIG_INSTALL_DIR):
-    os.remove(CONFIG_INSTALL_DIR)
-os.makedirs(CONFIG_INSTALL_DIR, exist_ok=True)
-shutil.chown(CONFIG_INSTALL_DIR, 'root', COURSE_BUILDERS_GROUP)
-os.chmod(CONFIG_INSTALL_DIR, 0o755)
-
-# Finish rescuing files.
-for full_file_name, tmp_file_name in rescued:
-    #copy autograding workers back
-    shutil.move(tmp_file_name, full_file_name)
-    #make sure the permissions are correct.
-    shutil.chown(full_file_name, 'root', DAEMON_GID)
-    os.chmod(full_file_name, 0o660)
-
-#remove the tmp folder
-os.removedirs(tmp_folder)
 
 ##############################################################################
 # WRITE CONFIG FILES IN ${SUBMITTY_INSTALL_DIR}/config
@@ -443,9 +336,6 @@ if not args.worker:
     for file in [WORKERS_JSON, CONTAINERS_JSON]:
       os.chmod(file, 0o660)
 
-    shutil.chown(WORKERS_JSON, PHP_USER, DAEMON_GID)
-    shutil.chown(CONTAINERS_JSON, group=DAEMONPHP_GROUP)
-
 ##############################################################################
 # Write database json
 
@@ -454,7 +344,6 @@ if not args.worker:
     database_config['debugging_enabled'] = DEBUGGING_ENABLED
     with open(DATABASE_JSON, 'w') as json_file:
         json.dump(database_config, json_file, indent=2)
-    shutil.chown(DATABASE_JSON, 'root', DAEMONPHP_GROUP)
     os.chmod(DATABASE_JSON, 0o440)
 
 ##############################################################################
@@ -463,13 +352,12 @@ if not args.worker:
     auth_config = full_config['authentication']
     with open(AUTHENTICATION_JSON, 'w') as json_file:
         json.dump(auth_config, json_file, indent=4)
-    shutil.chown(AUTHENTICATION_JSON, 'root', DAEMONPHP_GROUP)
     os.chmod(AUTHENTICATION_JSON, 0o440)
 
 ##############################################################################
 
 config = submitty_config
-generated_submitty_config = full_config['submitty_config']
+generated_submitty_config = full_config['submitty']
 config = config + submitty_config
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR
 config['submitty_repository'] = SUBMITTY_REPOSITORY
@@ -489,36 +377,6 @@ with open(SUBMITTY_JSON, 'w') as json_file:
 os.chmod(SUBMITTY_JSON, 0o444)
 
 ##############################################################################
-# Write users json
-
-config = OrderedDict()
-config['num_grading_scheduler_workers'] = NUM_GRADING_SCHEDULER_WORKERS
-config['num_untrusted'] = NUM_UNTRUSTED
-config['first_untrusted_uid'] = FIRST_UNTRUSTED_UID
-config['first_untrusted_gid'] = FIRST_UNTRUSTED_UID
-config['daemon_uid'] = DAEMON_UID
-config['daemon_gid'] = DAEMON_GID
-config['daemon_user'] = DAEMON_USER
-config['course_builders_group'] = COURSE_BUILDERS_GROUP
-
-if not args.worker:
-    config['php_uid'] = PHP_UID
-    config['php_gid'] = PHP_GID
-    config['php_user'] = PHP_USER
-    config['cgi_user'] = CGI_USER
-    config['daemonphp_group'] = DAEMONPHP_GROUP
-    config['daemoncgi_group'] = DAEMONCGI_GROUP
-    config['daemonphpcgi_group'] = DAEMONPHPCGI_GROUP
-else:
-    config['supervisor_user'] = full_config['general']['supervisor_user']
-
-with open(SUBMITTY_USERS_JSON, 'w') as json_file:
-    json.dump(config, json_file, indent=2)
-shutil.chown(SUBMITTY_USERS_JSON, 'root', DAEMON_GROUP if args.worker else DAEMONPHP_GROUP)
-
-os.chmod(SUBMITTY_USERS_JSON, 0o440)
-
-##############################################################################
 # Write secrets_submitty_php json
 
 if not args.worker:
@@ -527,7 +385,6 @@ if not args.worker:
     config['session'] = ''.join(secrets.choice(characters) for _ in range(64))
     with open(SECRETS_PHP_JSON, 'w') as json_file:
         json.dump(config, json_file, indent=2)
-    shutil.chown(SECRETS_PHP_JSON, 'root', PHP_GROUP)
     os.chmod(SECRETS_PHP_JSON, 0o440)
 
 ##############################################################################
@@ -539,7 +396,6 @@ if not args.worker:
 
     with open(SUBMITTY_ADMIN_JSON, 'w') as json_file:
         json.dump(config, json_file, indent=2)
-    shutil.chown(SUBMITTY_ADMIN_JSON, 'root', DAEMON_GROUP)
     os.chmod(SUBMITTY_ADMIN_JSON, 0o440)
 
 ##############################################################################
@@ -549,7 +405,6 @@ if not args.worker:
     config = full_config['email']
     with open(EMAIL_JSON, 'w') as json_file:
         json.dump(config, json_file, indent=2)
-    shutil.chown(EMAIL_JSON, 'root', DAEMONPHP_GROUP)
     os.chmod(EMAIL_JSON, 0o440)
 
 ##############################################################################
