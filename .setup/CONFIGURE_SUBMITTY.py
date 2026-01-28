@@ -170,6 +170,18 @@ AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
 
 ##############################################################################
 
+if os.path.isdir(CONFIG_INSTALL_DIR):
+    for file in os.scandir(CONFIG_INSTALL_DIR):
+        if file.name not in IGNORED_FILES_AND_DIRS:
+            if file.is_file():
+                os.remove(os.path.join(CONFIG_INSTALL_DIR, file.name))
+            else:
+                os.rmdir(os.path.join(CONFIG_INSTALL_DIR, file.name))
+elif os.path.exists(CONFIG_INSTALL_DIR):
+    os.remove(CONFIG_INSTALL_DIR)
+os.makedirs(CONFIG_INSTALL_DIR, exist_ok=True)
+os.chmod(CONFIG_INSTALL_DIR, 0o755)
+
 loaded_defaults = {}
 if os.path.isfile(CONFIGURATION_JSON):
     with open(CONFIGURATION_JSON) as conf_file:
