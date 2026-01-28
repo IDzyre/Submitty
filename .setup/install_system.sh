@@ -23,10 +23,6 @@ trap 'err_message' ERR
 # print commands as we execute and fail early
 set -ev
 
-# Sources
-source ${CURRENT_DIR}/bin/versions.sh
-source ${CURRENT_DIR}/distro_setup/setup_distro.sh
-
 # this script must be run by root or sudo
 if [[ "$UID" -ne "0" ]] ; then
     echo "ERROR: This script must be run by root or sudo"
@@ -44,6 +40,10 @@ RAINBOWGRADES_REPOSITORY=/usr/local/submitty/GIT_CHECKOUT/RainbowGrades
 LICHEN_REPOSITORY=/usr/local/submitty/GIT_CHECKOUT/Lichen
 SUBMITTY_INSTALL_DIR=/usr/local/submitty
 SUBMITTY_DATA_DIR=/var/local/submitty
+
+# Sources
+source ${CURRENT_DIR}/bin/versions.sh
+source ${CURRENT_DIR}/distro_setup/setup_distro.sh
 
 # create directory and fix permissions
 mkdir -p ${SUBMITTY_DATA_DIR}

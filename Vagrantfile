@@ -143,7 +143,7 @@ Vagrant.configure(2) do |config|
   apple_silicon = Vagrant::Util::Platform.darwin? && (arm || (`sysctl -n machdep.cpu.brand_string`.chomp.start_with? 'Apple M'))
   use_prebuilt_version = !ENV.fetch('PREBUILT_VERSION', '').empty?
   custom_box = ENV.has_key?('VAGRANT_BOX') 
-  base_box = ENV.has_key?('BASE_BOX') || ENV.has_key?('FROM_SCRATCH') || apple_silicon || arm
+  base_box = ENV.has_key?('BASE_BOX') || ENV.has_key?('FROM_SCRATCH') || apple_silicon || arm || true
   # The time in seconds that Vagrant will wait for the machine to boot and be accessible.
   config.vm.boot_timeout = 600
 

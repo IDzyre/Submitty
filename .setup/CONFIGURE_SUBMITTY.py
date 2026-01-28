@@ -11,7 +11,7 @@ import shutil
 import string
 import tempfile
 
-from y import generate_config
+from GENERATE_CONFIGS import generate_config
 
 
 def get_uid(user):
