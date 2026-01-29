@@ -370,7 +370,7 @@ if not args.worker:
 
 config = submitty_config
 generated_submitty_config = full_config['submitty']
-config = config + submitty_config
+config.update(generated_submitty_config)
 config['submitty_install_dir'] = SUBMITTY_INSTALL_DIR
 config['submitty_repository'] = SUBMITTY_REPOSITORY
 config['submitty_data_dir'] = SUBMITTY_DATA_DIR

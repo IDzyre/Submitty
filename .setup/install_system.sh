@@ -407,9 +407,9 @@ usermod -a -G docker "${DAEMON_USER}"
 #If in worker mode, run configure with --worker option.
 if [ ${WORKER} == 1 ]; then
     echo "Using users to update config files"
-    python3 ${SUBMITTY_REPOSITORY}/.setup/USER_SETUP.py --worker
+    python3 ${SUBMITTY_REPOSITORY}/.setup/USERS_SETUP.py --worker
 else
-    python3 ${SUBMITTY_REPOSITORY}/.setup/USER_SETUP.py
+    python3 ${SUBMITTY_REPOSITORY}/.setup/USERS_SETUP.py
 fi
 #################################################################
 # JAR SETUP
