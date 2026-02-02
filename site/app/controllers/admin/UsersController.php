@@ -289,14 +289,46 @@ class UsersController extends AbstractController {
         $this->core->getOutput()->renderJsonSuccess($user_information);
     }
 
+<<<<<<< HEAD
+    #[Route("/api/{semester}/{course}/users/add", methods: ["POST"])]
+    function ajaxAddUserCourse(string $semester, string $course): JsonResponse {
+        $values = [
+                'user_id',
+                'user_numeric_id',
+                'user_pronouns',
+                'user_givenname',
+                'user_familyname',
+                'user_email',
+                'user_email_secondary',
+                'user_numeric_id',
+                'display_pronouns',
+                'registered_section',
+                'rotating_section',
+                'user_group',
+                'edit_user',
+        ];
+        if (!FileUtils::arrayKeysExist($values, array_keys($_POST))) {
+            return JsonResponse::getErrorResponse('All required keys are not present', ['required_keys' => $values]);
+        }
+        $user = $this->core->getQueries()->getUserById($_POST['user_id']);
+        if ($user !== null){
+            return JsonResponse::getErrorResponse('User already exists!');
+        }
+        $this->updateUser($semester, $course, $type);
+    }
+
+    /**
+     * @Route("/courses/{semester}/{course}/users", methods={"POST"})
+     */
+    public function updateUser(string $semester, string $course, $type = 'users') {
+=======
     #[Route("/courses/{_semester}/{_course}/users", methods: ["POST"])]
     public function updateUser($type = 'users') {
+>>>>>>> origin/main
         $return_url = $this->core->buildCourseUrl([$type]) . '#user-' . $_POST['user_id'];
         $authentication = $this->core->getAuthentication();
         $use_database = $authentication instanceof DatabaseAuthentication;
         $_POST['user_id'] = trim($_POST['user_id']);
-        $semester = $this->core->getConfig()->getTerm();
-        $course = $this->core->getConfig()->getCourse();
 
         if (empty($_POST['user_id'])) {
             $this->core->addErrorMessage("User ID cannot be empty");

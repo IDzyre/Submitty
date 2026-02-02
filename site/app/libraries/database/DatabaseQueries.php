@@ -5959,6 +5959,11 @@ AND gc_id IN (
         return $this->course_db->getLastInsertId();
     }
 
+    public function addUser($user_details){
+        $this->submitty_db->query("INSERT INTO users(user_id, user_numeric_id, user_givenname, user_preferred_givenname, user_familyname, user_preferred_familyname, user_email, user_password, user_access_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", $user_details);
+        return $user_details[0];
+    }
+
     public function getGradeInquiryPost($post_id) {
         $this->course_db->query(
             "SELECT * FROM grade_inquiry_discussion WHERE id = ?",
