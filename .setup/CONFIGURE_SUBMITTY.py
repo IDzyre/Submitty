@@ -181,7 +181,6 @@ with open(DEFAULTS_FILE, 'r') as defaults_file:
     defaults = json.load(defaults_file)
     defaults['timezone'] = str(tzlocal.get_localzone())
 
-print(defaults)
 loaded_defaults = {}
 if os.path.isfile(CONFIGURATION_JSON):
     with open(CONFIGURATION_JSON) as conf_file:
@@ -222,6 +221,8 @@ if args.worker:
 print('Hit enter to use default in []')
 print()
 USE_DEFAULT = args.dev_vm is True
+print(args)
+print(args.dev_vm)
 if args.worker:
     SUPERVISOR_USER = get_input('What is the id for your submitty user?', defaults['supervisor_user'], USE_DEFAULT)
     print('SUPERVISOR USER : {}'.format(SUPERVISOR_USER))
