@@ -295,7 +295,7 @@ else:
 
     while True:
         try:
-            auth = int(get_input('Enter number?', defaults['authentication_method']), USE_DEFAULT) - 1
+            auth = int(get_input('Enter number?', defaults['authentication_method'], USE_DEFAULT)) - 1
         except ValueError:
             auth = -1
         if auth in range(len(authentication_methods)):
