@@ -222,8 +222,6 @@ if args.worker:
 print('Hit enter to use default in []')
 print()
 USE_DEFAULT = args.dev_vm is True
-print(args)
-print(args.dev_vm)
 if args.worker:
     SUPERVISOR_USER = get_input('What is the id for your submitty user?', defaults['supervisor_user'], USE_DEFAULT)
     print('SUPERVISOR USER : {}'.format(SUPERVISOR_USER))
@@ -232,7 +230,7 @@ else:
     print()
 
     if not os.path.isdir(DATABASE_HOST):
-        DATABASE_PORT = int(get_input('What is the database port?', defaults['database_port']), USE_DEFAULT)
+        DATABASE_PORT = int(get_input('What is the database port?', defaults['database_port'], USE_DEFAULT))
         print()
     else:
         DATABASE_PORT = defaults['database_port']
