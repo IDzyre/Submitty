@@ -346,7 +346,7 @@ else:
             EMAIL_REPLY_TO = get_input("What is the email reply to address?", defaults['email_reply_to'], USE_DEFAULT)
             EMAIL_SERVER_HOSTNAME = get_input("What is the email server hostname?", defaults['email_server_hostname'], USE_DEFAULT)
             try:
-                EMAIL_SERVER_PORT = int(get_input("What is the email server port?", defaults['email_server_port']), USE_DEFAULT)
+                EMAIL_SERVER_PORT = int(get_input("What is the email server port?", defaults['email_server_port'], USE_DEFAULT))
             except ValueError:
                 EMAIL_SERVER_PORT = defaults['email_server_port']
             EMAIL_INTERNAL_DOMAIN = get_input("What is the internal email address format?", defaults['email_internal_domain'], USE_DEFAULT)
