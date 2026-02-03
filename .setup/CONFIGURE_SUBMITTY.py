@@ -241,7 +241,7 @@ else:
     default = ''
     if 'database_password' in defaults and DATABASE_USER == defaults['database_user']:
         default = '(Leave blank to use same password)'
-    DATABASE_PASS = get_input('What is the password for the global database user/role {}? {}'.format(DATABASE_USER, default), USE_DEFAULT)
+    DATABASE_PASS = get_input('What is the password for the global database user/role {}? {}'.format(DATABASE_USER, default), "", USE_DEFAULT)
     if DATABASE_PASS == '' and DATABASE_USER == defaults['database_user'] and 'database_password' in defaults:
         DATABASE_PASS = defaults['database_password']
     print()
@@ -252,7 +252,7 @@ else:
     default = ''
     if 'database_course_password' in defaults and DATABASE_COURSE_USER == defaults['database_course_user']:
         default = '(Leave blank to use same password)'
-    DATABASE_COURSE_PASSWORD = get_input('What is the password for the course database user/role {}? {}'.format(DATABASE_COURSE_USER, default), USE_DEFAULT)
+    DATABASE_COURSE_PASSWORD = get_input('What is the password for the course database user/role {}? {}'.format(DATABASE_COURSE_USER, default), "", USE_DEFAULT)
     if DATABASE_COURSE_PASSWORD == '' and DATABASE_COURSE_USER == defaults['database_course_user'] and 'database_course_password' in defaults:
         DATABASE_COURSE_PASSWORD = defaults['database_course_password']
     print()
@@ -260,7 +260,7 @@ else:
     TIMEZONE = get_input('What timezone should Submitty use? (for a full list of supported timezones see http://php.net/manual/en/timezones.php)', defaults['timezone'], USE_DEFAULT)
     print()
 
-    DEFAULT_LOCALE = get_input('What default language should the Submitty site use?', 'en_US')
+    DEFAULT_LOCALE = get_input('What default language should the Submitty site use?', 'en_US', USE_DEFAULT)
     print()
 
     COURSE_MATERIAL_UPLOAD_LIMIT_MB = get_input('What is the maximum file upload size for course materials (in MB)?', defaults['course_material_file_upload_limit_mb'], USE_DEFAULT)
