@@ -47,7 +47,7 @@ chown ${PHP_USER}:${PHP_GROUP} ${SUBMITTY_DATA_DIR}
 chmod -R 777 ${SUBMITTY_INSTALL_DIR}
 chmod -R 777 ${SUBMITTY_DATA_DIR}
 
-python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --debug --dev-vm --install-dir $SUBMITTY_INSTALL_DIR --data-dir $SUBMITTY_DATA_DIR
+python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --debug --dev-vm --ci --install-dir $SUBMITTY_INSTALL_DIR --data-dir $SUBMITTY_DATA_DIR
 
 bash -c "echo 'export PATH=${PATH}' >> /home/${PHP_USER}/.profile"
 bash -c "echo 'export PATH=${PATH}' >> /home/${PHP_USER}/.bashrc"

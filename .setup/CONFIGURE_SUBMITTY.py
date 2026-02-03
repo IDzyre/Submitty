@@ -66,6 +66,8 @@ parser.add_argument('--debug', action='store_true', default=False, help='Configu
                                                                         'This should not be used in production!')
 parser.add_argument('--dev-vm', action='store_true', default=False,
                     help="Sets up submitty for use with Vagrant for developers, not to be used for production")
+parser.add_argument('--ci', action='store_true', default=False,
+                    help="Sets up Submitty with parameters for CI, This should not be used in production.")
 parser.add_argument('--worker', action='store_true', default=False, help='Configure Submitty with autograding only')
 parser.add_argument('--install-dir', default='/usr/local/submitty', help='Set the install directory for Submitty')
 parser.add_argument('--data-dir', default='/var/local/submitty', help='Set the data directory for Submitty')
@@ -181,6 +183,8 @@ defaults = {}
 with open(DEFAULTS_FILE, 'r') as defaults_file:
     defaults = json.load(defaults_file)
     defaults['timezone'] = str(tzlocal.get_localzone())
+    if args.ci:
+        defaults['database_host'] = 'localhost'
 
 loaded_defaults = {}
 if os.path.isfile(CONFIGURATION_JSON):
