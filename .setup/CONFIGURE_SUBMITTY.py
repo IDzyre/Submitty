@@ -28,7 +28,8 @@ def get_ids(user):
         raise SystemExit("ERROR: Could not find user: " + user)
 
 
-def get_input(question, default="", use_default = False):
+def get_input(question, default="", use_default=False):
+    print(use_default)
     if use_default:
         return default
     add = "[{}] ".format(default) if default != "" else ""
