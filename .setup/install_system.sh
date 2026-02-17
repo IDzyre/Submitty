@@ -203,6 +203,7 @@ systemctl start submitty_daemon_jobs_handler
 systemctl start submitty_websocket_server
 systemctl start nullsmtpd
 cd ${SUBMITTY_INSTALL_DIR}" >> /root/.bashrc
+fi
 if [ ${WORKER} == 1 ]; then
     if [ ${VAGRANT} == 1 ]; then
         # Setting it up to allow SSH as root by default
