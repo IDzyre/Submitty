@@ -37,19 +37,9 @@
 
 - name: Copy configuration files
   ansible.builtin.copy:
-    src: ./configs/{{ submitty_install_config_file }}
-    dest: /usr/local/submitty/config/{{ submitty_install_config_file }}
+    src: "{{ submitty_install_config_location }}"
+    dest: /usr/local/submitty/config/
     mode: "0644"
-  loop:
-    - authentication.json
-    - autograding_containers.json
-    - database.json
-    - email.json
-    - submitty_admin.json
-    - submitty_users.json
-    - submitty.json
-  loop_control:
-    loop_var: submitty_install_config_file
 
 - name: Run install_system.sh script
   ansible.builtin.shell:

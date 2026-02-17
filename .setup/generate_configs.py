@@ -2,14 +2,15 @@ import argparse
 import os
 import shutil
 import json
-from collections import OrderedDict
 import pwd
 
 def get_uid(user):
     return pwd.getpwnam(user).pw_uid
 
+
 def get_gid(user):
     return pwd.getpwnam(user).pw_gid
+
 
 def get_ids(user):
     try:
