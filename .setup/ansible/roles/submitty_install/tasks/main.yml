@@ -33,7 +33,6 @@
   ansible.builtin.copy:
     src: ./configs/{{ submitty_install_config_file }}
     dest: /usr/local/submitty/config/{{ submitty_install_config_file }}
-    remote_src: true
     mode: "0644"
   loop:
     - authentication.json
