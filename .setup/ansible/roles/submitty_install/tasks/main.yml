@@ -29,6 +29,12 @@
     force: true
     update: true
 
+- name: Create submitty config directory if none exists
+  ansible.builtin.file:
+    path: /usr/local/submitty/config
+    state: directory
+    mode: "0755"
+
 - name: Copy configuration files
   ansible.builtin.copy:
     src: ./configs/{{ submitty_install_config_file }}
