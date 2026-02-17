@@ -29,11 +29,28 @@
     force: true
     update: true
 
+- name: Copy configuration files
+  ansible.builtin.copy:
+    src: configs/{{ submitty_install_config_file }}
+    dest: /usr/local/submitty/config/{{ submitty_install_config_file }}
+    remote_src: true
+    mode: "0644"
+  loop:
+    - authentication.json
+    - autograding_containers.json
+    - database.json
+    - email.json
+    - submitty_admin.json
+    - submitty_users.json
+    - submitty.json
+  loop_control:
+    loop_var: submitty_install_config_file
+
 - name: Run install_system.sh script
   ansible.builtin.shell:
     executable: "/bin/bash"
     cmd: |
-      set -o pipefail; bash -p ./.setup/install_system.sh --utm > /usr/local/submitty/install.log 2>&1
+      set -o pipefail; bash -p ./.setup/install_system.sh > /usr/local/submitty/install.log 2>&1
 
   args:
     chdir: /usr/local/submitty/GIT_CHECKOUT/Submitty

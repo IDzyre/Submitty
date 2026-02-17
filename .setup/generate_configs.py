@@ -31,9 +31,19 @@ args = parser.parse_args()
 
 SUBMITTY_DATA_DIR = args.data_dir
 os.makedirs(SUBMITTY_DATA_DIR, exist_ok=True)
+
 CONFIG_INSTALL_DIR = os.path.join(args.install_dir, 'config')
 os.makedirs(CONFIG_INSTALL_DIR, exist_ok=True)
 CONFIG_REPOSITORY = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup/data/configs')
+
+
+SETUP_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, '.setup')
+os.makedirs(SETUP_INSTALL_DIR, exist_ok=True)
+
+SETUP_REPOSITORY_DIR = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup')
+os.makedirs(SETUP_REPOSITORY_DIR, exist_ok=True)
+
+INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
 
 if args.ci is True:
     database_config = os.path.join(CONFIG_REPOSITORY, 'database.json')
@@ -69,3 +79,12 @@ if not args.worker:
                 print(f"Permission denied for '{item}'")
             except Exception as e:
                 print(f"An error occurred while copying '{item}': {e}")
+
+with open(INSTALL_FILE, 'w') as open_file:
+    def write(x=''):
+        print(x, file=open_file)
+    write('#!/bin/bash')
+    write()
+    write(f'bash {SETUP_REPOSITORY_DIR}/INSTALL_SUBMITTY_HELPER.sh  "$@"')
+
+os.chmod(INSTALL_FILE, 0o700)
