@@ -33,12 +33,13 @@ if not args.worker:
     for item in os.listdir(CONFIG_REPOSITORY):
         source_path = os.path.join(CONFIG_REPOSITORY, item)
         destination_path = os.path.join(CONFIG_INSTALL_DIR, item)
-        with open(source_path, 'r') as f1, open(destination_path, 'r') as f2:
-            try:
-                required = json.load(f1).keys()
-                existing = json.load(f2).keys()
-                difference = required - existing
-                if len(difference) > 0:
-                    raise KeyError("Required key(s) {} not present in {}".format(difference, item))
-            except FileNotFoundError:
-                raise FileNotFoundError("Required file {} not found".format(destination_path))
+        if os.path.isfile(source_path):
+            with open(source_path, 'r') as f1, open(destination_path, 'r') as f2:
+                try:
+                    required = json.load(f1).keys()
+                    existing = json.load(f2).keys()
+                    difference = required - existing
+                    if len(difference) > 0:
+                        raise KeyError("Required key(s) {} not present in {}".format(difference, item))
+                except FileNotFoundError:
+                    raise FileNotFoundError("Required file {} not found".format(destination_path))
