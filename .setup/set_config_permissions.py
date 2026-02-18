@@ -1,3 +1,15 @@
+import argparse
+from collections import OrderedDict
+import grp
+import json
+import os
+import pwd
+import secrets
+import shutil
+import string
+import tzlocal
+import tempfile
+
 def get_uid(user):
     return pwd.getpwnam(user).pw_uid
 
@@ -12,23 +24,49 @@ def get_ids(user):
     except KeyError:
         raise SystemExit("ERROR: Could not find user: " + user)
 
+parser = argparse.ArgumentParser(description='Submitty config validation script',
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--install-dir', default='/usr/local/submitty', help='Set the install directory for Submitty')
+parser.add_argument('--worker', action='store_true', default=False, help='Configure Submitty with autograding only')
 
+args = parser.parse_args()
+
+SUBMITTY_INSTALL_DIR = args.install_dir
+
+CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
 DATABASE_JSON = os.path.join(CONFIG_INSTALL_DIR, 'database.json')
+SUBMITTY_ADMIN_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_admin.json')
+AUTHENTICATION_JSON = os.path.join(CONFIG_INSTALL_DIR, 'authentication.json')
 SUBMITTY_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty.json')
 SUBMITTY_USERS_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_users.json')
+EMAIL_JSON = os.path.join(CONFIG_INSTALL_DIR, 'email.json')
 WORKERS_JSON = os.path.join(CONFIG_INSTALL_DIR, 'autograding_workers.json')
 CONTAINERS_JSON = os.path.join(CONFIG_INSTALL_DIR, 'autograding_containers.json')
 SECRETS_PHP_JSON = os.path.join(CONFIG_INSTALL_DIR, 'secrets_submitty_php.json')
 
+
+PHP_USER = 'submitty_php'
+PHP_GROUP = 'submitty_php'
+CGI_USER = 'submitty_cgi'
+DAEMON_USER = 'submitty_daemon'
+DAEMON_GROUP = 'submitty_daemon'
+DAEMONPHP_GROUP = 'submitty_daemonphp'
+DAEMONPHPCGI_GROUP = 'submitty_daemonphpcgi'
+DAEMONCGI_GROUP = 'submitty_daemoncgi'
+
+FIRST_UNTRUSTED_UID, FIRST_UNTRUSTED_GID = get_ids('untrusted00')
+DAEMON_UID, DAEMON_GID = get_ids(DAEMON_USER)
+
 if not args.worker:
     for file in [WORKERS_JSON, CONTAINERS_JSON]:
         os.chmod(file, 0o660)
-    shutil.chown(WORKERS_JSON, PHP_USER, DAEMON_GID)
+    shutil.chown(WORKERS_JSON, PHP_USER, DAEMONPHP_GROUP)
     shutil.chown(CONTAINERS_JSON, group=DAEMONPHP_GROUP)
 
 os.chmod(SUBMITTY_JSON, 0o444)
 
 os.chmod(SUBMITTY_USERS_JSON, 0o440)
+
 shutil.chown(SUBMITTY_USERS_JSON, 'root', DAEMON_GROUP if args.worker else DAEMONPHP_GROUP)
 
 
@@ -54,18 +92,6 @@ if not args.worker:
     shutil.chown(EMAIL_JSON, 'root', DAEMONPHP_GROUP)
     os.chmod(EMAIL_JSON, 0o440)
 
-
-PHP_USER = 'submitty_php'
-PHP_GROUP = 'submitty_php'
-CGI_USER = 'submitty_cgi'
-DAEMON_USER = 'submitty_daemon'
-DAEMON_GROUP = 'submitty_daemon'
-DAEMONPHP_GROUP = 'submitty_daemonphp'
-DAEMONPHPCGI_GROUP = 'submitty_daemonphpcgi'
-DAEMONCGI_GROUP = 'submitty_daemoncgi'
-
-FIRST_UNTRUSTED_UID, FIRST_UNTRUSTED_GID = get_ids('untrusted00')
-DAEMON_UID, DAEMON_GID = get_ids(DAEMON_USER)
 
 config = OrderedDict()
 config['num_grading_scheduler_workers'] = 5

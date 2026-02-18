@@ -1,13 +1,13 @@
 name: 'SetUpForE2e'
-description: 'Uses the composite action to copy and set up our e2e Selenium and cypress tests'
+descriptions: 'Uses the composite action to copy and set up our e2e Selenium and cypress tests'
 
 inputs:
   courses:
-    description: 'The course(s) to set up for testing'
+    describes: 'The course(s) to set up for testing'
     required: false
     default: 'sample testing archived'
   flags:
-    description: 'Flags to pass to the setup script'
+    describes: 'Flags to pass to the setup script'
     required: false
     default: '--test_only_grading'
 
