@@ -1,3 +1,18 @@
+def get_uid(user):
+    return pwd.getpwnam(user).pw_uid
+
+
+def get_gid(user):
+    return pwd.getpwnam(user).pw_gid
+
+
+def get_ids(user):
+    try:
+        return get_uid(user), get_gid(user)
+    except KeyError:
+        raise SystemExit("ERROR: Could not find user: " + user)
+
+
 DATABASE_JSON = os.path.join(CONFIG_INSTALL_DIR, 'database.json')
 SUBMITTY_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty.json')
 SUBMITTY_USERS_JSON = os.path.join(CONFIG_INSTALL_DIR, 'submitty_users.json')

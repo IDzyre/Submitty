@@ -4,21 +4,6 @@ import shutil
 import json
 import pwd
 
-def get_uid(user):
-    return pwd.getpwnam(user).pw_uid
-
-
-def get_gid(user):
-    return pwd.getpwnam(user).pw_gid
-
-
-def get_ids(user):
-    try:
-        return get_uid(user), get_gid(user)
-    except KeyError:
-        raise SystemExit("ERROR: Could not find user: " + user)
-
-
 parser = argparse.ArgumentParser(description='Submitty config validation script',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--debug', action='store_true', default=False, help='Configure Submitty to be in debug mode. '
@@ -81,11 +66,11 @@ if not args.worker:
             except Exception as e:
                 print(f"An error occurred while copying '{item}': {e}")
 
-with open(INSTALL_FILE, 'w') as open_file:
-    def write(x=''):
-        print(x, file=open_file)
-    write('#!/bin/bash')
-    write()
-    write(f'bash {SETUP_REPOSITORY_DIR}/INSTALL_SUBMITTY_HELPER.sh  "$@"')
+# with open(INSTALL_FILE, 'w') as open_file:
+#     def write(x=''):
+#         print(x, file=open_file)
+#     write('#!/bin/bash')
+#     write()
+#     write(f'bash {SETUP_REPOSITORY_DIR}/INSTALL_SUBMITTY_HELPER.sh  "$@"')
 
-os.chmod(INSTALL_FILE, 0o700)
+# os.chmod(INSTALL_FILE, 0o700)
