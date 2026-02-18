@@ -15,13 +15,9 @@ parser.add_argument('--ci', action='store_true', default=False, help='Flag for r
 
 args = parser.parse_args()
 
-SUBMITTY_DATA_DIR = args.data_dir
-os.makedirs(SUBMITTY_DATA_DIR, exist_ok=True)
-
 CONFIG_INSTALL_DIR = os.path.join(args.install_dir, 'config')
 os.makedirs(CONFIG_INSTALL_DIR, exist_ok=True)
 CONFIG_REPOSITORY = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup/data/configs')
-
 
 SETUP_INSTALL_DIR = os.path.join(args.install_dir, '.setup')
 os.makedirs(SETUP_INSTALL_DIR, exist_ok=True)
