@@ -45,7 +45,7 @@ if not args.worker:
                     raise FileNotFoundError("Required file {} not found".format(destination_path))
 
 
-SETUP_REPOSITORY_DIR = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup)
+SETUP_REPOSITORY_DIR = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup')
 
 with open(INSTALL_FILE, 'w') as open_file:
     def write(x=''):
