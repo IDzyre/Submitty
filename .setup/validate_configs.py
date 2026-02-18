@@ -43,3 +43,13 @@ if not args.worker:
                         raise KeyError("Required key(s) {} not present in {}".format(difference, item))
                 except FileNotFoundError:
                     raise FileNotFoundError("Required file {} not found".format(destination_path))
+
+
+with open(INSTALL_FILE, 'w') as open_file:
+    def write(x=''):
+        print(x, file=open_file)
+    write('#!/bin/bash')
+    write()
+    write(f'bash {SETUP_REPOSITORY_DIR}/INSTALL_SUBMITTY_HELPER.sh  "$@"')
+
+os.chmod(INSTALL_FILE, 0o700)

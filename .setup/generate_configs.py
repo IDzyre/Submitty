@@ -62,11 +62,12 @@ if not args.worker:
             except Exception as e:
                 print(f"An error occurred while copying '{item}': {e}")
 
-# with open(INSTALL_FILE, 'w') as open_file:
-#     def write(x=''):
-#         print(x, file=open_file)
-#     write('#!/bin/bash')
-#     write()
-#     write(f'bash {SETUP_REPOSITORY_DIR}/INSTALL_SUBMITTY_HELPER.sh  "$@"')
 
-# os.chmod(INSTALL_FILE, 0o700)
+with open(INSTALL_FILE, 'w') as open_file:
+    def write(x=''):
+        print(x, file=open_file)
+    write('#!/bin/bash')
+    write()
+    write(f'bash {SETUP_REPOSITORY_DIR}/INSTALL_SUBMITTY_HELPER.sh  "$@"')
+
+os.chmod(INSTALL_FILE, 0o700)
