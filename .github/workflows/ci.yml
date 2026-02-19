@@ -514,7 +514,6 @@ jobs:
             "${PR_REPO_PATH}"       "${{ job.services.postgres-branch.ports['5432'] }}"
 
 
-
       - name: Create Databases
         run: |
           psql -d postgres -h localhost -U postgres        -p ${{  job.services.postgres-main.ports['5432']  }} \
@@ -876,7 +875,13 @@ jobs:
       - name: Check for site errors
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
-
+      
+      - name: tail apache logs
+        if: failure()
+        run: |
+          sudo tail -n 200 /var/log/apache2/submitty.log
+          sudo tail -n 200 /var/log/apache2/error.log
+        
       - name: Check services
         if: failure()
         run: |
@@ -984,6 +989,12 @@ jobs:
           spec: cypress/e2e/Cypress-Ansible/ansible-course.spec.js
           working-directory: ${{env.SUBMITTY_REPOSITORY}}/site
           browser: chrome
+      
+      - name: tail apache logs
+        if: failure()
+        run: |
+          sudo tail -n 200 /var/log/apache2/submitty.log
+          sudo tail -n 200 /var/log/apache2/error.log
 
       - uses: actions/upload-artifact@v6
         if: failure()
