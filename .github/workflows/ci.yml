@@ -496,7 +496,7 @@ jobs:
             mkdir -vp "$2/courses"  &&  chmod -vR 777 "$2/courses"
 
             sudo -E python3 "$3/Submitty/.setup/generate_configs.py" \
-                        --install-dir "$1" --data-dir "$2" --debug
+                        --install-dir "$1" --repo-dir "$3" --debug
             sudo -E python3 "$3/Submitty/.setup/set_config_permissions.py" \
                         --install-dir "$1"
 
