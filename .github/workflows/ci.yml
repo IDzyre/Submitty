@@ -495,24 +495,13 @@ jobs:
             mkdir -vp "$1/site"     &&  chmod -vR 777 "$1/site"
             mkdir -vp "$2/courses"  &&  chmod -vR 777 "$2/courses"
 
-            # Determine repository root containing the .setup directory
-            if [ -d "$3/.setup" ]; then
-              REPO_ROOT="$3"
-            elif [ -d "$3/Submitty/.setup" ]; then
-              REPO_ROOT="$3/Submitty"
-            else
-              echo "::error:: Could not find .setup in $3 or $3/Submitty"
-              ls -la "$3" || true
-              exit 1
-            fi
-
-            sudo -E python3 "$REPO_ROOT/.setup/generate_configs.py" \
+            sudo -E python3 "$3/Submitty/.setup/generate_configs.py" \
                         --install-dir "$1" --data-dir "$2" --debug
-            sudo -E python3 "$REPO_ROOT/.setup/set_config_permissions.py" \
+            sudo -E python3 "$3/Submitty/.setup/set_config_permissions.py" \
                         --install-dir "$1" --data-dir "$2" --debug
 
             # Copy necessary files to the installation path
-            cp -vr "$REPO_ROOT/sbin" "$1"
+            cp -vr "$3/Submitty/sbin" "$1"
             sudo chmod -vR 777 "$1/config"
             sudo chmod -vR 777 "$1/sbin"
           }
