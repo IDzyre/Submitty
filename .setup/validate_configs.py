@@ -23,7 +23,7 @@ if not os.path.isdir(SUBMITTY_INSTALL_DIR) or not os.access(SUBMITTY_INSTALL_DIR
 
 SUBMITTY_DATA_DIR = args.data_dir 
 os.makedirs(SUBMITTY_DATA_DIR, exist_ok=True)
-INSTALL_FILE = os.path.join(SUBMITTY_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
+INSTALL_FILE = os.path.join(SUBMITTY_INSTALL_DIR, '.setup/INSTALL_SUBMITTY.sh')
 
 CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
 

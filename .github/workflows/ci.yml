@@ -646,7 +646,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      - uses: ./.github/actions/e2e-Setup-Composite
+      - name: Run setup script
+        uses: ./.github/actions/e2e-Setup-Composite
       # TODO: Remove this block after upgrading jsPDF
       - name: Cache Node Modules
         uses: actions/cache@v5
@@ -872,6 +873,12 @@ jobs:
       - name: Check for site errors
         working-directory: ${{ env.SUBMITTY_REPOSITORY }}
         run: sudo bash tests/test_site_error_log.sh
+
+      - name: Check services
+        if: failure()
+        run: |
+          systemctl status submitty_autograding_shipper.service
+          journalctl -xeu submitty_autograding_shipper.service
 
       - uses: actions/upload-artifact@v6
         if: failure()
