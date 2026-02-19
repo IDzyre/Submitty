@@ -880,7 +880,7 @@ jobs:
       - name: Check services
         if: failure()
         run: |
-          journalctl -xeu submitty_autograding_shipper.service
+          ls -alF ${{ env.SUBMITTY_INSTALL_DIR }}/config
 
       - uses: actions/upload-artifact@v6
         if: failure()
