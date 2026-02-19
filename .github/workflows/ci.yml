@@ -495,9 +495,9 @@ jobs:
             mkdir -vp "$1/site"     &&  chmod -vR 777 "$1/site"
             mkdir -vp "$2/courses"  &&  chmod -vR 777 "$2/courses"
 
-            sudo -E python3 "$3/Submitty/.setup/generate_configs.py" \
+            sudo -E python3 "$3/.setup/generate_configs.py" \
                         --install-dir "$1" --data-dir "$2" --debug
-            sudo -E python3 "$3/Submitty/.setup/set_config_permissions.py" \
+            sudo -E python3 "$3/.setup/set_config_permissions.py" \
                         --install-dir "$1" --data-dir "$2" --debug
 
             # Copy necessary files to the installation path
