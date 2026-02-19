@@ -10,19 +10,19 @@ parser.add_argument('--debug', action='store_true', default=False, help='Configu
                                                                         'This should not be used in production!')
 parser.add_argument('--worker', action='store_true', default=False, help='Configure Submitty with autograding only')
 parser.add_argument('--install-dir', default='/usr/local/submitty', help='Set the install directory for Submitty')
-parser.add_argument('--repo-dir', default='/usr/local/submitty', help='Set the data directory for Submitty')
+parser.add_argument('--data-dir', default='/var/local/submitty', help='Set the data directory for Submitty')
 parser.add_argument('--ci', action='store_true', default=False, help='Flag for running Submitty in CI, since it uses different parameters')
 
 args = parser.parse_args()
 
 CONFIG_INSTALL_DIR = os.path.join(args.install_dir, 'config')
 os.makedirs(CONFIG_INSTALL_DIR, exist_ok=True)
-CONFIG_REPOSITORY = os.path.join(args.repo_dir, 'Submitty/.setup/data/configs')
+CONFIG_REPOSITORY = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup/data/configs')
 
 SETUP_INSTALL_DIR = os.path.join(args.install_dir, '.setup')
 os.makedirs(SETUP_INSTALL_DIR, exist_ok=True)
 
-SETUP_REPOSITORY_DIR = os.path.join(args.repo_dir, 'Submitty/.setup')
+SETUP_REPOSITORY_DIR = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup')
 os.makedirs(SETUP_REPOSITORY_DIR, exist_ok=True)
 
 INSTALL_FILE = os.path.join(SETUP_INSTALL_DIR, 'INSTALL_SUBMITTY.sh')
