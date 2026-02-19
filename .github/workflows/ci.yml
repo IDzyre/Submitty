@@ -497,7 +497,8 @@ jobs:
 
             sudo -E python3 "$3/Submitty/.setup/generate_configs.py" \
                         --install-dir "$1" --data-dir "$2" --debug
-            sudo -E python3 "$3/Submitty/.setup/set_config_permissions.py"
+            sudo -E python3 "$3/Submitty/.setup/set_config_permissions.py" \
+                        --install-dir "$1"
 
             # Copy necessary files to the installation path
             cp -vr "$3/Submitty/sbin" "$1"
