@@ -877,7 +877,6 @@ jobs:
       - name: Check services
         if: failure()
         run: |
-          systemctl status submitty_autograding_shipper.service
           journalctl -xeu submitty_autograding_shipper.service
 
       - uses: actions/upload-artifact@v6
