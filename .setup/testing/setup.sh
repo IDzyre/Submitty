@@ -49,12 +49,12 @@ chmod -R 777 ${SUBMITTY_DATA_DIR}
 
 python3 ${SUBMITTY_REPOSITORY}/.setup/generate_configs.py --install-dir $SUBMITTY_INSTALL_DIR --data-dir $SUBMITTY_DATA_DIR
 
-python3 ${SUBMITTY_REPOSITORY}/.setup/set_config_permissions.py
-
 ls -alF ${SUBMITTY_INSTALL_DIR}/config
 tmp=$(mktemp) && jq --arg v "localhost" '.database_host = $v' "$SUBMITTY_INSTALL_DIR/config/database.json" > "$tmp" && mv "$tmp" "$SUBMITTY_INSTALL_DIR/config/database.json"
 tmp=$(mktemp) && jq --arg v "DatabaseAuthentication" '.authentication_method = $v' "$SUBMITTY_INSTALL_DIR/config/database.json" > "$tmp" && mv "$tmp" "$SUBMITTY_INSTALL_DIR/config/database.json"
 tmp=$(mktemp) && jq --arg v "DatabaseAuthentication" '.authentication_method = $v' "$SUBMITTY_INSTALL_DIR/config/authentication.json" > "$tmp" && mv "$tmp" "$SUBMITTY_INSTALL_DIR/config/authentication.json"
+
+python3 ${SUBMITTY_REPOSITORY}/.setup/set_config_permissions.py
 
 bash -c "echo 'export PATH=${PATH}' >> /home/${PHP_USER}/.profile"
 bash -c "echo 'export PATH=${PATH}' >> /home/${PHP_USER}/.bashrc"

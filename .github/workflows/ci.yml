@@ -512,7 +512,7 @@ jobs:
             "${PR_REPO_PATH}"       "${{ job.services.postgres-branch.ports['5432'] }}"
           configure_submitty "${MAIN_INSTALL_PATH}"   "${MAIN_DATA_PATH}"                       \
             "${PR_REPO_PATH}"       "${{ job.services.postgres-branch.ports['5432'] }}"
-          
+
 
 
       - name: Create Databases
