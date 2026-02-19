@@ -26,7 +26,7 @@ os.makedirs(SUBMITTY_DATA_DIR, exist_ok=True)
 INSTALL_FILE = os.path.join(SUBMITTY_INSTALL_DIR, '.setup/INSTALL_SUBMITTY.sh')
 
 CONFIG_INSTALL_DIR = os.path.join(SUBMITTY_INSTALL_DIR, 'config')
-
+os.makedirs(os.path.join(SUBMITTY_INSTALL_DIR, '.setup'), exist_ok=True)
 CONFIG_REPOSITORY = os.path.join(args.install_dir, 'GIT_CHECKOUT/Submitty/.setup/data/configs')
 
 if not args.worker:
