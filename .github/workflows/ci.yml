@@ -506,10 +506,13 @@ jobs:
             sudo chmod -vR 777 "$1/sbin"
           }
 
-          configure_submitty "${MAIN_INSTALL_PATH}" "${MAIN_DATA_PATH}"                     \
-            "${MAIN_REPO_PATH}"     "${{  job.services.postgres-main.ports['5432']  }}"
+          # configure_submitty "${MAIN_INSTALL_PATH}" "${MAIN_DATA_PATH}"                     \
+          #   "${MAIN_REPO_PATH}"     "${{  job.services.postgres-main.ports['5432']  }}"
           configure_submitty "${PR_INSTALL_PATH}"   "${PR_DATA_PATH}"                       \
             "${PR_REPO_PATH}"       "${{ job.services.postgres-branch.ports['5432'] }}"
+          configure_submitty "${MAIN_INSTALL_PATH}"   "${MAIN_DATA_PATH}"                       \
+            "${PR_REPO_PATH}"       "${{ job.services.postgres-branch.ports['5432'] }}"
+          
 
 
       - name: Create Databases
