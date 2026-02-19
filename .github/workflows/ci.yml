@@ -995,6 +995,7 @@ jobs:
         run: |
           sudo tail -n 200 /var/log/apache2/submitty.log
           sudo tail -n 200 /var/log/apache2/error.log
+          sudo cat /usr/local/submitty/config/database.json
 
       - uses: actions/upload-artifact@v6
         if: failure()
