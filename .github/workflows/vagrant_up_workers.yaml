@@ -1,4 +1,4 @@
-name: Vagrant Up
+name: Vagrant Up (Workers)
 
 on:
   schedule:
