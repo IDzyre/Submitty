@@ -22,12 +22,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ci/Dockerfile
-          push: true
-          tags: |
-              ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:main
-              ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:${{ github.sha }}
+      - name: Compute lowercase image owner
+        run: |
+          echo "IMAGE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Build and push image (using buildx)
+        run: |
+          docker buildx create --use --driver docker-container || true
+          docker buildx build --file ci/Dockerfile \
+            --tag ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:main \
+            --tag ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:${{ github.sha }} \
+            --push .
+        env:
+          IMAGE_OWNER: ${{ env.IMAGE_OWNER }}

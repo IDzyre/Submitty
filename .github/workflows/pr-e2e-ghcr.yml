@@ -23,11 +23,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Compute lowercase image owner
+        run: |
+          echo "IMAGE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Pull prebuilt image (main, fallback to SHA)
         run: |
           set -euo pipefail
-          IMAGE=ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:main
-          docker pull "$IMAGE" || docker pull ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:${{ github.sha }} || true
+          IMAGE=ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:main
+          docker pull "$IMAGE" || docker pull ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:${{ github.sha }} || true
         shell: bash
 
       - name: Try extracting /usr/local/submitty from image
