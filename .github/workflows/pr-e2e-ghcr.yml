@@ -37,7 +37,7 @@ jobs:
       - name: Try extracting /usr/local/submitty from image
         run: |
           set -euo pipefail
-          IMAGE=ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:main
+          IMAGE=ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:main
           # Create a temporary container
           CID=$(docker create "$IMAGE" || true)
           if [ -n "$CID" ]; then
@@ -48,7 +48,7 @@ jobs:
           if [ ! -d /tmp/submitty-extract ]; then
             echo "No /usr/local/submitty in image; running setup inside a temporary container to generate it"
             CONTAINER_NAME=submitty_builder_${GITHUB_RUN_ID:-tmp}
-            docker run --name "$CONTAINER_NAME" -d ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:main sleep infinity || true
+            docker run --name "$CONTAINER_NAME" -d ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:main sleep infinity || true
             # copy repo into the container
             docker cp SUBMITTY_CPY/. "$CONTAINER_NAME":/workspace || true
             # run the heavy setup inside the container to produce /usr/local/submitty
