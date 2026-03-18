@@ -3,3 +3,4 @@ source = autograder
 omit = 
     *_test*.py
     tests/*.py
+ 
