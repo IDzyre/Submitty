@@ -26,8 +26,8 @@ jobs:
       - name: Pull prebuilt image (main, fallback to SHA)
         run: |
           set -euo pipefail
-          IMAGE=ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:main
-          docker pull "$IMAGE" || docker pull ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:${{ github.sha }} || true
+          IMAGE=ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:main
+          docker pull "$IMAGE" || docker pull ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:${{ github.sha }} || true
         shell: bash
 
       - name: Try extracting /usr/local/submitty from image
@@ -44,7 +44,7 @@ jobs:
           if [ ! -d /tmp/submitty-extract ]; then
             echo "No /usr/local/submitty in image; running setup inside a temporary container to generate it"
             CONTAINER_NAME=submitty_builder_${GITHUB_RUN_ID:-tmp}
-            docker run --name "$CONTAINER_NAME" -d ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:main sleep infinity || true
+            docker run --name "$CONTAINER_NAME" -d ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:main sleep infinity || true
             # copy repo into the container
             docker cp SUBMITTY_CPY/. "$CONTAINER_NAME":/workspace || true
             # run the heavy setup inside the container to produce /usr/local/submitty
