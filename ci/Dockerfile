@@ -1,14 +1,14 @@
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
-ARG PHP_VER=8.2
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install a minimal, reliable base of packages. Avoid installing apache/nginx/php versions
+# here because version availability differs between Ubuntu releases and can cause build failures.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    apt-utils ca-certificates curl gnupg lsb-release build-essential sudo \
+    ca-certificates curl build-essential sudo \
     python3 python3-pip python3-venv git tar jq moreutils \
-    libseccomp-dev libboost-all-dev poppler-utils valgrind \
-    nginx apache2 apache2-suexec-custom libapache2-mod-authnz-external libapache2-mod-authz-unixgroup libapache2-mod-wsgi-py3 php${PHP_VER}-fpm postgresql-client && \
+    libseccomp-dev libboost-all-dev poppler-utils valgrind postgresql-client && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
