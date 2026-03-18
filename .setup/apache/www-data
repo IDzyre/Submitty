@@ -6,3 +6,4 @@ cgi-bin
 # refuse the corresponding type of request.
 # This config file is only used by the apache2-suexec-custom package. See the
 # suexec man page included in the package for more details.
+ 
