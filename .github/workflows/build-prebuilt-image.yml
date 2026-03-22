@@ -1,0 +1,57 @@
+name: Build and Publish Submitty Prebuilt Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-prebuilt:
+    name: Run composite setup, archive, build & push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run e2e Setup (composite)
+        uses: ./.github/actions/e2e-Setup-Composite
+        with:
+          courses: 'sample testing archived'
+          flags: '--test_only_grading'
+
+      - name: Archive prepared install
+        run: |
+          # Create an archive of the prepared directories; sudo preserves ownership
+          sudo tar -C / -czf "$GITHUB_WORKSPACE/submitty.tgz" usr/local/submitty var/local/submitty || true
+          ls -lh "$GITHUB_WORKSPACE/submitty.tgz" || true
+
+      - name: Set up QEMU and buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image to GHCR
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ github.workspace }}
+          file: ci/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:latest
+          # Optional: adjust platforms and build-args if needed
+          # platforms: linux/amd64
+
+      - name: Output image info
+        run: |
+          echo "Image pushed: ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:${{ github.sha }}"
