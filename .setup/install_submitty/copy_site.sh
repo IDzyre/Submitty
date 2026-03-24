@@ -171,7 +171,6 @@ if [ -d "${SUBMITTY_INSTALL_DIR}/site/vendor/composer" ]; then
 	chmod -R 740 ${SUBMITTY_INSTALL_DIR}/site/vendor
 fi
 
-echo "Set permissions"
 for entry in "${result_array[@]}"; do
 	if echo ${entry} | grep -E -q "^.d"; then
 		if [ ! -z "${entry}" ]; then
