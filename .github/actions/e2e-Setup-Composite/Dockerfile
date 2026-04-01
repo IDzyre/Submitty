@@ -28,8 +28,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
        php${PHP_VER}-fpm php${PHP_VER}-cli php${PHP_VER}-imagick php${PHP_VER}-ldap \
-    && # Node 16
-       curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && # install composer
        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
