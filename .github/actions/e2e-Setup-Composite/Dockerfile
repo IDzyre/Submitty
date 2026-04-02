@@ -51,6 +51,7 @@ RUN if [ -f composer.json ]; then composer install --no-interaction --prefer-dis
 WORKDIR ${SUBMITTY_REPOSITORY}/python_submitty_utils
 RUN if [ -f setup.py ] || [ -f pyproject.toml ]; then pip3 install .; fi
 
+RUN ls -la ${SUBMITTY_REPOSITORY} 
 # Run the project's testing/setup scripts to prepare the install (best-effort)
 RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && ./.setup/testing/autograder.sh config=/usr/local/submitty/config"
 RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && ./.setup/testing/setup.sh"
