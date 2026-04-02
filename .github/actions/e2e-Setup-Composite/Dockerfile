@@ -59,7 +59,7 @@ RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && ./.setup/testing/autograder.sh config
 RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && ./.setup/testing/setup.sh"
 
 # Copy a lightweight entrypoint that documents next manual steps that require services
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY .github/actions/e2e-Setup-Composite/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /
