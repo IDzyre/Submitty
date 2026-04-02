@@ -1,17 +1,51 @@
+
 #!/usr/bin/env bash
 set -euo pipefail
 
-cat <<'EOF'
-Submitty E2E setup container
+echo "Submitty E2E container entrypoint: starting services"
 
-This container provides a prepared environment but does NOT start external
-services (e.g. PostgreSQL, PHP-FPM). Start required services separately
-before running integration tests.
+# Start PHP-FPM (try versioned then unversioned)
+if command -v php-fpm${PHP_VER} >/dev/null 2>&1; then
+  php-fpm${PHP_VER} -D
+elif command -v php-fpm >/dev/null 2>&1; then
+  php-fpm -D
+elif service php${PHP_VER}-fpm start >/dev/null 2>&1; then
+  true
+else
+  echo "ERROR: php-fpm not found/startable" >&2
+  exit 1
+fi
 
-To open an interactive shell in this image (after building):
-  docker run --rm -it submitty/e2e-setup:latest /bin/bash
+# Start a webserver: prefer nginx, fall back to apache2
+if command -v nginx >/dev/null 2>&1; then
+  nginx
+elif command -v apache2ctl >/dev/null 2>&1; then
+  apache2ctl start
+else
+  echo "ERROR: no webserver (nginx or apache2) found" >&2
+  exit 1
+fi
 
-For CI usage, run the container where required services are available.
-EOF
+# Start Submitty daemons as the submitty_daemon user. Scripts must exist.
+DAEMONS=(
+  /usr/local/submitty/autograder/submitty_autograding_shipper.py
+  /usr/local/submitty/autograder/submitty_autograding_worker.py
+  /usr/local/submitty/sbin/submitty_daemon_jobs/submitty_daemon_jobs.py
+)
 
+for d in "${DAEMONS[@]}"; do
+  if [ -f "$d" ]; then
+    echo "Launching $d as submitty_daemon"
+    if id submitty_daemon >/dev/null 2>&1; then
+      su -s /bin/bash -c "nohup python3 '$d' >/var/log/$(basename "$d").log 2>&1 &" submitty_daemon
+    else
+      nohup python3 "$d" >/var/log/$(basename "$d").log 2>&1 &
+    fi
+  else
+    echo "ERROR: required daemon script $d not found" >&2
+    exit 1
+  fi
+done
+
+echo "All services started; handing off to: $*"
 exec "$@"

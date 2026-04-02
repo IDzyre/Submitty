@@ -52,8 +52,8 @@ WORKDIR ${SUBMITTY_REPOSITORY}/python_submitty_utils
 RUN if [ -f setup.py ] || [ -f pyproject.toml ]; then pip3 install .; fi
 
 # Run the project's testing/setup scripts to prepare the install (best-effort)
-RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && if [ -x ./.setup/testing/autograder.sh ]; then ./.setup/testing/autograder.sh config=/usr/local/submitty/config || true; fi"
-RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && if [ -x ./.setup/testing/setup.sh ]; then ./.setup/testing/setup.sh || true; fi"
+RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && ./.setup/testing/autograder.sh config=/usr/local/submitty/config"
+RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && ./.setup/testing/setup.sh"
 
 # Copy a lightweight entrypoint that documents next manual steps that require services
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
