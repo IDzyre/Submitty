@@ -18,17 +18,14 @@ ENV PGPASSWORD=submitty_dbuser \
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Basic tools, Python, Composer and common build deps. PHP 8.2 via sury, Node 16 via NodeSource.
+# Basic tools, Python, Composer and common build deps.
 RUN apt-get update \
      && apt-get install -y --no-install-recommends \
          apt-utils ca-certificates curl gnupg lsb-release build-essential sudo git \
          python3 python3-pip python3-venv python3-dev unzip jq moreutils \
          libseccomp-dev libboost-all-dev postgresql-client \
          nginx apache2 apache2-suexec-custom libapache2-mod-authnz-external libapache2-mod-authz-unixgroup libapache2-mod-wsgi-py3 \
-     && curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/sury-php.gpg \
-     && echo "deb [signed-by=/usr/share/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/sury-php.list \
-     && apt-get update \
-     && apt-get install -y --no-install-recommends \
-         php${PHP_VER}-fpm php${PHP_VER}-cli php${PHP_VER}-imagick php${PHP_VER}-ldap \
+         php-fpm php-cli php-imagick php-ldap \
      && curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
      && apt-get install -y --no-install-recommends nodejs \
      && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
