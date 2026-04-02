@@ -35,7 +35,9 @@ RUN apt-get update \
 # Prepare submitty install directory and copy repository into image. When building the image
 # provide repository files in the build context (e.g. `docker build .` from repo root).
 RUN mkdir -p ${SUBMITTY_INSTALL_DIR}/GIT_CHECKOUT
-COPY ../../ ${SUBMITTY_INSTALL_DIR}/GIT_CHECKOUT/Submitty
+# Copy repository from the build context root into the image. When building,
+# run `docker build` from the repo root so `.` contains the full Submitty tree.
+COPY . ${SUBMITTY_INSTALL_DIR}/GIT_CHECKOUT/Submitty
 RUN chmod -R a+rwx ${SUBMITTY_INSTALL_DIR} && chmod -R a+rwx /tmp/
 
 # Python dependencies used by tests

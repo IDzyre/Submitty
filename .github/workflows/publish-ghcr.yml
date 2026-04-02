@@ -36,7 +36,8 @@ jobs:
       - name: Build and push image (using buildx)
         uses: docker/build-push-action@v4
         with:
-          context: .github/actions/e2e-Setup-Composite
+          # Set build context to repository root so Dockerfile's `COPY .` includes the whole repo
+          context: .
           file: .github/actions/e2e-Setup-Composite/Dockerfile
           push: true
           tags: ghcr.io/${{ env.IMAGE_OWNER }}/submitty-e2e:latest,ghcr.io/${{ env.IMAGE_OWNER }}/submitty-e2e:${{ github.sha }}
