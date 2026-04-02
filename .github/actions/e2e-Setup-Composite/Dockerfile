@@ -59,7 +59,7 @@ RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && if [ -x ./.setup/testing/autograder.s
 RUN bash -lc "cd ${SUBMITTY_REPOSITORY} && if [ -x ./.setup/testing/setup.sh ]; then ./.setup/testing/setup.sh || true; fi"
 
 # Copy a lightweight entrypoint that documents next manual steps that require services
-COPY .github/actions/e2e-Setup-Composite/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /
