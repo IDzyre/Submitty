@@ -41,6 +41,12 @@ LICHEN_REPOSITORY=/usr/local/submitty/GIT_CHECKOUT/Lichen
 SUBMITTY_INSTALL_DIR=/usr/local/submitty
 SUBMITTY_DATA_DIR=/var/local/submitty
 
+# create directory and fix permissions
+mkdir -p ${SUBMITTY_DATA_DIR}
+mkdir -p ${SUBMITTY_INSTALL_DIR}/config
+INSTALL_SYS_DIR=$(mktemp -d)
+chmod 777 "${INSTALL_SYS_DIR}"
+pushd "${INSTALL_SYS_DIR}" > /dev/null
 
 # USERS / GROUPS
 DAEMON_USER=submitty_daemon
@@ -50,12 +56,17 @@ PHP_GROUP=submitty_php
 CGI_USER=submitty_cgi
 CGI_GROUP=submitty_cgi
 
+COURSE_BUILDERS_GROUP=submitty_course_builders
+DB_USER=submitty_dbuser
+DATABASE_PASSWORD=submitty_dbuser
+DB_COURSE_USER=submitty_course_dbuser
+DB_COURSE_PASSWORD=submitty_dbuser
+
 DAEMONPHP_GROUP=submitty_daemonphp
 DAEMONCGI_GROUP=submitty_daemoncgi
 DAEMONPHPCGI_GROUP=submitty_daemonphpcgi
 
-# VERSIONS
-source ${CURRENT_DIR}/bin/versions.sh
+
 
 #################################################################
 # PROVISION SETUP
@@ -106,6 +117,66 @@ fi
 
 if [ ${UTM} == 1 ]; then
     mkdir ${SUBMITTY_REPOSITORY}/.utm
+fi
+#################################################################
+# DISTRO SETUP
+#################
+# Sources
+source ${CURRENT_DIR}/bin/versions.sh
+source ${CURRENT_DIR}/distro_setup/variables.sh
+#################################################################
+# SUBMITTY SETUP
+#################
+apt-get update
+apt-get install -qqy python3 python3-pip
+pip3 install tzlocal
+#If in worker mode, run configure with --worker option.
+if [ ${WORKER} == 1 ]; then
+    echo "Running configure submitty in worker mode"
+    if [ ${DEV_VM} == 1 ]; then
+        echo "submitty" | python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --worker
+    else
+        python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --worker
+    fi
+else
+    if [ ${DEV_VM} == 1 ]; then
+        # This should be set by setup_distro.sh for whatever distro we have, but
+        # in case it is not, default to our primary URL
+        if [ -z "${SUBMISSION_URL}" ]; then
+            SUBMISSION_URL='http://192.168.56.101'
+        fi
+        mkdir /var/run/postgresql
+        echo -e "/var/run/postgresql
+${DB_USER}
+${DATABASE_PASSWORD}
+${DB_COURSE_USER}
+${DB_COURSE_PASSWORD}
+America/New_York
+en_US
+100
+${SUBMISSION_URL}
+
+
+sysadmin@example.com
+https://example.com
+1
+submitty-admin
+y
+
+
+submitty@vagrant
+do-not-reply@vagrant
+localhost
+25
+" | python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --debug --setup-for-sample-courses --websocket-port ${WEBSOCKET_PORT}
+
+        # Set these manually as they're not asked about during CONFIGURE_SUBMITTY.py
+        sed -i -e 's/"url": ""/"url": "ldap:\/\/localhost"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
+        sed -i -e 's/"uid": ""/"uid": "uid"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
+        sed -i -e 's/"bind_dn": ""/"bind_dn": "ou=users,dc=vagrant,dc=local"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
+    else
+        python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py
+    fi
 fi
 
 if [ ${DEV_VM} == 1 ] && [ ${WORKER} == 0 ]; then
@@ -208,23 +279,7 @@ else
 
 fi
 
-INSTALL_SYS_DIR=$(mktemp -d)
-chmod 777 "${INSTALL_SYS_DIR}"
-pushd "${INSTALL_SYS_DIR}" > /dev/null
-
-COURSE_BUILDERS_GROUP=submitty_course_builders
-DB_USER=submitty_dbuser
-DATABASE_PASSWORD=submitty_dbuser
-DB_COURSE_USER=submitty_course_dbuser
-DB_COURSE_PASSWORD=submitty_dbuser
-
-#################################################################
-# DISTRO SETUP
-#################
-
 source ${CURRENT_DIR}/distro_setup/setup_distro.sh
-
-bash "${SUBMITTY_REPOSITORY}/.setup/update_system.sh" "config=${SUBMITTY_DIRECTORY}"
 
 #################################################################
 # STACK SETUP
@@ -349,6 +404,13 @@ sudo chown "${DAEMON_USER}:${DAEMON_USER}" "$gitconfig_path"
 
 usermod -a -G docker "${DAEMON_USER}"
 
+#If in worker mode, run configure with --worker option.
+if [ ${WORKER} == 1 ]; then
+    echo "Using users to update config files"
+    python3 ${SUBMITTY_REPOSITORY}/.setup/USERS_SETUP.py --worker
+else
+    python3 ${SUBMITTY_REPOSITORY}/.setup/USERS_SETUP.py
+fi
 #################################################################
 # JAR SETUP
 #################
@@ -576,9 +638,6 @@ EOF
     sed -i -e "s/^disable_functions = .*/disable_functions = ${DISABLED_FUNCTIONS}/g" /etc/php/${PHP_VERSION}/fpm/php.ini
 fi
 
-# create directories and fix permissions
-mkdir -p ${SUBMITTY_DATA_DIR}
-
 #Set up database and copy down the tutorial repo if not in worker mode
 if [ ${WORKER} == 0 ]; then
     # create the courses directory. This is needed for the first time we run
@@ -665,59 +724,6 @@ if [ ! -d "${clangsrc}" ]; then
     echo 'add_subdirectory(UnionTool)'  >> ${clangsrc}/llvm/tools/clang/tools/extra/CMakeLists.txt
 
     echo 'DONE PREPARING CLANG INSTALLATION'
-fi
-
-#################################################################
-# SUBMITTY SETUP
-#################
-echo Beginning Submitty Setup
-
-#If in worker mode, run configure with --worker option.
-if [ ${WORKER} == 1 ]; then
-    echo "Running configure submitty in worker mode"
-    if [ ${DEV_VM} == 1 ]; then
-        echo "submitty" | python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --worker
-    else
-        python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --worker
-    fi
-else
-    if [ ${DEV_VM} == 1 ]; then
-        # This should be set by setup_distro.sh for whatever distro we have, but
-        # in case it is not, default to our primary URL
-        if [ -z "${SUBMISSION_URL}" ]; then
-            SUBMISSION_URL='http://192.168.56.101'
-        fi
-        echo -e "/var/run/postgresql
-${DB_USER}
-${DATABASE_PASSWORD}
-${DB_COURSE_USER}
-${DB_COURSE_PASSWORD}
-America/New_York
-en_US
-100
-${SUBMISSION_URL}
-
-
-sysadmin@example.com
-https://example.com
-1
-submitty-admin
-y
-
-
-submitty@vagrant
-do-not-reply@vagrant
-localhost
-25
-" | python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py --debug --setup-for-sample-courses --websocket-port ${WEBSOCKET_PORT}
-
-        # Set these manually as they're not asked about during CONFIGURE_SUBMITTY.py
-        sed -i -e 's/"url": ""/"url": "ldap:\/\/localhost"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
-        sed -i -e 's/"uid": ""/"uid": "uid"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
-        sed -i -e 's/"bind_dn": ""/"bind_dn": "ou=users,dc=vagrant,dc=local"/g' ${SUBMITTY_INSTALL_DIR}/config/authentication.json
-    else
-        python3 ${SUBMITTY_REPOSITORY}/.setup/CONFIGURE_SUBMITTY.py
-    fi
 fi
 
 if [ ${WORKER} == 1 ]; then
