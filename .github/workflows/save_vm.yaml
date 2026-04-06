@@ -83,7 +83,7 @@ jobs:
             --data-urlencode 'content=The Package Vagrant VM Github Action has failed, this means the VM is not saved, and requires attention. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}/job/${{ steps.get-job-id.outputs.job_id }}'
 
   vagrant-up-arm:
-    runs-on: windows-latest-arm64
+    runs-on: windows-11-arm64
     steps:
       - uses: actions/checkout@v6
         with:
