@@ -91,7 +91,7 @@ jobs:
       - name: Install vagrant
         run: brew install vagrant
 
-      - name: install virtual box 7.0.20
+      - name: install virtual box 7.1.16
         run: |
           curl -LO https://download.virtualbox.org/virtualbox/7.1.16/VirtualBox-7.1.16-172425-macOSArm64.dmg
           hdiutil mount VirtualBox-7.1.16-172425-macOSArm64.dmg
@@ -104,15 +104,15 @@ jobs:
           brew install hashicorp/tap/hcp
           brew upgrade hashicorp/tap/hcp
 
-      - name: Get latest version
-        id: get-version
-        run: |
-          TAG=$(git describe --tags --abbrev=0)
-          if ! [[ $TAG =~ ^v[0-9]{2}\.[0-9]{2}\.[0-9]{2}$ ]]; then
-            echo "Invalid tag name: '$TAG'"
-            exit 1
-          fi
-          echo "version=${TAG:1}" >> $GITHUB_OUTPUT
+      # - name: Get latest version
+      #   id: get-version
+      #   run: |
+      #     TAG=$(git describe --tags --abbrev=0)
+      #     if ! [[ $TAG =~ ^v[0-9]{2}\.[0-9]{2}\.[0-9]{2}$ ]]; then
+      #       echo "Invalid tag name: '$TAG'"
+      #       exit 1
+      #     fi
+      #     echo "version=${TAG:1}" >> $GITHUB_OUTPUT
 
       - name: Vagrant Up
         run: CI=1 vagrant up
