@@ -83,26 +83,20 @@ jobs:
             --data-urlencode 'content=The Package Vagrant VM Github Action has failed, this means the VM is not saved, and requires attention. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}/job/${{ steps.get-job-id.outputs.job_id }}'
 
   vagrant-up-arm:
-    runs-on: macos-15
+    runs-on: windows-latest-arm64
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Install vagrant
-        run: brew install vagrant
-
-      - name: install virtual box 7.1.16
+      - name: Install Vagrant
+        shell: pwsh
         run: |
-          curl -LO https://download.virtualbox.org/virtualbox/7.1.16/VirtualBox-7.1.16-172425-macOSArm64.dmg
-          hdiutil mount VirtualBox-7.1.16-172425-macOSArm64.dmg
-          sudo installer -pkg /Volumes/VirtualBox/VirtualBox.pkg -target /
-          hdiutil unmount /Volumes/VirtualBox
+          winget install --id Hashicorp.Vagrant --accept-package-agreements --accept-source-agreements --silent
 
-      - name: Install HCP CLI
+      - name: Install VirtualBox
+        shell: pwsh
         run: |
-          brew tap hashicorp/tap
-          brew install hashicorp/tap/hcp
-          brew upgrade hashicorp/tap/hcp
+          winget install --id Oracle.VirtualBox --accept-package-agreements --accept-source-agreements --silent
 
       # - name: Get latest version
       #   id: get-version
@@ -115,10 +109,14 @@ jobs:
       #     echo "version=${TAG:1}" >> $GITHUB_OUTPUT
 
       - name: Vagrant Up
-        run: CI=1 vagrant up
+        run: vagrant up
+        env:
+          CI: "1"
 
       - name: Validate image
-        run: curl --show-error --fail --include http://localhost:1511
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri http://localhost:1511 | Out-Null
 
       - name: Save image
         run: vagrant package --output submitty.box
