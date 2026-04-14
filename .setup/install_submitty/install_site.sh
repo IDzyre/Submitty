@@ -13,7 +13,7 @@
 #
 # This script has two command-line arguments:
 #   Required argument: config=<config dir>.
-#   Optional argument: browscap
+#   Optional arguments: browscap, copy_only
 
 set_permissions () {
     local fullpath=$1
@@ -64,6 +64,7 @@ PHP_GROUP=${PHP_USER}
 CGI_USER=$(jq -r '.cgi_user' ${CONF_DIR}/submitty_users.json)
 CGI_GROUP=${CGI_USER}
 VAGRANT=0
+COPY_ONLY=false
 
 if [ -d "${THIS_DIR}/../../.vagrant" ]; then
     VAGRANT=1
@@ -76,12 +77,14 @@ do
         SUBMITTY_CONFIG_DIR="$(readlink -f "$(echo "$cli_arg" | cut -f2 -d=)")"
     elif [ "$cli_arg" == "browscap" ]; then
         BROWSCAP=true
+    elif [ "$cli_arg" == "copy_only" ]; then
+        COPY_ONLY=true
     fi
 done
 
 if [ -z "${SUBMITTY_CONFIG_DIR}" ]; then
     echo "ERROR: This script requires a config dir argument"
-    echo "Usage: ${BASH_SOURCE[0]} config=<config dir> [browscap]"
+    echo "Usage: ${BASH_SOURCE[0]} config=<config dir> [browscap] [copy_only]"
     exit 1
 fi
 
@@ -153,6 +156,27 @@ fi
 
 readarray -t result_array <<< "${result}"
 
+COMPOSER_CONFIG_CHANGED=false
+PHP_FILES_CHANGED=false
+NODE_CONFIG_CHANGED=false
+NEEDS_FRONTEND_BUILD=false
+
+if echo "${result}" | grep -E -q "composer\.(json|lock)"; then
+    COMPOSER_CONFIG_CHANGED=true
+fi
+
+if echo "${result}" | grep -E -q "site/.*\.php$"; then
+    PHP_FILES_CHANGED=true
+fi
+
+if echo "${result}" | grep -E -q "package(-lock)?\.json"; then
+    NODE_CONFIG_CHANGED=true
+fi
+
+if echo "${result}" | grep -E -q "site/(ts|vue)/|site/vite\.config|site/package(-lock)?\.json|site/tsconfig"; then
+    NEEDS_FRONTEND_BUILD=true
+fi
+
 # clear old twig cache
 if [ -d "${SUBMITTY_INSTALL_DIR}/site/cache/twig" ]; then
     rm -rf "${SUBMITTY_INSTALL_DIR}/site/cache/twig"
@@ -195,11 +219,13 @@ fi
 # create lang cache directory
 mkdir -p ${SUBMITTY_INSTALL_DIR}/site/cache/lang
 
-if [ -d "${SUBMITTY_INSTALL_DIR}/site/public/mjs" ]; then
-    rm -r "${SUBMITTY_INSTALL_DIR}/site/public/mjs"
+if [ "${NEEDS_FRONTEND_BUILD}" = true ]; then
+    if [ -d "${SUBMITTY_INSTALL_DIR}/site/public/mjs" ]; then
+        rm -r "${SUBMITTY_INSTALL_DIR}/site/public/mjs"
+    fi
+    # create output dir for esbuild
+    mkdir -p ${SUBMITTY_INSTALL_DIR}/site/public/mjs
 fi
-# create output dir for esbuild
-mkdir -p ${SUBMITTY_INSTALL_DIR}/site/public/mjs
 
 # Update ownership to PHP_USER for affected files and folders
 chown ${PHP_USER}:${PHP_GROUP} ${SUBMITTY_INSTALL_DIR}/site
@@ -210,7 +236,9 @@ done
 # Update ownership for cgi-bin to CGI_USER
 find ${SUBMITTY_INSTALL_DIR}/site/cgi-bin -exec chown ${CGI_USER}:${CGI_GROUP} {} \;
 
-chown ${PHP_USER}:${PHP_GROUP} ${SUBMITTY_INSTALL_DIR}/site/public/mjs
+if [ -d "${SUBMITTY_INSTALL_DIR}/site/public/mjs" ]; then
+    chown ${PHP_USER}:${PHP_GROUP} ${SUBMITTY_INSTALL_DIR}/site/public/mjs
+fi
 
 # set the mask for composer so that it'll run properly and be able to delete/modify
 # files under it
@@ -238,7 +266,19 @@ for entry in "${result_array[@]}"; do
     fi
 done
 
-if echo "${result}" | grep -E -q "composer\.(json|lock)"; then
+if [ "${COPY_ONLY}" = true ]; then
+    echo "copy_only enabled, skipping dependency install and build steps"
+    if [ -f "${SUBMITTY_INSTALL_DIR}/site/public/manifest.json" ]; then
+        chmod 444 ${SUBMITTY_INSTALL_DIR}/site/public/manifest.json
+    fi
+    chown -R ${CGI_USER}:${CGI_USER} ${SUBMITTY_INSTALL_DIR}/site/cgi-bin
+    chmod 540 ${SUBMITTY_INSTALL_DIR}/site/cgi-bin/*
+    chmod 550 ${SUBMITTY_INSTALL_DIR}/site/cgi-bin/git-http-backend
+    rm -f ${SUBMITTY_INSTALL_DIR}/site/public/index.html
+    exit 0
+fi
+
+if [ "${COMPOSER_CONFIG_CHANGED}" = true ]; then
     # install composer dependencies and generate classmap
     if [ ${VAGRANT} == 1 ]; then
         su - ${PHP_USER} -c "composer install -d \"${SUBMITTY_INSTALL_DIR}/site\" --dev --prefer-dist --optimize-autoloader"
@@ -249,8 +289,7 @@ if echo "${result}" | grep -E -q "composer\.(json|lock)"; then
 
     find ${SUBMITTY_INSTALL_DIR}/site/vendor -type d -exec chmod 551 {} \;
     find ${SUBMITTY_INSTALL_DIR}/site/vendor -type f -exec chmod 440 {} \;
-else
-    # TODO: We can skip this step in the future by checking whether there are any new files.
+elif [ "${PHP_FILES_CHANGED}" = true ]; then
     if [ ${VAGRANT} == 1 ]; then
         su - ${PHP_USER} -c "composer dump-autoload -d \"${SUBMITTY_INSTALL_DIR}/site\" --optimize"
     else
@@ -260,6 +299,8 @@ else
 
     find ${SUBMITTY_INSTALL_DIR}/site/vendor/composer -type d -exec chmod 551 {} \;
     find ${SUBMITTY_INSTALL_DIR}/site/vendor/composer -type f -exec chmod 440 {} \;
+else
+    echo "No PHP/composer changes detected, skipping composer autoload update"
 fi
 
 # create doctrine proxy classes
@@ -284,7 +325,7 @@ NODE_FOLDER=${SUBMITTY_INSTALL_DIR}/site/node_modules
 
 chmod 440 ${SUBMITTY_INSTALL_DIR}/site/composer.lock
 
-if echo "{$result}" | grep -E -q "package(-lock)?.json"; then
+if [ "${NODE_CONFIG_CHANGED}" = true ]; then
     # Install JS dependencies and then copy them into place
     # We need to create the node_modules folder initially if it
     # doesn't exist, or else submitty_php won't be able to make it
@@ -415,32 +456,36 @@ chown -R ${CGI_USER}:${CGI_USER} ${SUBMITTY_INSTALL_DIR}/site/cgi-bin
 chmod 540 ${SUBMITTY_INSTALL_DIR}/site/cgi-bin/*
 chmod 550 ${SUBMITTY_INSTALL_DIR}/site/cgi-bin/git-http-backend
 
-mkdir -p "${NODE_FOLDER}/.vue-global-types"
-chown -R "${PHP_USER}:${PHP_USER}" "${NODE_FOLDER}/.vue-global-types"
-mkdir -p "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
-chgrp "${PHP_USER}" "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
+if [ "${NEEDS_FRONTEND_BUILD}" = true ]; then
+    mkdir -p "${NODE_FOLDER}/.vue-global-types"
+    chown -R "${PHP_USER}:${PHP_USER}" "${NODE_FOLDER}/.vue-global-types"
+    mkdir -p "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
+    chgrp "${PHP_USER}" "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
 
-echo "Running esbuild"
-chmod a+x ${NODE_FOLDER}/esbuild/bin/esbuild
-chmod a+x ${NODE_FOLDER}/typescript/bin/tsc
-chmod a+x ${NODE_FOLDER}/vue-tsc/bin/vue-tsc.js
-chmod -R u+rw ${NODE_FOLDER}/.vue-global-types
-chmod a+x ${NODE_FOLDER}/vite/bin/vite.js
-chmod g+w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
-chmod -R u+w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
-chmod +w "${SUBMITTY_INSTALL_DIR}/site/vue"
-su - ${PHP_USER} -c "cd ${SUBMITTY_INSTALL_DIR}/site && npm run build"
-chmod -w "${SUBMITTY_INSTALL_DIR}/site/vue"
-chmod a-x ${NODE_FOLDER}/esbuild/bin/esbuild
-chmod a-x ${NODE_FOLDER}/typescript/bin/tsc
-chmod a-x ${NODE_FOLDER}/vue-tsc/bin/vue-tsc.js
-chmod g-w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
-chmod a-x ${NODE_FOLDER}/vite/bin/vite.js
-chmod -R u-rw ${NODE_FOLDER}/.vue-global-types
-chmod -R u-w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
+    echo "Running esbuild"
+    chmod a+x ${NODE_FOLDER}/esbuild/bin/esbuild
+    chmod a+x ${NODE_FOLDER}/typescript/bin/tsc
+    chmod a+x ${NODE_FOLDER}/vue-tsc/bin/vue-tsc.js
+    chmod -R u+rw ${NODE_FOLDER}/.vue-global-types
+    chmod a+x ${NODE_FOLDER}/vite/bin/vite.js
+    chmod g+w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
+    chmod -R u+w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
+    chmod +w "${SUBMITTY_INSTALL_DIR}/site/vue"
+    su - ${PHP_USER} -c "cd ${SUBMITTY_INSTALL_DIR}/site && npm run build"
+    chmod -w "${SUBMITTY_INSTALL_DIR}/site/vue"
+    chmod a-x ${NODE_FOLDER}/esbuild/bin/esbuild
+    chmod a-x ${NODE_FOLDER}/typescript/bin/tsc
+    chmod a-x ${NODE_FOLDER}/vue-tsc/bin/vue-tsc.js
+    chmod g-w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
+    chmod a-x ${NODE_FOLDER}/vite/bin/vite.js
+    chmod -R u-rw ${NODE_FOLDER}/.vue-global-types
+    chmod -R u-w "${SUBMITTY_INSTALL_DIR}/site/incremental_build"
 
-chmod 551 ${SUBMITTY_INSTALL_DIR}/site/public/mjs
-set_mjs_permission ${SUBMITTY_INSTALL_DIR}/site/public/mjs
+    chmod 551 ${SUBMITTY_INSTALL_DIR}/site/public/mjs
+    set_mjs_permission ${SUBMITTY_INSTALL_DIR}/site/public/mjs
+else
+    echo "No frontend source changes detected, skipping npm build"
+fi
 
 # cache needs to be writable
 find ${SUBMITTY_INSTALL_DIR}/site/cache -type d -exec chmod u+w {} \;
