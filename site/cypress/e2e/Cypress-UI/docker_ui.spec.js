@@ -56,11 +56,9 @@ describe('Docker UI Test', () => {
         // Allow the system to update the info and reload
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
-            return cy.get('[data-testid="docker-version"]')
-                .invoke('text')
-                .then((text) => {
-                    return text !== 'Unknown';
-                });
+            return cy.get('body').then(($body) => {
+                return $body.find('[data-testid="docker-version"]').text() !== 'Unknown';
+            });
         }, 10000);
         // Updated time should not be "Unknown"
         cy.get('[data-testid="systemwide-info"]')
@@ -138,15 +136,13 @@ describe('Docker UI Test', () => {
         // Check success message for adding to config
         cy.get('.alert-success')
             .should('contain.text', 'submitty/autograding-default:latest has been added to the configuration!');
-
+        
         // Verify DockerUI status has changed to "Changes Pending"
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
-            return cy.get('[data-testid="docker-status"]')
-                .invoke('text')
-                .then((text) => {
-                    return text.includes('Changes Pending');
-                });
+            return cy.get('body').then(($body) => {
+                return $body.find('[data-testid="docker-status"]').text().includes('Changes Pending');
+            });
         }, 2000);
 
         // Update the machine to link existing image to a new tag
@@ -157,11 +153,9 @@ describe('Docker UI Test', () => {
         // Wait until the system updates
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
-            return cy.get('[data-testid="docker-status"]')
-                .invoke('text')
-                .then((text) => {
-                    return text.includes('Up-to-Date');
-                });
+            return cy.get('body').then(($body) => {
+                return $body.find('[data-testid="docker-status"]').text().includes('Up-to-Date');
+            });
         }, 10000, 500);
 
         // Check the empty tag list
@@ -215,11 +209,9 @@ describe('Docker UI Test', () => {
         // Verify DockerUI status has changed to "Changes Pending"
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
-            return cy.get('[data-testid="docker-status"]')
-                .invoke('text')
-                .then((text) => {
-                    return text.includes('Changes Pending');
-                });
+            return cy.get('body').then(($body) => {
+                return $body.find('[data-testid="docker-status"]').text().includes('Changes Pending');
+            });
         }, 2000);
 
         // Update the machine to pull the image
@@ -268,11 +260,9 @@ describe('Docker UI Test', () => {
         // Verify DockerUI status has changed to "Changes Pending"
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
-            return cy.get('[data-testid="docker-status"]')
-                .invoke('text')
-                .then((text) => {
-                    return text.includes('Changes Pending');
-                });
+            return cy.get('body').then(($body) => {
+                return $body.find('[data-testid="docker-status"]').text().includes('Changes Pending');
+            });
         }, 2000);
 
         // Update the machine to remove the image
@@ -294,11 +284,9 @@ describe('Docker UI Test', () => {
         // Wait until the system updates
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
-            return cy.get('[data-testid="docker-status"]')
-                .invoke('text')
-                .then((text) => {
-                    return text.includes('Up-to-Date');
-                });
+            return cy.get('body').then(($body) => {
+                return $body.find('[data-testid="docker-status"]').text().includes('Up-to-Date');
+            });
         }, 10000, 500);
 
         // Final verification
