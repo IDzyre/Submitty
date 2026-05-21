@@ -1,0 +1,37 @@
+name: Build and Publish Submitty GHCR
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute lowercase image owner
+        run: |
+          echo "IMAGE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Build and push image (using buildx)
+        run: |
+          docker buildx create --use --driver docker-container || true
+          docker buildx build --file ci/Dockerfile \
+            --tag ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:main \
+            --tag ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:${{ github.sha }} \
+            --push .
+        env:
+          IMAGE_OWNER: ${{ env.IMAGE_OWNER }}

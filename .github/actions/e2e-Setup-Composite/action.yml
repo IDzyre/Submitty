@@ -74,8 +74,8 @@ runs:
         python3 -m pip install --upgrade pip setuptools wheel packaging
         pip3 -V
         pip3 install selenium websocket_client
-        # Install globally
-        sudo python3 -m pip install --upgrade pip setuptools wheel packaging
+        # Install globally (single upgrade call)
+        sudo python3 -m pip install --upgrade pip setuptools wheel packaging selenium websocket_client
         sudo pip3 -V
       shell: bash
     - name: Install python dependencies
@@ -125,12 +125,11 @@ runs:
     - name: Install apt-get packages
       run: |
         sudo apt-get update
-        sudo apt-get install libseccomp-dev
-        sudo apt-get install libboost-all-dev
-        sudo apt-get install poppler-utils
-        sudo apt-get install valgrind
-        sudo apt-get install ca-certificates
-        sudo apt-get install moreutils
+        sudo apt-get install -y --no-install-recommends \
+          libseccomp-dev libboost-all-dev poppler-utils valgrind ca-certificates moreutils \
+          nginx apache2 apache2-suexec-custom libapache2-mod-authnz-external libapache2-mod-authz-unixgroup libapache2-mod-wsgi-py3 php${PHP_VER}-fpm
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
       shell: bash
 
     - name: Install third party dependencies
@@ -167,7 +166,6 @@ runs:
 
     - name: Set up nginx
       run: |
-        sudo apt-get install nginx
         cd $SUBMITTY_REPOSITORY
         sudo mkdir /etc/systemd/system/nginx.service.d
         sudo printf "[Service]\nExecStartPost=/bin/sleep 0.1\n" | sudo tee /etc/systemd/system/nginx.service.d/override.conf
@@ -182,12 +180,7 @@ runs:
 
     - name: Set up apache
       run: |
-        sudo apt-get install apache2
-        sudo apt-get install apache2-suexec-custom
-        sudo apt-get install libapache2-mod-authnz-external
-        sudo apt-get install libapache2-mod-authz-unixgroup
-        sudo apt-get install libapache2-mod-wsgi-py3
-        sudo apt-get install php${PHP_VER}-fpm
+        # apache packages are installed earlier in the combined apt step
         cd $SUBMITTY_REPOSITORY
         sudo a2enmod include rewrite actions cgi alias headers suexec authnz_external headers proxy_fcgi proxy_http proxy_wstunnel ssl
         sudo cp .setup/php-fpm/pool.d/submitty.conf /etc/php/$PHP_VER/fpm/php-fpm.conf

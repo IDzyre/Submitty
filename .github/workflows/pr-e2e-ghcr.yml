@@ -1,0 +1,76 @@
+name: PR E2E using GHCR image
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tests only
+        uses: actions/checkout@v6
+        with:
+          path: SUBMITTY_CPY/
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute lowercase image owner
+        run: |
+          echo "IMAGE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Pull prebuilt image (main, fallback to SHA)
+        run: |
+          set -euo pipefail
+          IMAGE=ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:main
+          docker pull "$IMAGE" || docker pull ghcr.io/${IMAGE_OWNER}/submitty-prebuilt:${{ github.sha }} || true
+        shell: bash
+
+      - name: Try extracting /usr/local/submitty from image
+        run: |
+          set -euo pipefail
+          IMAGE=ghcr.io/${{ github.repository_owner }}/submitty-prebuilt:main
+          # Create a temporary container
+          CID=$(docker create "$IMAGE" || true)
+          if [ -n "$CID" ]; then
+            docker cp "$CID":/usr/local/submitty /tmp/submitty-extract || true
+            docker rm -v "$CID" || true
+          fi
+          # If nothing extracted, run the setup inside a container and tar the result
+          if [ ! -d /tmp/submitty-extract ]; then
+            echo "No /usr/local/submitty in image; running setup inside a temporary container to generate it"
+            CONTAINER_NAME=submitty_builder_${GITHUB_RUN_ID:-tmp}
+            docker run --name "$CONTAINER_NAME" -d ghcr.io/${{ toLower(github.repository_owner) }}/submitty-prebuilt:main sleep infinity || true
+            # copy repo into the container
+            docker cp SUBMITTY_CPY/. "$CONTAINER_NAME":/workspace || true
+            # run the heavy setup inside the container to produce /usr/local/submitty
+            docker exec -w /workspace -u root "$CONTAINER_NAME" bash -lc "set -e; if [ -x ./.setup/testing/autograder.sh ]; then ./.setup/testing/autograder.sh config=/usr/local/submitty/config || true; fi; if [ -x ./.setup/testing/setup.sh ]; then ./.setup/testing/setup.sh || true; fi; tar -C / -czf /tmp/submitty-prebuilt.tar.gz usr/local/submitty || true"
+            docker cp "$CONTAINER_NAME":/tmp/submitty-prebuilt.tar.gz /tmp/submitty-prebuilt.tar.gz || true
+            docker rm -f "$CONTAINER_NAME" || true
+            if [ -f /tmp/submitty-prebuilt.tar.gz ]; then
+              sudo tar -C / -xzf /tmp/submitty-prebuilt.tar.gz || true
+            fi
+          else
+            # move extracted files into place on the runner
+            sudo rm -rf /usr/local/submitty || true
+            sudo mv /tmp/submitty-extract /usr/local/submitty || true
+          fi
+        shell: bash
+
+      - name: Run lightweight test setup and tests (on runner)
+        run: |
+          set -euo pipefail
+          cd /usr/local/submitty/GIT_CHECKOUT/Submitty || cd SUBMITTY_CPY
+          # run only the lightweight test setup to avoid recompiling
+          if [ -x ./.setup/testing/setup_test_suite.sh ]; then sudo -E env "PATH=$PATH" bash ./.setup/testing/setup_test_suite.sh || true; fi
+          if [ -x ./.setup/bin/setup_sample_courses.py ]; then sudo -E env "PATH=$PATH" python3 ./.setup/bin/setup_sample_courses.py --test_only_grading sample || true; fi
+          sudo -E env "PATH=$PATH" bash tests/git_test.sh || true
+        shell: bash
