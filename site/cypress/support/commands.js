@@ -124,7 +124,7 @@ Cypress.Commands.add('waitAndReloadUntil', (condition, timeout, wait = 100) => {
     cy.then(() => {
         return condition().then((result) => {
             if (timeout <= 0) {
-                throw new Error('Timed out waiting for condition');
+                throw new Error(`Timed out waiting for condition (last result: ${JSON.stringify(result)}, condition: ${condition.toString()})`);
             }
             if (result) {
                 return result;
