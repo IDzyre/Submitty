@@ -12,7 +12,7 @@ class PollRepository extends EntityRepository {
      * Find all of the polls available to the specified student, and the  and hydrate all options
      * @return Poll[]
      */
-    public function findAllByStudentIDWithAllOptions(string $user_id): array {
+    public function findAllByStudentIDWithAllOptions(string $user_id, string $today): array {
         return $this->getEntityManager()
             ->createQuery('
                 SELECT p, r, o FROM app\entities\poll\Poll p
@@ -20,7 +20,7 @@ class PollRepository extends EntityRepository {
                 LEFT JOIN p.options o
                 WHERE p.release_date <= :release_date
                 ORDER BY p.release_date ASC, p.name ASC')
-            ->setParameter('release_date', date('Y-m-d'))
+            ->setParameter('release_date', $today)
             ->setParameter('user_id', $user_id)
             ->getResult();
     }
@@ -28,14 +28,14 @@ class PollRepository extends EntityRepository {
     /**
      * Find single poll and hydrate all options and the specific responses for the specified student
      */
-    public function findByStudentID(string $user_id, int $poll_id): ?Poll {
+    public function findByStudentID(string $user_id, int $poll_id, string $today): ?Poll {
         $result = $this->getEntityManager()
             ->createQuery('
                 SELECT p, r, o FROM app\entities\poll\Poll p
                 LEFT JOIN p.responses r WITH r.student_id = :user_id
                 LEFT JOIN p.options o
                 WHERE p.id = :poll_id AND p.release_date <= :release_date')
-            ->setParameter('release_date', date('Y-m-d'))
+            ->setParameter('release_date', $today)
             ->setParameter('poll_id', $poll_id)
             ->setParameter('user_id', $user_id)
             ->getResult();
