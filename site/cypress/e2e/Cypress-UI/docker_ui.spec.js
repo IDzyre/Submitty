@@ -88,21 +88,21 @@ describe('Docker UI Test', () => {
 
     it('Should not add invalid image', () => {
         // Check invalid format
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .clear();
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .type('submitty/invalid-image');
         cy.get('#docker-warning')
             .should('be.visible');
-        cy.get('#send-button')
+        cy.get('[data-testid="add-image-to-capability"]')
             .should('be.disabled');
 
         // Check valid format but invalid image
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .clear();
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .type('submitty/invalid-image:0.0');
-        cy.get('#send-button')
+          cy.get('[data-testid="add-image-to-capability"]')
             .should('not.be.disabled')
             .click();
 
@@ -116,19 +116,19 @@ describe('Docker UI Test', () => {
             .should('contain.text', 'Up-to-Date');
 
         // Check empty tag list, should have `et-cetera'
-        cy.get('#capabilities-list')
-            .contains('et-cetera');
+        cy.get('[data-testid="capabilities-list"]')
+            .should('contain.text', 'et-cetera');
 
         cy.intercept('POST', '**/admin/add_image').as('addImage');
 
         // Check valid format and valid image
-        cy.get('#capability-form')
+        cy.get('[data-testid="capability-form"]')
             .select('et-cetera');
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .clear();
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .type('submitty/autograding-default:latest');
-        cy.get('#send-button')
+          cy.get('[data-testid="add-image-to-capability"]')
             .should('not.be.disabled')
             .click();
 
@@ -165,17 +165,17 @@ describe('Docker UI Test', () => {
         }, 10000, 500);
 
         // Check the empty tag list
-        cy.get('#capabilities-list')
+        cy.get('[data-testid="capabilities-list"]')
             .should('not.contain.text', 'et-cetera');
 
         // Try to add it again, should fail
-        cy.get('#capability-form')
+        cy.get('[data-testid="capability-form"]')
             .select('et-cetera');
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .clear();
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .type('submitty/autograding-default:latest');
-        cy.get('#send-button')
+        cy.get('[data-testid="add-image-to-capability"]')
             .should('not.be.disabled')
             .click();
 
@@ -195,13 +195,13 @@ describe('Docker UI Test', () => {
         cy.intercept('POST', '**/admin/add_image').as('addImage');
 
         // Add a new image
-        cy.get('#capability-form')
+        cy.get('[data-testid="capability-form"]')
             .select('python');
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .clear();
-        cy.get('#add-field')
+        cy.get('[data-testid="add-field"]')
             .type('submitty/prolog:8');
-        cy.get('#send-button')
+        cy.get('[data-testid="add-image-to-capability"]')
             .should('not.be.disabled')
             .click();
 
@@ -216,10 +216,7 @@ describe('Docker UI Test', () => {
         // eslint-disable-next-line no-restricted-syntax
         cy.waitAndReloadUntil(() => {
             return cy.get('[data-testid="docker-status"]')
-                .invoke('text')
-                .then((text) => {
-                    return text.includes('Changes Pending');
-                });
+                .invoke('text').should('have.text', 'Changes Pending')
         }, 2000);
 
         // Update the machine to pull the image

@@ -123,12 +123,13 @@ Cypress.Commands.add('waitAndReloadUntil', (condition, timeout, wait = 100) => {
     cy.reload();
     cy.then(() => {
         return condition().then((result) => {
-            if (timeout <= 0) {
-                throw new Error('Timed out waiting for condition');
-            }
             if (result) {
                 return result;
             }
+            if (timeout <= 0) {
+                throw new Error('Timed out waiting for condition');
+            }
+            
             // eslint-disable-next-line no-restricted-syntax
             return cy.waitAndReloadUntil(condition, timeout - wait, wait);
         });
