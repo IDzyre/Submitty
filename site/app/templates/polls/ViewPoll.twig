@@ -158,11 +158,13 @@
         {% endif %}
     </div>
 </div>
-
+ {{ dump(test_end_time) }}
 <script>
 
     {% if timer_enabled %}
-        const endTime = new Date('{{ end_time }}')
+        const endTime = new Date('{{ end_time }}');
+        console.log(endTime);
+        console.log('{{end_time}}');
         updateTimer(endTime);
     {% endif %}
 

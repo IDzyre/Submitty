@@ -22,6 +22,18 @@ const visitPoll = (title, text, wsEnabled = false) => {
 };
 
 describe('Test cases revolving around polls functionality', () => {
+    before(() => {
+        cy.login();
+        cy.visit(['sample', 'polls']);
+        cy.get('#old-table-dropdown').click();
+        cy.get('body').then(($body) => {
+            if ($body.text().includes('Poll Cypress Test')) {
+                cy.contains('Poll Cypress Test').siblings(':nth-child(2)').click();
+            }
+        });
+        cy.get('#old-table-dropdown').click();
+    });
+
     it('Should verify the default settings and functionality of the dropdown bars', () => {
         // log in from instructor account
         cy.visit(['sample', 'polls']);
@@ -306,8 +318,7 @@ describe('Test cases revolving around polls functionality', () => {
         visitPoll('Poll Cypress Test', 'View Poll', true);
 
         // Waiting for duration to reach 0, so poll ends.
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(5000);
+        cy.get('[data-testid="timer"]').should('contain', 'Poll Ended',  { timeout: 5000 });
         cy.visit(['sample', 'polls']);
 
         cy.reload(); // Will not need this after websockets.
@@ -438,7 +449,7 @@ describe('Test cases revolving around polls functionality', () => {
         cy.logout();
         cy.login('student');
         cy.visit(['sample', 'polls']);
-        visitPoll('Poll Cypress Test', 'Edit Answer', true);
+        visitPoll('Poll Cypress Test', 'View Poll', true);
         cy.get('#toggle-info-button').should('not.exist');
         cy.get('#toggle-histogram-button').should('not.exist');
         cy.get('#poll-histogram').should('not.exist');
@@ -448,9 +459,8 @@ describe('Test cases revolving around polls functionality', () => {
         cy.logout();
         cy.login();
         cy.visit(['sample', 'polls']);
-        // Wait 6 seconds to wait out the time remaining for poll to close
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(6000);
+        // Wait out the time remaining for poll to close
+        cy.get('[data-testid="timer"]').should('contain', 'Poll Ended',  { timeout: 7000 });
         cy.reload();
         // Validate that the poll is closed.
         cy.contains('Poll Cypress Test').siblings(':nth-child(6)').children().should('not.be.checked');
