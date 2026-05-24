@@ -828,6 +828,8 @@ jobs:
 
   Cypress:
     runs-on: ubuntu-22.04
+    env:
+      TZ: "America/New_York"
     strategy:
       fail-fast: false
       matrix:
