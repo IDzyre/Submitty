@@ -12,7 +12,6 @@ class JsonResponse implements ResponseInterface {
     /** @var array json encoded array */
     public $json;
 
-    
     /**
      * HTTP status code to send with the response. Defaults to 200 OK.
      * @var int
