@@ -28,11 +28,8 @@ jobs:
           sudo installer -pkg /Volumes/VirtualBox/VirtualBox.pkg -target /
           hdiutil unmount /Volumes/VirtualBox
 
-      - name: Install HCP CLI
-        run: |
-          brew tap hashicorp/tap
-          brew install hashicorp/tap/hcp
-          brew upgrade hashicorp/tap/hcp
+      - name: Install awscli and jq
+        run: brew install awscli jq
 
       - name: Get latest version
         id: get-version
@@ -53,18 +50,15 @@ jobs:
       - name: Save image
         run: vagrant package --output submitty.box
 
-      - name: Get HCP token
-        id: hcp-token
-        run: |
-          hcp auth login --client-id=${{ secrets.HCP_CLIENT_ID }} --client-secret=${{ secrets.HCP_CLIENT_SECRET }}
-          echo "HCP_TOKEN=$(hcp auth print-access-token)" >> $GITHUB_OUTPUT
-
       - name: Publish image
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
         run: |
-          export VAGRANT_CLOUD_TOKEN="${{ secrets.VAGRANT_CLOUD_TOKEN }};${{ steps.hcp-token.outputs.HCP_TOKEN }}"
-          vagrant cloud auth login
-          vagrant cloud publish SubmittyBot/ubuntu22-dev ${{ steps.get-version.outputs.version }}.$(date +"%y%m%d%H%M") virtualbox submitty.box --release --force
-          vagrant cloud auth logout
+          bash push-to-r2.sh -f submitty.box -v "${{ steps.get-version.outputs.version }}.$(date +"%y%m%d%H%M")"
 
       - name: Acquire Job ID
         if: failure()
