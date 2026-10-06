@@ -20,8 +20,6 @@ jobs:
   amd64:
     runs-on: macos-15-intel
     timeout-minutes: 180
-    outputs:
-      version: ${{ steps.get-version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
 
@@ -38,21 +36,17 @@ jobs:
           sudo installer -pkg /Volumes/VirtualBox/VirtualBox.pkg -target /
           hdiutil unmount /Volumes/VirtualBox
 
-      # Shared with the arm64 job so both architectures land under the same catalog version.
-      - name: Get version
-        id: get-version
-        run: echo "version=$(date -u +%Y.%m.%d%H%M)" >> $GITHUB_OUTPUT
-
       - name: Build and publish box
         run: |
           bash .setup/vagrant/base-box/build-base-box.sh -A amd64 -n 3 -m 8192 -o "$RUNNER_TEMP/base.box" \
-            -N "$BOX_NAME" -p "${{ steps.get-version.outputs.version }}"
+            -N "$BOX_NAME" -p "$(date -u +%Y.%m.%d%H%M)"
 
   # GitHub's Apple Silicon runners lack nested virtualization, so this needs a self-hosted
   # Apple Silicon Mac with VirtualBox 7.1+ and Homebrew installed. Enable it by setting the
   # repository variable BUILD_ARM_BASE_BOX to "true".
+  # Published as a separate box (like bento/ubuntu-22.04-arm64) so the jobs never write the same
+  # metadata.json and can run in parallel.
   arm64:
-    needs: amd64
     if: vars.BUILD_ARM_BASE_BOX == 'true'
     runs-on: [self-hosted, macOS, ARM64]
     timeout-minutes: 180
@@ -70,7 +64,7 @@ jobs:
       - name: Build and publish box
         run: |
           bash .setup/vagrant/base-box/build-base-box.sh -A arm64 -n 4 -m 8192 -o "$RUNNER_TEMP/base.box" \
-            -N "$BOX_NAME" -p "${{ needs.amd64.outputs.version }}"
+            -N "$BOX_NAME-arm64" -p "$(date -u +%Y.%m.%d%H%M)"
 
       # A self-hosted runner keeps its disk between runs; don't leave a multi-GB box behind.
       - name: Remove box
