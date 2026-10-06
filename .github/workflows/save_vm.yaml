@@ -18,7 +18,7 @@ jobs:
       - name: Install vagrant
         run: |
           brew tap hashicorp/tap
-          brew trust --formula hashicorp/tap/vagrant
+          brew trust --formula hashicorp/tap/vagrant  
           brew install hashicorp/tap/hashicorp-vagrant
 
       - name: install virtual box 7.0.20
@@ -30,7 +30,11 @@ jobs:
 
       - name: Install awscli and jq
         run: |
-          rm '/usr/local/bin/aws'
+          brew link --overwrite awscli
+          brew unlink awscli
+          brew install awscli
+          brew link --overwrite jq
+          brew unlink jq
           brew install jq awscli
 
       - name: Get latest version
