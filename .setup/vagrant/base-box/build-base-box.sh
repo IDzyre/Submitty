@@ -50,6 +50,11 @@ native_path() {
 VARS=(-var "disk_size=$DISK" -var "memory=$MEMORY" -var "cpus=$CPUS" -var "headless=$HEADLESS")
 
 if [[ -n $ISO ]]; then
+  # The 22.04 desktop ISO ignores autoinstall and just boots to a live desktop.
+  if [[ $(basename "$ISO") == *desktop* ]]; then
+    echo "Error: $ISO looks like a desktop ISO; use the live server ISO (ubuntu-22.04.5-live-server-amd64.iso)" >&2
+    exit 1
+  fi
   if [[ $ISO =~ ^[a-z]+:// ]]; then
     VARS+=(-var "iso_url=$ISO")
   else
