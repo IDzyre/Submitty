@@ -10,6 +10,11 @@ permissions:
 
 env:
   BOX_NAME: SubmittyBot/ubuntu22-base
+  R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  R2_BUCKET: ${{ secrets.R2_BUCKET }}
+  R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
 
 jobs:
   amd64:
@@ -39,12 +44,6 @@ jobs:
         run: echo "version=$(date -u +%Y.%m.%d%H%M)" >> $GITHUB_OUTPUT
 
       - name: Build and publish box
-        env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
         run: |
           bash .setup/vagrant/base-box/build-base-box.sh -A amd64 -n 3 -m 8192 -o "$RUNNER_TEMP/base.box" \
             -N "$BOX_NAME" -p "${{ steps.get-version.outputs.version }}"
@@ -69,12 +68,6 @@ jobs:
           }
 
       - name: Build and publish box
-        env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
         run: |
           bash .setup/vagrant/base-box/build-base-box.sh -A arm64 -n 4 -m 8192 -o "$RUNNER_TEMP/base.box" \
             -N "$BOX_NAME" -p "${{ needs.amd64.outputs.version }}"
