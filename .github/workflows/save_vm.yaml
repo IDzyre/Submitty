@@ -29,7 +29,9 @@ jobs:
           hdiutil unmount /Volumes/VirtualBox
 
       - name: Install awscli and jq
-        run: brew install awscli jq
+        run: |
+          brew link --overwrite awscli
+          brew install jq
 
       - name: Get latest version
         id: get-version
