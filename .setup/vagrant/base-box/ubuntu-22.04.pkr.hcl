@@ -11,19 +11,30 @@ packer {
   }
 }
 
+# amd64 or arm64. VirtualBox can't emulate another CPU, so this must match the host.
+variable "arch" {
+  type    = string
+  default = "amd64"
+  validation {
+    condition     = contains(["amd64", "arm64"], var.arch)
+    error_message = "The arch variable must be amd64 or arm64."
+  }
+}
+
+# Leave empty to download the official live server ISO for var.arch.
 variable "iso_url" {
   type    = string
-  default = "https://releases.ubuntu.com/22.04/ubuntu-22.04.5-live-server-amd64.iso"
+  default = ""
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "file:https://releases.ubuntu.com/22.04/SHA256SUMS"
+  default = ""
 }
 
 variable "output_box" {
   type    = string
-  default = "output/ubuntu-22.04-virtualbox.box"
+  default = ""
 }
 
 variable "cpus" {
@@ -47,18 +58,64 @@ variable "headless" {
   default = true
 }
 
+locals {
+  platform = {
+    amd64 = {
+      iso_url       = "https://releases.ubuntu.com/22.04/ubuntu-22.04.5-live-server-amd64.iso"
+      iso_checksum  = "file:https://releases.ubuntu.com/22.04/SHA256SUMS"
+      guest_os_type = "Ubuntu_64"
+      chipset       = "piix3"
+      firmware      = "bios"
+      disk_iface    = "sata"
+      iso_iface     = "sata"
+      gfx           = "vmsvga"
+      nic           = "82540EM"
+      usb           = "none"
+      keyboard      = "ps2"
+      mouse         = "ps2"
+    }
+    # VirtualBox 7.1+ on an ARM host (e.g. Apple Silicon); ARM VMs only boot via EFI and lack legacy PC devices.
+    arm64 = {
+      iso_url       = "https://cdimage.ubuntu.com/releases/22.04/release/ubuntu-22.04.5-live-server-arm64.iso"
+      iso_checksum  = "file:https://cdimage.ubuntu.com/releases/22.04/release/SHA256SUMS"
+      guest_os_type = "Ubuntu_arm64"
+      chipset       = "armv8virtual"
+      firmware      = "efi"
+      disk_iface    = "virtio"
+      iso_iface     = "virtio"
+      gfx           = "qemuramfb"
+      nic           = "virtio"
+      usb           = "xhci"
+      keyboard      = "usb"
+      mouse         = "usbtablet"
+    }
+  }
+  p = local.platform[var.arch]
+}
+
 source "virtualbox-iso" "ubuntu" {
-  vm_name       = "ubuntu-22.04-base"
-  guest_os_type = "Ubuntu_64"
-  iso_url       = var.iso_url
-  iso_checksum  = var.iso_checksum
+  vm_name       = "ubuntu-22.04-${var.arch}-base"
+  guest_os_type = local.p.guest_os_type
+  iso_url       = var.iso_url != "" ? var.iso_url : local.p.iso_url
+  iso_checksum  = var.iso_checksum != "" ? var.iso_checksum : local.p.iso_checksum
 
   cpus      = var.cpus
   memory    = var.memory
   disk_size = var.disk_size
   headless  = var.headless
 
-  hard_drive_interface     = "sata"
+  chipset        = local.p.chipset
+  firmware       = local.p.firmware
+  gfx_controller = local.p.gfx
+  gfx_vram_size  = 16
+  nic_type       = local.p.nic
+  usb            = local.p.usb != "none"
+  usb_controller = local.p.usb
+  keyboard       = local.p.keyboard
+  mouse          = local.p.mouse
+
+  hard_drive_interface     = local.p.disk_iface
+  iso_interface            = local.p.iso_iface
   hard_drive_discard       = true
   hard_drive_nonrotational = true
 
@@ -86,8 +143,6 @@ source "virtualbox-iso" "ubuntu" {
   guest_additions_path = "VBoxGuestAdditions.iso"
 
   vboxmanage = [
-    ["modifyvm", "{{ .Name }}", "--graphicscontroller", "vmsvga"],
-    ["modifyvm", "{{ .Name }}", "--vram", "16"],
     ["modifyvm", "{{ .Name }}", "--rtcuseutc", "on"],
     ["modifyvm", "{{ .Name }}", "--audio-enabled", "off"],
   ]
@@ -113,7 +168,7 @@ build {
   }
 
   post-processor "vagrant" {
-    output            = var.output_box
+    output            = var.output_box != "" ? var.output_box : "output/ubuntu-22.04-${var.arch}-virtualbox.box"
     compression_level = 6
   }
 }

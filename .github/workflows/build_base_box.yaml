@@ -1,0 +1,98 @@
+name: Build Base Box
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  BOX_NAME: SubmittyBot/ubuntu22-base
+
+jobs:
+  amd64:
+    runs-on: macos-15-intel
+    timeout-minutes: 180
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install packer
+        run: |
+          brew tap hashicorp/tap
+          brew trust --formula hashicorp/tap/packer
+          brew install hashicorp/tap/packer
+
+      - name: install virtual box 7.0.20
+        run: |
+          curl -LO https://download.virtualbox.org/virtualbox/7.0.20/VirtualBox-7.0.20-163906-OSX.dmg
+          hdiutil mount VirtualBox-7.0.20-163906-OSX.dmg
+          sudo installer -pkg /Volumes/VirtualBox/VirtualBox.pkg -target /
+          hdiutil unmount /Volumes/VirtualBox
+
+      # Shared with the arm64 job so both architectures land under the same catalog version.
+      - name: Get version
+        id: get-version
+        run: echo "version=$(date -u +%Y.%m.%d%H%M)" >> $GITHUB_OUTPUT
+
+      - name: Build and publish box
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
+        run: |
+          bash .setup/vagrant/base-box/build-base-box.sh -A amd64 -n 3 -m 8192 -o "$RUNNER_TEMP/base.box" \
+            -N "$BOX_NAME" -p "${{ steps.get-version.outputs.version }}"
+
+  # GitHub's Apple Silicon runners lack nested virtualization, so this needs a self-hosted
+  # Apple Silicon Mac with VirtualBox 7.1+ and Homebrew installed. Enable it by setting the
+  # repository variable BUILD_ARM_BASE_BOX to "true".
+  arm64:
+    needs: amd64
+    if: vars.BUILD_ARM_BASE_BOX == 'true'
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install packer
+        run: |
+          command -v packer || {
+            brew tap hashicorp/tap
+            brew trust --formula hashicorp/tap/packer
+            brew install hashicorp/tap/packer
+          }
+
+      - name: Build and publish box
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
+        run: |
+          bash .setup/vagrant/base-box/build-base-box.sh -A arm64 -n 4 -m 8192 -o "$RUNNER_TEMP/base.box" \
+            -N "$BOX_NAME" -p "${{ needs.amd64.outputs.version }}"
+
+      # A self-hosted runner keeps its disk between runs; don't leave a multi-GB box behind.
+      - name: Remove box
+        if: always()
+        run: rm -f "$RUNNER_TEMP/base.box"
+
+  notify-failure:
+    needs: [amd64, arm64]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send zulip message on failure
+        run: |
+          curl -X POST https://submitty.zulipchat.com/api/v1/messages -u ${{ secrets.ZULIP_AUTHENTICATION }} \
+            --data-urlencode 'type=stream' \
+            --data-urlencode 'to=Submitty Developer Studio' \
+            --data-urlencode 'topic=Vagrant Up Failures' \
+            --data-urlencode 'content=The Build Base Box Github Action has failed, this means the base box was not updated, and requires attention. View here: https://github.com/Submitty/Submitty/actions/runs/${{ github.run_id }}'
