@@ -30,8 +30,7 @@ jobs:
 
       - name: Install awscli and jq
         run: |
-          brew link --overwrite awscli
-          brew unlink awscli
+          brew link --overwrite aws
           brew install awscli
           brew link --overwrite jq
           brew unlink jq
