@@ -30,8 +30,8 @@ jobs:
 
       - name: Install awscli and jq
         run: |
-          brew link --overwrite awscli
-          brew install jq
+          rm '/usr/local/bin/aws'
+          brew install jq awscli
 
       - name: Get latest version
         id: get-version
