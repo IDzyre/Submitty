@@ -6,7 +6,7 @@ set -euo pipefail
 
 usage() {
   cat >&2 <<EOF
-Usage: $0 [-A ARCH] [-i ISO] [-c CHECKSUM] [-o BOX_FILE] [-d DISK_MB] [-m MEMORY_MB] [-n CPUS] [-g] [-a] [-p VERSION [-N BOX_NAME]]
+Usage: $0 [-A ARCH] [-i ISO] [-c CHECKSUM] [-o BOX_FILE] [-d DISK_MB] [-m MEMORY_MB] [-n CPUS] [-w BOOT_WAIT] [-g] [-k] [-a] [-p VERSION [-N BOX_NAME]]
   -A  amd64 or arm64 (default: this machine's architecture; VirtualBox can't build for another)
   -i  Path or URL of an Ubuntu 22.04 live server ISO for ARCH
       (default: download ubuntu-22.04.5-live-server-ARCH.iso from Ubuntu)
@@ -16,7 +16,9 @@ Usage: $0 [-A ARCH] [-i ISO] [-c CHECKSUM] [-o BOX_FILE] [-d DISK_MB] [-m MEMORY
   -d  Max disk size in MB (default: 65536)
   -m  Memory in MB used during the build (default: 4096)
   -n  CPUs used during the build (default: 2)
+  -w  Wait after power-on before typing the boot command (default: 15s; raise on slow hosts, max ~25s)
   -g  Show the VirtualBox window instead of building headless
+  -k  On failure, leave the VM running for debugging instead of deleting it
   -a  Add the finished box to Vagrant as ubuntu-22.04-local
   -p  Publish the box to Cloudflare R2 with push-to-r2.sh under this version, e.g. 2026.10.061530
   -N  Box name to publish under (default: SubmittyBot/ubuntu22-base)
@@ -32,12 +34,12 @@ esac
 REPO_ROOT=$(cd "$SCRIPT_DIR/../../.." && pwd)
 ARCH=$HOST_ARCH; ISO=""; CHECKSUM=""; BOX_FILE=""
 DISK=65536; MEMORY=4096; CPUS=2; HEADLESS=true; ADD_BOX=false
-PUBLISH_VERSION=""; BOX_NAME="SubmittyBot/ubuntu22-base"
-while getopts "A:i:c:o:d:m:n:gap:N:h" opt; do
+PUBLISH_VERSION=""; BOX_NAME="SubmittyBot/ubuntu22-base"; BOOT_WAIT=15s; ON_ERROR=cleanup
+while getopts "A:i:c:o:d:m:n:w:gkap:N:h" opt; do
   case $opt in
     A) ARCH=$OPTARG ;; i) ISO=$OPTARG ;; c) CHECKSUM=$OPTARG ;; o) BOX_FILE=$OPTARG ;;
-    d) DISK=$OPTARG ;; m) MEMORY=$OPTARG ;; n) CPUS=$OPTARG ;;
-    g) HEADLESS=false ;; a) ADD_BOX=true ;; p) PUBLISH_VERSION=$OPTARG ;; N) BOX_NAME=$OPTARG ;;
+    d) DISK=$OPTARG ;; m) MEMORY=$OPTARG ;; n) CPUS=$OPTARG ;; w) BOOT_WAIT=$OPTARG ;;
+    g) HEADLESS=false ;; k) ON_ERROR=abort ;; a) ADD_BOX=true ;; p) PUBLISH_VERSION=$OPTARG ;; N) BOX_NAME=$OPTARG ;;
     *) usage ;;
   esac
 done
@@ -72,7 +74,7 @@ native_path() {
   if command -v cygpath >/dev/null; then cygpath -m "$1"; else echo "$1"; fi
 }
 
-VARS=(-var "arch=$ARCH" -var "disk_size=$DISK" -var "memory=$MEMORY" -var "cpus=$CPUS" -var "headless=$HEADLESS")
+VARS=(-var "arch=$ARCH" -var "disk_size=$DISK" -var "memory=$MEMORY" -var "cpus=$CPUS" -var "headless=$HEADLESS" -var "boot_wait=$BOOT_WAIT")
 
 if [[ -n $ISO ]]; then
   # The 22.04 desktop ISO ignores autoinstall and just boots to a live desktop.
@@ -109,7 +111,7 @@ packer init "$TEMPLATE"
 echo "==> Building $ARCH box (the unattended install takes 15-30 minutes)..."
 # Packer's working directory holds the VM and export; keep it next to the template.
 cd "$SCRIPT_DIR"
-packer build -force "${VARS[@]}" "$TEMPLATE"
+packer build -force -on-error="$ON_ERROR" "${VARS[@]}" "$TEMPLATE"
 
 echo
 echo "Done: $BOX_ABS"

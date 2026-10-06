@@ -53,6 +53,14 @@ variable "disk_size" {
   default = 65536
 }
 
+# How long to wait after power-on before typing the boot command. Keystrokes sent before GRUB is
+# ready are lost and the installer starts without autoinstall, so slow hosts (CI) need longer.
+# Keep it under GRUB's 30 second menu timeout.
+variable "boot_wait" {
+  type    = string
+  default = "15s"
+}
+
 variable "headless" {
   type    = bool
   default = true
@@ -123,7 +131,7 @@ source "virtualbox-iso" "ubuntu" {
   http_directory = "${path.root}/http"
 
   # Drop to the GRUB console and boot the installer with autoinstall enabled.
-  boot_wait = "5s"
+  boot_wait = var.boot_wait
   boot_command = [
     "c<wait>",
     "linux /casper/vmlinuz --- autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/<enter><wait>",
@@ -133,7 +141,7 @@ source "virtualbox-iso" "ubuntu" {
 
   ssh_username = "vagrant"
   ssh_password = "vagrant"
-  ssh_timeout  = "60m"
+  ssh_timeout  = "100m"
   # The installer's own SSH server is up during install and rejects us; keep retrying until the real system boots.
   ssh_handshake_attempts = 500
 
