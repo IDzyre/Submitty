@@ -127,6 +127,7 @@ Vagrant.configure(2) do |config|
     config.env.enable
   end
 
+  config.vm.box_url="https://pub-94c17b86ab5f476dada8358ae6d22279.r2.dev/SubmittyBot/metadata.json"
   # Warn the user if they attempt to re-provision
   if ARGV[0] == 'provision' and not Dir.glob(".vagrant/machines/*/*/action_provision").empty?
     print "\e[31mWarning: A virtual machine has already been provisioned. Re-provisioning may destroy this existing virtual machine state.\nAre you sure you would like to proceed?\e[0m [y/N] "
