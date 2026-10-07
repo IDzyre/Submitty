@@ -61,6 +61,13 @@ variable "boot_wait" {
   default = "15s"
 }
 
+# How long the OS install may take before Packer gives up. Hosts without hardware virtualization
+# (VirtualBox "turtle mode", e.g. GitHub's macOS Intel runners) are many times slower.
+variable "ssh_timeout" {
+  type    = string
+  default = "60m"
+}
+
 variable "headless" {
   type    = bool
   default = true
@@ -130,18 +137,20 @@ source "virtualbox-iso" "ubuntu" {
   # Serves http/user-data and http/meta-data to the installer.
   http_directory = "${path.root}/http"
 
-  # Drop to the GRUB console and boot the installer with autoinstall enabled.
+  # Edit the default GRUB entry to add autoinstall to the kernel line, then boot it with F10.
+  # Editing the entry (rather than typing linux/initrd/boot at the GRUB console) lets GRUB load
+  # the kernel and initrd itself, so nothing typed can be lost while a slow VM is busy loading.
   boot_wait = var.boot_wait
   boot_command = [
-    "c<wait>",
-    "linux /casper/vmlinuz --- autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/<enter><wait>",
-    "initrd /casper/initrd<enter><wait>",
-    "boot<enter>",
+    "e<wait>",
+    "<down><down><down><end>",
+    " autoinstall ds=\"nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/\"",
+    "<f10>",
   ]
 
   ssh_username = "vagrant"
   ssh_password = "vagrant"
-  ssh_timeout  = "100m"
+  ssh_timeout  = var.ssh_timeout
   # The installer's own SSH server is up during install and rejects us; keep retrying until the real system boots.
   ssh_handshake_attempts = 500
 
