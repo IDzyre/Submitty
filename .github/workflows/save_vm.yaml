@@ -49,9 +49,12 @@ jobs:
           TAG=$(git describe --tags --abbrev=0)
           echo "version=${TAG:1}" >> $GITHUB_OUTPUT
 
-      # Keep the VM on failure so the diagnostics step below can inspect it.
+      # Keep the VM on failure so the diagnostics step below can inspect it. A step timeout counts as a
+      # failure (a job timeout counts as cancelled), so the diagnostics still run if this hangs.
+      # --debug goes to stderr, so the normal output stays readable in the log.
       - name: Vagrant Up
-        run: CI=1 vagrant up --no-destroy-on-error
+        timeout-minutes: 150
+        run: CI=1 vagrant up --no-destroy-on-error --debug 2> "$RUNNER_TEMP/vagrant-debug.log"
 
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
@@ -69,6 +72,12 @@ jobs:
           fi
           find /mnt/vms -name 'VBox*.log*' -exec cp {} "$RUNNER_TEMP/diagnostics/" \; || true
           cp .vagrant/logs/*.log "$RUNNER_TEMP/diagnostics/" 2>/dev/null || true
+          cp "$RUNNER_TEMP/vagrant-debug.log" "$RUNNER_TEMP/diagnostics/" 2>/dev/null || true
+          # What the guest was doing: shared folder state, vbox modules, kernel messages, and the process tree.
+          CI=1 vagrant ssh-config > "$RUNNER_TEMP/ssh-config" 2>/dev/null || true
+          timeout 60 ssh -F "$RUNNER_TEMP/ssh-config" -o StrictHostKeyChecking=no ubuntu-22.04 \
+            'sudo sh -c "uname -a; mount | grep -i vbox; lsmod | grep -i vbox; modinfo vboxsf | head -n 5; tail -n 20 /etc/fstab; dmesg | tail -n 150; ps -ef --forest"' \
+            > "$RUNNER_TEMP/diagnostics/guest.txt" 2>&1 || true
 
       - uses: actions/upload-artifact@v7
         if: failure()
