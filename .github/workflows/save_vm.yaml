@@ -49,11 +49,32 @@ jobs:
           TAG=$(git describe --tags --abbrev=0)
           echo "version=${TAG:1}" >> $GITHUB_OUTPUT
 
+      # Keep the VM on failure so the diagnostics step below can inspect it.
       - name: Vagrant Up
-        run: CI=1 vagrant up
+        run: CI=1 vagrant up --no-destroy-on-error
 
       - name: Validate image
         run: curl --show-error --fail --include http://localhost:1511
+
+      # Shows whether the guest hung while booting (screenshot) or booted without networking (guest IP).
+      - name: Collect VM diagnostics
+        if: failure()
+        run: |
+          mkdir -p "$RUNNER_TEMP/diagnostics"
+          VM=$(VBoxManage list vms | grep -o '"Submitty_[^"]*"' | tr -d '"' | head -n1)
+          if [ -n "$VM" ]; then
+            VBoxManage controlvm "$VM" screenshotpng "$RUNNER_TEMP/diagnostics/screen.png" || true
+            VBoxManage showvminfo "$VM" > "$RUNNER_TEMP/diagnostics/vminfo.txt" || true
+            VBoxManage guestproperty enumerate "$VM" > "$RUNNER_TEMP/diagnostics/guestproperties.txt" || true
+          fi
+          find /mnt/vms -name 'VBox*.log*' -exec cp {} "$RUNNER_TEMP/diagnostics/" \; || true
+          cp .vagrant/logs/*.log "$RUNNER_TEMP/diagnostics/" 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: vm-diagnostics
+          path: ${{ runner.temp }}/diagnostics
 
       - name: Save image
         run: vagrant package --output /mnt/vms/submitty.box
