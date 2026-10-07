@@ -9,24 +9,39 @@ permissions:
   contents: read
 
 jobs:
+  # GitHub's Linux runners expose hardware virtualization (KVM); the macOS Intel runners don't, which
+  # leaves VirtualBox in its very slow software-only "turtle" mode.
   vagrant-up:
-    runs-on: macos-15-intel
+    runs-on: ubuntu-24.04
+    env:
+      # Box downloads and `vagrant package`'s temporary export go here; keep them off the small root disk.
+      VAGRANT_HOME: /mnt/vms/.vagrant.d
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Install vagrant
-        run: |
-          brew tap hashicorp/tap
-          brew trust --formula hashicorp/tap/vagrant
-          brew install hashicorp/tap/hashicorp-vagrant
 
-      - name: install virtual box 7.0.20
+      - name: Install vagrant and VirtualBox
         run: |
-          curl -LO https://download.virtualbox.org/virtualbox/7.0.20/VirtualBox-7.0.20-163906-OSX.dmg
-          hdiutil mount VirtualBox-7.0.20-163906-OSX.dmg
-          sudo installer -pkg /Volumes/VirtualBox/VirtualBox.pkg -target /
-          hdiutil unmount /Volumes/VirtualBox
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+            | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          curl -fsSL https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor -o /usr/share/keyrings/oracle-virtualbox.gpg
+          echo "deb [signed-by=/usr/share/keyrings/oracle-virtualbox.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" \
+            | sudo tee /etc/apt/sources.list.d/virtualbox.list
+          sudo apt-get update
+          sudo apt-get install -y vagrant "linux-headers-$(uname -r)" virtualbox-7.1
+
+      # VirtualBox can't use VT-x while KVM holds it.
+      - name: Unload KVM
+        run: sudo modprobe -r kvm_intel kvm_amd kvm || true
+
+      # The root disk is small; keep the VM and the packaged box on the larger /mnt disk.
+      - name: Use /mnt for VMs
+        run: |
+          sudo mkdir -p /mnt/vms
+          sudo chown "$USER" /mnt/vms
+          VBoxManage setproperty machinefolder /mnt/vms
 
       - name: Get latest version
         id: get-version
@@ -41,7 +56,7 @@ jobs:
         run: curl --show-error --fail --include http://localhost:1511
 
       - name: Save image
-        run: vagrant package --output submitty.box
+        run: vagrant package --output /mnt/vms/submitty.box
 
       - name: Publish image
         env:
@@ -51,7 +66,7 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
         run: |
-          bash push-to-r2.sh -f submitty.box -v "${{ steps.get-version.outputs.version }}.$(date +"%y%m%d%H%M")"
+          bash push-to-r2.sh -f /mnt/vms/submitty.box -v "${{ steps.get-version.outputs.version }}.$(date +"%y%m%d%H%M")"
 
       - name: Acquire Job ID
         if: failure()
