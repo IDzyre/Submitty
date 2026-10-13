@@ -12,7 +12,7 @@ jobs:
     if: >-
       github.repository == 'IDzyre/Submitty' &&
       github.event.pull_request.user.type != 'Bot' &&
-      !contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
+      !contains(fromJSON('["MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
     name: Limit External PRs
     runs-on: ubuntu-latest
     permissions:
